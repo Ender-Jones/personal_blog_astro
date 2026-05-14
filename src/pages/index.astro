@@ -1,64 +1,175 @@
 ---
 import { getCollection } from 'astro:content';
+import AboutTile from '../components/bento/AboutTile.astro';
+import CurrentThreadTile from '../components/bento/CurrentThreadTile.astro';
+import GithubTile from '../components/bento/GithubTile.astro';
+import IdentityTile from '../components/bento/IdentityTile.astro';
+import MarginaliaTile from '../components/bento/MarginaliaTile.astro';
+import RecentWritingTile from '../components/bento/RecentWritingTile.astro';
+import ResearchNowTile from '../components/bento/ResearchNowTile.astro';
+import SelectedEntryTile from '../components/bento/SelectedEntryTile.astro';
+import TopicsTile from '../components/bento/TopicsTile.astro';
 import BaseLayout from '../components/layout/BaseLayout.astro';
-import { research, site } from '../lib/data';
+import { getCurrentThread } from '../lib/parseWorklog';
+import { resolveSelectedEntry } from '../lib/selectEntry';
+import { byDateDesc } from '../lib/content';
+import { quotes, research, site } from '../lib/data';
 
 const posts = await getCollection('posts');
 const worklogs = await getCollection('worklogs');
+const recentPosts = byDateDesc(posts).slice(0, 4);
+const currentThread = getCurrentThread(worklogs);
+const selectedEntry = resolveSelectedEntry(posts);
+const quote = quotes[new Date().getUTCDate() % quotes.length];
 ---
 
 <BaseLayout title={site.name} description={site.research_oneliner}>
-  <main class="page-shell">
-    <section class="home-foundation surface-panel">
-      <p class="eyebrow">Personal Archive · Foundation</p>
-      <h1>{site.name}</h1>
-      <p>
-        {site.role} · {site.location}
-      </p>
-      <p>
-        {research.focus}
-      </p>
-      <div class="home-foundation__meta" aria-label="Content summary">
-        <span>{posts.length} posts</span>
-        <span>{worklogs.length} worklogs</span>
+  <main class="home-page">
+    <header class="home-intro">
+      <div class="home-intro__line">
+        <span></span>
+        <p class="eyebrow">Personal Archive · Est. 2025</p>
       </div>
-    </section>
+      <h1>
+        Hi, I'm <span>Ender</span><span class="blink-cursor" aria-hidden="true">_</span>
+      </h1>
+      <p>
+        {site.role} in Tokyo, researching {research.focus.toLowerCase()}
+        This is my notebook: essays, research notes, and an append-only worklog.
+      </p>
+    </header>
+
+    <div class="bento-grid">
+      <div class="bento-grid__identity"><IdentityTile /></div>
+      <div class="bento-grid__research"><ResearchNowTile /></div>
+      <div class="bento-grid__recent"><RecentWritingTile posts={recentPosts} /></div>
+      <div class="bento-grid__thread"><CurrentThreadTile thread={currentThread} /></div>
+      <div class="bento-grid__selected"><SelectedEntryTile selected={selectedEntry} /></div>
+      <div class="bento-grid__topics"><TopicsTile posts={posts} /></div>
+      <div class="bento-grid__about"><AboutTile /></div>
+      {quote && <div class="bento-grid__marginalia"><MarginaliaTile quote={quote} /></div>}
+      <div class="bento-grid__github"><GithubTile /></div>
+    </div>
   </main>
 </BaseLayout>
 
 <style>
-  .home-foundation {
-    max-width: 760px;
-    padding: clamp(var(--s-8), 6vw, var(--s-16));
+  .home-page {
+    width: min(1312px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: var(--s-12) 0 var(--s-20);
   }
 
-  .home-foundation h1 {
-    margin: var(--s-4) 0 var(--s-3);
+  .home-intro {
+    max-width: 760px;
+    padding: var(--s-8) 0 var(--s-6);
+  }
+
+  .home-intro__line {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    margin-bottom: var(--s-5);
+  }
+
+  .home-intro__line span {
+    width: 24px;
+    height: 1px;
+    background: var(--accent-pink);
+  }
+
+  .home-intro h1 {
+    margin: 0;
     color: #fff;
-    font-size: clamp(40px, 8vw, 72px);
+    font-size: clamp(44px, 8vw, 72px);
     line-height: 1;
   }
 
-  .home-foundation p {
-    max-width: 620px;
-    color: var(--text-muted);
+  .home-intro h1 span:first-of-type {
+    color: var(--accent-pink);
+  }
+
+  .home-intro p:not(.eyebrow) {
+    max-width: 680px;
+    margin: var(--s-5) 0 0;
+    color: #cfd5dd;
+    font-size: 16px;
     line-height: 1.7;
   }
 
-  .home-foundation__meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-3);
-    margin-top: var(--s-8);
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-    font-size: 12px;
+  .bento-grid {
+    display: grid;
+    grid-auto-rows: minmax(112px, auto);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 14px;
   }
 
-  .home-foundation__meta span {
-    padding: 5px 10px;
-    border: 1px solid var(--border);
-    border-radius: var(--r-sm);
-    background: rgba(255, 255, 255, 0.025);
+  .bento-grid > div {
+    min-width: 0;
+  }
+
+  .bento-grid__identity {
+    grid-column: span 4;
+    grid-row: span 2;
+  }
+
+  .bento-grid__research {
+    grid-column: span 8;
+    grid-row: span 2;
+  }
+
+  .bento-grid__recent {
+    grid-column: span 7;
+    grid-row: span 3;
+  }
+
+  .bento-grid__thread {
+    grid-column: span 5;
+    grid-row: span 3;
+  }
+
+  .bento-grid__selected {
+    grid-column: span 5;
+    grid-row: span 2;
+  }
+
+  .bento-grid__topics {
+    grid-column: span 4;
+    grid-row: span 2;
+  }
+
+  .bento-grid__about {
+    grid-column: span 3;
+    grid-row: span 2;
+  }
+
+  .bento-grid__marginalia {
+    grid-column: span 6;
+  }
+
+  .bento-grid__github {
+    grid-column: span 6;
+  }
+
+  @media (max-width: 1020px) {
+    .bento-grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .bento-grid > div {
+      grid-column: span 6;
+      grid-row: auto;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .home-page {
+      width: min(100% - 28px, 1312px);
+      padding-top: var(--s-8);
+    }
+
+    .bento-grid {
+      gap: var(--s-3);
+    }
   }
 </style>

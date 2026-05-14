@@ -1,0 +1,35 @@
+---
+type Props = {
+  tone?: 'pink' | 'blue' | 'green' | 'muted';
+};
+
+const { tone = 'muted' } = Astro.props;
+---
+
+<p class={`section-label section-label--${tone}`}>
+  <slot />
+</p>
+
+<style>
+  .section-label {
+    margin: 0;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .section-label--pink {
+    color: var(--accent-pink);
+  }
+
+  .section-label--blue {
+    color: var(--accent-blue);
+  }
+
+  .section-label--green {
+    color: var(--accent-green);
+  }
+</style>

@@ -1,0 +1,65 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import { formatDate } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const worklogs = await getCollection('worklogs');
+
+  return worklogs.map((worklog) => ({
+    params: { id: worklog.id },
+    props: { worklog },
+  }));
+}
+
+type Props = {
+  worklog: CollectionEntry<'worklogs'>;
+};
+
+const { worklog } = Astro.props;
+const { Content } = await render(worklog);
+---
+
+<BaseLayout title={worklog.data.title} description={worklog.data.description}>
+  <main class="worklog-page">
+    <header class="worklog-header">
+      <p class="eyebrow">Worklog · {formatDate(worklog.data.date)}</p>
+      <h1>{worklog.data.title}</h1>
+      {worklog.data.description && <p>{worklog.data.description}</p>}
+    </header>
+
+    <article class="worklog-body prose">
+      <Content />
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  .worklog-page {
+    width: min(920px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: var(--s-16) 0 var(--s-20);
+  }
+
+  .worklog-header {
+    margin-bottom: var(--s-12);
+  }
+
+  .worklog-header h1 {
+    max-width: 820px;
+    margin: var(--s-4) 0;
+    color: #fff;
+    font-size: clamp(40px, 7vw, 64px);
+    line-height: 1.1;
+  }
+
+  .worklog-header p:not(.eyebrow) {
+    max-width: 680px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .worklog-body {
+    width: min(720px, 100%);
+  }
+</style>

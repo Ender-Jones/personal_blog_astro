@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
-import { getTagCounts } from '../../lib/content';
+import { getTagCounts, tagSlug } from '../../lib/content';
 
 const posts = await getCollection('posts');
 const tags = getTagCounts(posts);
@@ -18,7 +18,7 @@ const tags = getTagCounts(posts);
     <div class="tag-cloud surface-panel">
       {
         tags.map(([tag, count]) => (
-          <span class="tag-chip">
+          <span class="tag-chip" id={tagSlug(tag)}>
             #{tag} <small>{count}</small>
           </span>
         ))

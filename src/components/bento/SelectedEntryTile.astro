@@ -1,0 +1,121 @@
+---
+import type { SelectedEntryResult } from '../../lib/selectEntry';
+import { formatDate, postHref } from '../../lib/content';
+import BentoTile from './BentoTile.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import { research } from '../../lib/data';
+
+type Props = {
+  selected: SelectedEntryResult;
+};
+
+const { selected } = Astro.props;
+
+const labelByVariant = {
+  selected: 'Selected Writing',
+  pinned: 'Selected Essay',
+  startHere: 'Start Here',
+  latest: 'Latest Writing',
+  research: 'Currently Researching',
+};
+---
+
+<BentoTile class="selected-entry" tone={selected.variant === 'research' ? 'green' : 'pink'}>
+  {
+    selected.entry ? (
+      <a class="selected-entry__link" href={postHref(selected.entry)}>
+        <div class="selected-entry__top">
+          <SectionLabel tone="pink">{labelByVariant[selected.variant]}</SectionLabel>
+          <time>{formatDate(selected.entry.data.date)}</time>
+        </div>
+        <div class="selected-entry__body">
+          {selected.entry.data.image && (
+            <img src={selected.entry.data.image} alt={selected.entry.data.image_alt ?? ''} loading="lazy" />
+          )}
+          <div>
+            <h2>{selected.entry.data.title}</h2>
+            {selected.entry.data.description && <p>{selected.entry.data.description}</p>}
+          </div>
+        </div>
+        <span class="selected-entry__cta">read</span>
+      </a>
+    ) : (
+      <div class="selected-entry__fallback">
+        <SectionLabel tone="green">{labelByVariant.research}</SectionLabel>
+        <h2>{research.focus}</h2>
+        <p>{research.abstract}</p>
+      </div>
+    )
+  }
+</BentoTile>
+
+<style>
+  .selected-entry {
+    min-height: 220px;
+  }
+
+  .selected-entry__link,
+  .selected-entry__fallback {
+    display: flex;
+    height: 100%;
+    min-height: 220px;
+    flex-direction: column;
+    gap: var(--s-4);
+    padding: var(--s-6);
+  }
+
+  .selected-entry__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+  }
+
+  .selected-entry time,
+  .selected-entry__cta {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .selected-entry__body {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: var(--s-4);
+    align-items: start;
+  }
+
+  .selected-entry img {
+    width: 92px;
+    height: 92px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    object-fit: cover;
+    filter: brightness(0.86) saturate(0.92);
+  }
+
+  .selected-entry h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 20px;
+    line-height: 1.3;
+  }
+
+  .selected-entry p {
+    margin: var(--s-3) 0 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .selected-entry__cta {
+    margin-top: auto;
+    color: var(--accent-pink);
+  }
+
+  @media (max-width: 560px) {
+    .selected-entry__body {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

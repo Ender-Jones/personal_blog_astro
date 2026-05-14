@@ -1,0 +1,37 @@
+---
+type Props = {
+  class?: string;
+  tone?: 'pink' | 'blue' | 'green' | 'plain';
+};
+
+const { class: className = '', tone = 'plain' } = Astro.props;
+---
+
+<section class={`bento-tile bento-tile--${tone} ${className}`.trim()}>
+  <slot />
+</section>
+
+<style>
+  .bento-tile {
+    position: relative;
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background: rgba(14, 16, 20, 0.82);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+
+  .bento-tile--pink {
+    border-color: rgba(244, 114, 182, 0.15);
+  }
+
+  .bento-tile--blue {
+    border-color: rgba(56, 189, 248, 0.18);
+  }
+
+  .bento-tile--green {
+    border-color: rgba(52, 211, 153, 0.16);
+  }
+</style>

@@ -1,0 +1,68 @@
+---
+import BentoTile from './BentoTile.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import { research } from '../../lib/data';
+---
+
+<BentoTile class="research-tile" tone="green">
+  <div class="research-tile__body">
+    <SectionLabel tone="green">Research · Now</SectionLabel>
+    <h2>{research.focus}</h2>
+    <p>{research.abstract}</p>
+    <div class="research-tile__tags">
+      {research.tags.map((tag) => <span>{tag}</span>)}
+    </div>
+  </div>
+</BentoTile>
+
+<style>
+  .research-tile {
+    min-height: 260px;
+    background:
+      radial-gradient(620px 260px at 100% 100%, rgba(52, 211, 153, 0.055), transparent 62%),
+      rgba(14, 16, 20, 0.82);
+  }
+
+  .research-tile__body {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--s-6);
+    padding: clamp(var(--s-6), 4vw, var(--s-8));
+  }
+
+  .research-tile h2 {
+    max-width: 760px;
+    margin: var(--s-5) 0 var(--s-3);
+    color: #fff;
+    font-family: var(--font-serif);
+    font-size: clamp(26px, 4vw, 34px);
+    font-weight: 400;
+    line-height: 1.25;
+  }
+
+  .research-tile p {
+    max-width: 720px;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  .research-tile__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .research-tile__tags span {
+    padding: 4px 10px;
+    border: 1px solid rgba(52, 211, 153, 0.18);
+    border-radius: 999px;
+    background: rgba(52, 211, 153, 0.05);
+    color: #cfd5dd;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+</style>

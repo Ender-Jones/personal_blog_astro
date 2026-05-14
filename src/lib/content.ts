@@ -9,10 +9,27 @@ export function byDateDesc<T extends { data: { date: Date } }>(items: T[]) {
 
 export function formatDate(date: Date) {
   return new Intl.DateTimeFormat('en', {
+    timeZone: 'Asia/Tokyo',
     year: 'numeric',
     month: 'short',
     day: '2-digit',
   }).format(date);
+}
+
+export function formatShortDate(date: Date) {
+  return new Intl.DateTimeFormat('en', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric',
+    month: '2-digit',
+  }).format(date);
+}
+
+export function postHref(post: PostEntry) {
+  return `/posts/${post.id}/`;
+}
+
+export function worklogHref(worklog: WorklogEntry) {
+  return `/worklog/${worklog.id}/`;
 }
 
 export function getTagCounts(posts: PostEntry[]) {
@@ -25,4 +42,11 @@ export function getTagCounts(posts: PostEntry[]) {
   }
 
   return [...counts.entries()].sort(([a], [b]) => a.localeCompare(b));
+}
+
+export function tagSlug(tag: string) {
+  return tag
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 }

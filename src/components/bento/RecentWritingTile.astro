@@ -1,0 +1,122 @@
+---
+import type { PostEntry } from '../../lib/content';
+import { formatDate, postHref } from '../../lib/content';
+import BentoTile from './BentoTile.astro';
+
+type Props = {
+  posts: PostEntry[];
+};
+
+const { posts } = Astro.props;
+---
+
+<BentoTile class="recent-writing">
+  <div class="recent-writing__header">
+    <div>
+      <h2>Recent Writing</h2>
+      <p>{posts.length} latest entries</p>
+    </div>
+    <a href="/posts/">all posts</a>
+  </div>
+
+  <div class="recent-writing__list">
+    {
+      posts.map((post) => (
+        <a class="recent-writing__item" href={postHref(post)}>
+          {post.data.image && (
+            <img src={post.data.image} alt={post.data.image_alt ?? ''} loading="lazy" />
+          )}
+          <span>
+            <strong>{post.data.title}</strong>
+            <small>
+              {[formatDate(post.data.date), ...post.data.tags.slice(0, 2).map((tag) => `#${tag}`)].join(' · ')}
+            </small>
+          </span>
+        </a>
+      ))
+    }
+  </div>
+</BentoTile>
+
+<style>
+  .recent-writing {
+    padding: var(--s-6);
+  }
+
+  .recent-writing__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-4);
+    margin-bottom: var(--s-4);
+  }
+
+  .recent-writing h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 24px;
+  }
+
+  .recent-writing p,
+  .recent-writing__header a {
+    margin: var(--s-2) 0 0;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .recent-writing__header a:hover {
+    color: var(--accent-blue);
+  }
+
+  .recent-writing__list {
+    display: grid;
+  }
+
+  .recent-writing__item {
+    display: grid;
+    grid-template-columns: 68px 1fr;
+    gap: var(--s-4);
+    align-items: center;
+    padding: var(--s-4) 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  .recent-writing__item img {
+    width: 68px;
+    height: 58px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    object-fit: cover;
+    filter: brightness(0.86) saturate(0.92);
+  }
+
+  .recent-writing__item strong {
+    display: block;
+    overflow: hidden;
+    color: #fff;
+    font-size: 15px;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .recent-writing__item small {
+    display: block;
+    margin-top: var(--s-2);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 10px;
+  }
+
+  @media (max-width: 560px) {
+    .recent-writing__item {
+      grid-template-columns: 56px 1fr;
+    }
+
+    .recent-writing__item img {
+      width: 56px;
+      height: 52px;
+    }
+  }
+</style>
