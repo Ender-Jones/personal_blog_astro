@@ -82,6 +82,27 @@
 - Homepage 使用 `IdentityTile`，不要同时渲染 `AuthorRail`。
 - `i18n_alt` 只是指向另一语言文章的 slug，不做完整多语言路由系统。
 
+## CSS / Responsive 规则
+
+- CSS 要保持低优先级、局部化、可维护。
+- 优先使用 Astro component-scoped `<style>`；跨页面共享样式只放真正通用的 tokens/base/prose。
+- 不使用 `!important` 作为常规手段。
+- 避免 `:global()`；如果必须跨组件布局，优先在父组件加语义 wrapper class。
+- 页面文件负责页面级 grid/section 排布；tile/card/row 组件负责自己的内部样式。
+- 不让一个页面级 CSS 文件深度选择组件内部 DOM。
+- 移动端不是桌面缩小版，要按内容优先级重新排序。
+- 首页 Bento 在桌面使用 12 栏；平板收敛；手机单列。
+- 手机端优先保留：Identity、Research Now、Recent Writing、Current Thread、Selected Entry。
+- 手机端减少 padding、固定图片比例/高度、避免长标题挤爆卡片。
+- Archive 手机端可隐藏缩略图和多余 tags，保留日期、标题、摘要。
+- Post detail 手机端优先正文宽度与行高；TOC 后续使用 `<details>`，不要强行 sticky。
+
+## Astro 使用建议
+
+- 需要交互时才加 client JS；默认保持静态 HTML。
+- 图片后续可逐步从 `public/` 迁到 `src/assets/`，用 Astro `<Image />` / `<Picture />` 做响应式优化。
+- View Transitions 可以后期考虑，但不是当前优先级；先保证布局、阅读体验和可访问性。
+
 ## Worklog 公开规则
 
 - Homepage Current Thread 不读取完整 worklog body。
