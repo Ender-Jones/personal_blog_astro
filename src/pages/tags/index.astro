@@ -18,9 +18,9 @@ const tags = getTagCounts(posts);
     <div class="tag-cloud surface-panel">
       {
         tags.map(([tag, count]) => (
-          <span class="tag-chip" id={tagSlug(tag)}>
+          <a class="tag-chip" href={`/tags/${tagSlug(tag)}/`}>
             #{tag} <small>{count}</small>
-          </span>
+          </a>
         ))
       }
     </div>
@@ -43,6 +43,10 @@ const tags = getTagCounts(posts);
     font-family: var(--font-mono);
     font-size: 12px;
     background: rgba(255, 255, 255, 0.025);
+  }
+
+  .tag-chip:hover {
+    color: var(--accent-blue);
   }
 
   .tag-chip small {

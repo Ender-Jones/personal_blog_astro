@@ -1,0 +1,62 @@
+---
+import { site } from '../../lib/data';
+
+type Props = {
+  enabled: boolean;
+};
+
+const { enabled } = Astro.props;
+const giscus = site.comments?.giscus;
+const canMount = Boolean(
+  enabled && giscus?.repo && giscus.repo_id && giscus.category && giscus.category_id,
+);
+const config = canMount && giscus
+  ? {
+      repo: giscus.repo,
+      repoId: giscus.repo_id,
+      category: giscus.category,
+      categoryId: giscus.category_id,
+      mapping: giscus.mapping ?? 'pathname',
+      strict: giscus.strict ?? '0',
+      reactionsEnabled: giscus.reactions_enabled ?? '1',
+      emitMetadata: giscus.emit_metadata ?? '0',
+      inputPosition: giscus.input_position ?? 'bottom',
+      theme: giscus.theme ?? 'transparent_dark',
+      lang: giscus.lang ?? 'en',
+      loading: giscus.loading ?? 'lazy',
+    }
+  : undefined;
+---
+
+{
+  config && (
+    <section class="post-comments" aria-label="Comments">
+      <script
+        is:inline
+        src="https://giscus.app/client.js"
+        data-repo={config.repo}
+        data-repo-id={config.repoId}
+        data-category={config.category}
+        data-category-id={config.categoryId}
+        data-mapping={config.mapping}
+        data-strict={config.strict}
+        data-reactions-enabled={config.reactionsEnabled}
+        data-emit-metadata={config.emitMetadata}
+        data-input-position={config.inputPosition}
+        data-theme={config.theme}
+        data-lang={config.lang}
+        data-loading={config.loading}
+        crossorigin="anonymous"
+        async
+      >
+      </script>
+    </section>
+  )
+}
+
+<style>
+  .post-comments {
+    width: min(720px, calc(100% - 32px));
+    margin: var(--s-12) auto 0;
+  }
+</style>

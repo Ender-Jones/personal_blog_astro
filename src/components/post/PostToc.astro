@@ -1,0 +1,69 @@
+---
+type Heading = {
+  depth: number;
+  slug: string;
+  text: string;
+};
+
+type Props = {
+  headings: Heading[];
+};
+
+const { headings } = Astro.props;
+const tocHeadings = headings.filter((heading) => heading.depth === 2 || heading.depth === 3).slice(0, 12);
+---
+
+{
+  tocHeadings.length > 0 && (
+    <nav class="post-toc" aria-label="Table of contents">
+      <p>On this page</p>
+      <ol>
+        {tocHeadings.map((heading) => (
+          <li class={`post-toc__item post-toc__item--${heading.depth}`}>
+            <a href={`#${heading.slug}`}>{heading.text}</a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  .post-toc {
+    margin-top: var(--s-4);
+    padding: var(--s-5);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: rgba(14, 16, 20, 0.58);
+  }
+
+  .post-toc p {
+    margin: 0 0 var(--s-3);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+
+  .post-toc ol {
+    display: grid;
+    gap: var(--s-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .post-toc a {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .post-toc a:hover {
+    color: var(--accent-blue);
+  }
+
+  .post-toc__item--3 {
+    padding-left: var(--s-3);
+  }
+</style>

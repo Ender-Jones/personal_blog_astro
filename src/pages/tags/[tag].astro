@@ -1,0 +1,59 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import PostListRow from '../../components/archive/PostListRow.astro';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import { byDateDesc, getTagCounts, tagSlug } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const posts = byDateDesc(await getCollection('posts'));
+
+  return getTagCounts(posts).map(([tag]) => ({
+    params: { tag: tagSlug(tag) },
+    props: {
+      tag,
+      posts: posts.filter((post) => post.data.tags.some((postTag) => tagSlug(postTag) === tagSlug(tag))),
+    },
+  }));
+}
+
+type Props = {
+  tag: string;
+  posts: CollectionEntry<'posts'>[];
+};
+
+const { tag, posts } = Astro.props;
+const title = `#${tag}`;
+---
+
+<BaseLayout title={title} description={`Posts tagged ${tag}.`}>
+  <main class="page-shell tag-page">
+    <section class="route-header tag-page__header">
+      <p class="eyebrow">/ tags</p>
+      <h1>{title}</h1>
+      <p>{posts.length} {posts.length === 1 ? 'post' : 'posts'} filed under this topic.</p>
+      <a href="/tags/">all topics</a>
+    </section>
+
+    <div class="tag-page__posts surface-panel">
+      {posts.map((post) => <PostListRow post={post} />)}
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .tag-page__header {
+    position: relative;
+  }
+
+  .tag-page__header a {
+    display: inline-flex;
+    margin-top: var(--s-3);
+    color: var(--accent-blue);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  .tag-page__posts {
+    overflow: hidden;
+  }
+</style>

@@ -3,36 +3,53 @@ import { getCollection, render, type CollectionEntry } from 'astro:content';
 import AuthorRail from '../../components/author/AuthorRail.astro';
 import AuthorStrip from '../../components/author/AuthorStrip.astro';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
+import PostComments from '../../components/post/PostComments.astro';
 import PostHeader from '../../components/post/PostHeader.astro';
+import PostPrevNext from '../../components/post/PostPrevNext.astro';
+import PostToc from '../../components/post/PostToc.astro';
+import ReadingProgress from '../../components/post/ReadingProgress.astro';
+import { byDateDesc } from '../../lib/content';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts');
+  const posts = byDateDesc(await getCollection('posts'));
 
-  return posts.map((post) => ({
+  return posts.map((post, index) => ({
     params: { id: post.id },
-    props: { post },
+    props: {
+      post,
+      newer: posts[index - 1],
+      older: posts[index + 1],
+    },
   }));
 }
 
 type Props = {
   post: CollectionEntry<'posts'>;
+  newer?: CollectionEntry<'posts'>;
+  older?: CollectionEntry<'posts'>;
 };
 
-const { post } = Astro.props;
-const { Content } = await render(post);
+const { post, newer, older } = Astro.props;
+const { Content, headings } = await render(post);
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description}>
   <main class="post-page">
+    <ReadingProgress />
     <PostHeader post={post} />
     <div class="read-layout">
       <div class="read-layout__rail">
-        <AuthorRail />
+        <div class="post-page__rail-stack">
+          <AuthorRail />
+          <PostToc headings={headings} />
+        </div>
       </div>
       <article class="read-layout__body prose">
         <Content />
       </article>
     </div>
+    <PostPrevNext newer={newer} older={older} />
+    <PostComments enabled={post.data.comments} />
     <AuthorStrip />
   </main>
 </BaseLayout>
@@ -40,5 +57,10 @@ const { Content } = await render(post);
 <style>
   .post-page {
     padding-bottom: var(--s-20);
+  }
+
+  .post-page__rail-stack {
+    display: grid;
+    gap: var(--s-4);
   }
 </style>

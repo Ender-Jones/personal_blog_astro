@@ -21,7 +21,7 @@ const tags = getTagCounts(posts).slice(0, 10);
   <div class="topics-tile__cloud">
     {
       tags.map(([tag, count]) => (
-        <a href={`/tags/#${tagSlug(tag)}`}>
+        <a href={`/tags/${tagSlug(tag)}/`}>
           #{tag} <small>{count}</small>
         </a>
       ))

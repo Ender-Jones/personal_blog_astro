@@ -17,7 +17,7 @@ const mode = total <= 3 ? 'small' : total <= 12 ? 'compact' : 'full';
     <a class="tag-chip is-active" href="/posts/">all <small>{total}</small></a>
     {
       tags.map(([tag, count]) => (
-        <a class="tag-chip" href={`/tags/#${tagSlug(tag)}`}>
+        <a class="tag-chip" href={`/tags/${tagSlug(tag)}/`}>
           #{tag} <small>{count}</small>
         </a>
       ))

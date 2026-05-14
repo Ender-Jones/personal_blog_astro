@@ -16,6 +16,22 @@ export type SiteData = {
   avatar: string;
   research_oneliner: string;
   socials: SocialLinks;
+  comments?: {
+    giscus?: {
+      repo: string;
+      repo_id: string;
+      category: string;
+      category_id: string;
+      mapping?: string;
+      strict?: string;
+      reactions_enabled?: string;
+      emit_metadata?: string;
+      input_position?: string;
+      theme?: string;
+      lang?: string;
+      loading?: string;
+    };
+  };
   tiles: {
     github: boolean;
     marginalia: boolean;
