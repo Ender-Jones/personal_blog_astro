@@ -1,0 +1,7 @@
+.git
+.astro
+dist
+node_modules
+reference/old_blog/.git
+reference/old_blog/.jekyll-cache
+reference/old_blog/_site

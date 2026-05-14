@@ -1,0 +1,65 @@
+/* ============================================
+   EnderJones — Design Tokens
+   Mirror of §9 in CODEX_HANDOFF.md, ready to drop
+   into the Astro project as src/styles/tokens.css.
+   ============================================ */
+
+:root {
+  /* ── Surfaces ───────────────────────────── */
+  --bg:          #070809;
+  --surface:     #0e1014;
+  --surface-hi:  #141820;
+  --border:      rgba(255, 255, 255, 0.06);
+  --border-hi:   rgba(255, 255, 255, 0.12);
+
+  /* ── Text ──────────────────────────────── */
+  --text:        #f1f3f5;
+  --text-muted:  #8b95a1;
+  --text-dim:    #6b7785;
+
+  /* ── Accents (use sparingly) ───────────── */
+  --accent-pink:    #f472b6;  /* identity, marginalia, "selected" */
+  --accent-blue:    #38bdf8;  /* writing, worklog, code */
+  --accent-green:   #34d399;  /* research only */
+  --accent-purple:  #a78bfa;  /* reserved — currently unused on homepage */
+  --accent-amber:   #f59e0b;  /* staleness warning only */
+
+  /* ── Type ──────────────────────────────── */
+  --font-sans:   'Noto Sans', system-ui, sans-serif;
+  --font-mono:   'Fira Code', ui-monospace, monospace;
+  --font-serif:  'Georgia', 'Source Serif Pro', serif;
+
+  /* ── Radii ─────────────────────────────── */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 18px;
+
+  /* ── Spacing scale (4px base) ──────────── */
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  20px;
+  --s-6:  24px;
+  --s-8:  32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-20: 80px;
+}
+
+/* ── Neon discipline ────────────────────────
+   text-shadow glow is reserved for:
+     - blink cursor
+     - reading progress bar
+     - active TOC dot
+     - section-label color on key tiles
+   NEVER on body copy.
+
+   Accent rules:
+     - max two accent colors per visible area
+     - amber is staleness-warning only
+     - purple intentionally unused on homepage;
+       reserved for future page (e.g. /research)
+   ──────────────────────────────────────────── */

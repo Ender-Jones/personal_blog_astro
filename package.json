@@ -1,0 +1,21 @@
+{
+  "name": "enderjones-new-blog",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host 0.0.0.0",
+    "build": "astro check && astro build",
+    "preview": "astro preview --host 0.0.0.0",
+    "astro": "astro"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@astrojs/mdx": "^5.0.5",
+    "astro": "^6.3.2",
+    "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "yaml": "^2.9.0"
+  }
+}

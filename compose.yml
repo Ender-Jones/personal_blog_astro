@@ -1,0 +1,19 @@
+services:
+  site:
+    image: node:22-bookworm-slim
+    working_dir: /app
+    command: npm run dev
+    ports:
+      - "4321:4321"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - npm_cache:/home/node/.npm
+    environment:
+      ASTRO_TELEMETRY_DISABLED: "1"
+      NPM_CONFIG_CACHE: /home/node/.npm
+      CHOKIDAR_USEPOLLING: "true"
+
+volumes:
+  node_modules:
+  npm_cache:

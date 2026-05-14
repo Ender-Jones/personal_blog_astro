@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EnderJones — Site Redesign</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Noto+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; }
+    body {
+      font-family: 'Noto Sans', system-ui, sans-serif;
+      background: #0a0a0a;
+      color: #f1f3f5;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="homepage-designs.jsx"></script>
+  <script type="text/babel" src="e-bento.jsx"></script>
+  <script type="text/babel" src="archive-page.jsx"></script>
+  <script type="text/babel" src="post-detail.jsx"></script>
+
+  <script type="text/babel">
+    const { DesignCanvas, DCSection, DCArtboard } = window;
+    const { BentoArchive, CurrentThreadStates, SelectedEntryStates,
+            ArchivePage, PostDetailPage, PostCoverVariants } = window;
+
+    function App() {
+      return (
+        <DesignCanvas
+          title="EnderJones — Site Redesign · v4 final · Codex handoff"
+          subtitle="Visitor-first homepage · Current Thread alongside Recent Writing · adaptive archive · 5 cover modes (incl. showcase) · AuthorRail · Giscus comments opt-in. See CODEX_HANDOFF.md for the implementation brief."
+        >
+          <DCSection id="home" title="① Homepage · /">
+            <DCArtboard id="e-bento" label="Homepage v4 — Identity + Research above · Recent Writing + Current Thread as second major layer" width={1440} height={2080}>
+              <BentoArchive />
+            </DCArtboard>
+            <DCArtboard id="current-thread-states" label="Current Thread — normal · stale · collapsed (worklog-derived activity signal)" width={1440} height={580}>
+              <CurrentThreadStates />
+            </DCArtboard>
+            <DCArtboard id="selected-entry-states" label="Selected Entry — 5-step fallback chain (selected → pinned → who-am-i → latest → research thesis)" width={1440} height={1300}>
+              <SelectedEntryStates />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="archive" title="② Archive · /posts/">
+            <DCArtboard id="archive-page" label="All Writing — adaptive (n = 6 → collapsed search, list default, single pinned hero)" width={1440} height={1700}>
+              <ArchivePage />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="post" title="③ Single Post · /posts/:slug/">
+            <DCArtboard id="post-detail" label="Post page — cover_mode: hero-large · TOC · reading progress · comments: true (Giscus)" width={1440} height={2400}>
+              <PostDetailPage />
+            </DCArtboard>
+            <DCArtboard id="post-cover-variants" label="cover_mode variants — hero-small · showcase · strip · none" width={1440} height={3400}>
+              <PostCoverVariants />
+            </DCArtboard>
+          </DCSection>
+        </DesignCanvas>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

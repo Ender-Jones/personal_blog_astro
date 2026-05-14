@@ -1,0 +1,82 @@
+/* Design tokens mirrored from reference/claude_redesign/tokens.css. */
+
+:root {
+  --bg: #070809;
+  --surface: #0e1014;
+  --surface-hi: #141820;
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hi: rgba(255, 255, 255, 0.12);
+
+  --text: #f1f3f5;
+  --text-muted: #8b95a1;
+  --text-dim: #6b7785;
+
+  --accent-pink: #f472b6;
+  --accent-blue: #38bdf8;
+  --accent-green: #34d399;
+  --accent-purple: #a78bfa;
+  --accent-amber: #f59e0b;
+
+  --font-sans: 'Noto Sans', system-ui, sans-serif;
+  --font-mono: 'Fira Code', ui-monospace, monospace;
+  --font-serif: 'Georgia', 'Source Serif Pro', serif;
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 18px;
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-20: 80px;
+}
+
+html {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    linear-gradient(to right, rgba(148, 163, 184, 0.018) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.018) 1px, transparent 1px),
+    var(--bg);
+  background-size: 40px 40px;
+}
+
+.bootstrap-shell {
+  max-width: 720px;
+  padding: 80px 24px;
+  margin: 0 auto;
+}
+
+.bootstrap-shell h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 48px;
+  line-height: 1.1;
+}
+
+.bootstrap-shell p {
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.bootstrap-shell .eyebrow {
+  color: var(--accent-pink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
