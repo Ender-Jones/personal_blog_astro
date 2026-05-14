@@ -1,0 +1,75 @@
+---
+import { site } from '../../lib/data';
+
+const links = [
+  ['GitHub', site.socials.github],
+  ['Email', site.socials.email],
+  ['RSS', site.socials.rss],
+].filter(([, href]) => Boolean(href));
+---
+
+<section class="author-strip" aria-label="Author">
+  <img src={site.avatar} alt={site.name} loading="lazy" />
+  <div>
+    <strong>{site.name}</strong>
+    <p>{site.role} · {site.location}</p>
+    <nav aria-label="Author links">
+      {links.map(([label, href]) => <a href={href}>{label}</a>)}
+    </nav>
+  </div>
+</section>
+
+<style>
+  .author-strip {
+    display: none;
+    width: min(720px, calc(100% - 32px));
+    margin: var(--s-12) auto 0;
+    padding: var(--s-4);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: rgba(14, 16, 20, 0.72);
+  }
+
+  .author-strip img {
+    flex: 0 0 auto;
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--border-hi);
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .author-strip strong {
+    display: block;
+    color: #fff;
+    font-size: 15px;
+  }
+
+  .author-strip p {
+    margin: var(--s-1) 0 0;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .author-strip nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-3);
+  }
+
+  .author-strip a {
+    color: var(--accent-blue);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  @media (max-width: 1020px) {
+    .author-strip {
+      display: flex;
+      gap: var(--s-4);
+      align-items: flex-start;
+    }
+  }
+</style>

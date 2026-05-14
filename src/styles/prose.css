@@ -2,6 +2,7 @@
   color: #dde1e6;
   font-size: 16px;
   line-height: 1.85;
+  overflow-wrap: anywhere;
 }
 
 .prose :where(h1, h2, h3, h4) {
@@ -20,7 +21,8 @@
 .prose p,
 .prose ul,
 .prose ol,
-.prose blockquote {
+.prose blockquote,
+.prose figure {
   margin: var(--s-5) 0;
 }
 
@@ -50,6 +52,7 @@
 
 .prose pre {
   overflow-x: auto;
+  max-width: 100%;
   padding: var(--s-5);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
@@ -59,4 +62,45 @@
 .prose pre code {
   padding: 0;
   background: transparent;
+  overflow-wrap: normal;
+  white-space: pre;
+}
+
+.prose img,
+.prose video {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--r-md);
+}
+
+.prose table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+  border-collapse: collapse;
+}
+
+.prose th,
+.prose td {
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 720px) {
+  .prose {
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .prose blockquote {
+    padding-left: var(--s-4);
+  }
+
+  .prose pre {
+    margin-right: calc(var(--s-2) * -1);
+    margin-left: calc(var(--s-2) * -1);
+    padding: var(--s-4);
+    border-radius: var(--r-sm);
+  }
 }

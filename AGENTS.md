@@ -82,6 +82,15 @@
 - Homepage 使用 `IdentityTile`，不要同时渲染 `AuthorRail`。
 - `i18n_alt` 只是指向另一语言文章的 slug，不做完整多语言路由系统。
 
+## 当前目录约定
+
+- `src/components/bento/`：首页 Bento tiles。
+- `src/components/archive/`：文章归档页组件。
+- `src/components/post/`：单篇文章页专用组件，例如 cover/header。
+- `src/components/author/`：跨页面作者存在感组件，例如 `AuthorRail` / `AuthorStrip`。
+- `src/styles/base.css` 只放全站基础元素和真正跨页面 layout，例如 `read-layout`。
+- `src/styles/prose.css` 只放 markdown 正文排版。
+
 ## CSS / Responsive 规则
 
 - CSS 要保持低优先级、局部化、可维护。

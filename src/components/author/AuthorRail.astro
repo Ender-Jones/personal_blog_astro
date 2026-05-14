@@ -1,0 +1,69 @@
+---
+import { site } from '../../lib/data';
+
+const links = [
+  ['GitHub', site.socials.github],
+  ['Email', site.socials.email],
+  ['RSS', site.socials.rss],
+].filter(([, href]) => Boolean(href));
+---
+
+<aside class="author-rail" aria-label="Author">
+  <img src={site.avatar} alt={site.name} loading="lazy" />
+  <strong>{site.name}</strong>
+  <p>{site.role} · {site.location}</p>
+  <small>{site.research_oneliner}</small>
+  <nav aria-label="Author links">
+    {links.map(([label, href]) => <a href={href}>{label}</a>)}
+  </nav>
+</aside>
+
+<style>
+  .author-rail {
+    padding: var(--s-5);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: rgba(14, 16, 20, 0.72);
+  }
+
+  .author-rail img {
+    width: 64px;
+    height: 64px;
+    margin-bottom: var(--s-4);
+    border: 1px solid var(--border-hi);
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .author-rail strong {
+    display: block;
+    color: #fff;
+    font-size: 15px;
+  }
+
+  .author-rail p,
+  .author-rail small {
+    margin: var(--s-2) 0 0;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .author-rail small {
+    display: block;
+    color: var(--text-dim);
+  }
+
+  .author-rail nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-4);
+  }
+
+  .author-rail a {
+    color: var(--accent-blue);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+</style>

@@ -120,6 +120,24 @@ img {
   padding: var(--s-16) 0 var(--s-20);
 }
 
+.read-layout {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 720px);
+  gap: var(--s-10);
+  align-items: start;
+  width: min(980px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+.read-layout__rail {
+  position: sticky;
+  top: var(--s-6);
+}
+
+.read-layout__body {
+  min-width: 0;
+}
+
 .surface-panel {
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
@@ -207,5 +225,16 @@ img {
     gap: var(--s-4);
     overflow-x: auto;
     padding-bottom: var(--s-1);
+  }
+}
+
+@media (max-width: 1020px) {
+  .read-layout {
+    display: block;
+    width: min(720px, calc(100% - 32px));
+  }
+
+  .read-layout__rail {
+    display: none;
   }
 }
