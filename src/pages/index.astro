@@ -1,5 +1,23 @@
 ---
+import { getCollection } from 'astro:content';
 import '../styles/tokens.css';
+import research from '../data/research.yml';
+import site from '../data/site.yml';
+
+type SiteData = {
+  name: string;
+  role: string;
+  location: string;
+};
+
+type ResearchData = {
+  focus: string;
+};
+
+const posts = await getCollection('posts');
+const worklogs = await getCollection('worklogs');
+const siteData = site as SiteData;
+const researchData = research as ResearchData;
 ---
 
 <!doctype html>
@@ -12,10 +30,17 @@ import '../styles/tokens.css';
   <body>
     <main class="bootstrap-shell">
       <p class="eyebrow">Astro scaffold ready</p>
-      <h1>EnderJones</h1>
+      <h1>{siteData.name}</h1>
       <p>
-        Phase 1 foundation only. The Bento homepage implementation starts after
-        the project structure is confirmed.
+        {siteData.role} · {siteData.location}
+      </p>
+      <p>
+        Data layer smoke test: {posts.length} posts, {worklogs.length} worklogs.
+        Current research focus: {researchData.focus}
+      </p>
+      <p>
+        This is still a scaffold page. The Bento homepage implementation starts
+        after the content/data layer is confirmed.
       </p>
     </main>
   </body>

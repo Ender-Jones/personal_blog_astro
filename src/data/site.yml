@@ -1,0 +1,16 @@
+name: EnderJones
+role: PhD candidate
+location: Tokyo, Japan
+avatar: /img/author/ang.JPG
+research_oneliner: Stress detection from multi-modal physiological signals.
+
+socials:
+  github: https://github.com/Ender-Jones
+  twitter: https://x.com/EnderJones1872
+  email: mailto:enderjones1872@gmail.com
+  rss: /rss.xml
+
+tiles:
+  github: true
+  marginalia: true
+  weather: false
