@@ -10,21 +10,25 @@ const socials = [
 ].filter((item): item is [string, string] => Boolean(item[1]));
 ---
 
-<BentoTile class="identity-tile" tone="pink">
-  <img class="identity-tile__image" src={site.avatar} alt={`${site.name} portrait`} />
-  <div class="identity-tile__shade"></div>
-  <div class="identity-tile__body">
-    <SectionLabel tone="pink">The author</SectionLabel>
-    <h2>{site.name}</h2>
-    <p>{site.role} · {site.location}</p>
-    <div class="identity-tile__links">
-      {socials.map(([label, href]) => <a href={href}>{label}</a>)}
+<BentoTile tone="pink">
+  <div class="identity-tile">
+    <img class="identity-tile__image" src={site.avatar} alt={`${site.name} portrait`} />
+    <div class="identity-tile__shade"></div>
+    <div class="identity-tile__body">
+      <SectionLabel tone="pink">The author</SectionLabel>
+      <h2>{site.name}</h2>
+      <p>{site.role} · {site.location}</p>
+      <div class="identity-tile__links">
+        {socials.map(([label, href]) => <a href={href}>{label}</a>)}
+      </div>
     </div>
   </div>
 </BentoTile>
 
 <style>
   .identity-tile {
+    position: relative;
+    height: 100%;
     min-height: 260px;
   }
 

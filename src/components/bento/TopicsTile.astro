@@ -12,20 +12,22 @@ const { posts } = Astro.props;
 const tags = getTagCounts(posts).slice(0, 10);
 ---
 
-<BentoTile class="topics-tile">
-  <div class="topics-tile__top">
-    <SectionLabel>Browse by topic</SectionLabel>
-    <a href="/tags/">all tags</a>
-  </div>
+<BentoTile>
+  <div class="topics-tile">
+    <div class="topics-tile__top">
+      <SectionLabel>Browse by topic</SectionLabel>
+      <a href="/tags/">all tags</a>
+    </div>
 
-  <div class="topics-tile__cloud">
-    {
-      tags.map(([tag, count]) => (
-        <a href={`/tags/${tagSlug(tag)}/`}>
-          #{tag} <small>{count}</small>
-        </a>
-      ))
-    }
+    <div class="topics-tile__cloud">
+      {
+        tags.map(([tag, count]) => (
+          <a href={`/tags/${tagSlug(tag)}/`}>
+            #{tag} <small>{count}</small>
+          </a>
+        ))
+      }
+    </div>
   </div>
 </BentoTile>
 

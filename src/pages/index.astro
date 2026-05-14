@@ -21,22 +21,45 @@ const recentPosts = byDateDesc(posts).slice(0, 4);
 const currentThread = getCurrentThread(worklogs);
 const selectedEntry = resolveSelectedEntry(posts);
 const quote = quotes[new Date().getUTCDate() % quotes.length];
+const threadStateLabel =
+  currentThread.state === 'collapsed' ? 'quiet' : currentThread.state === 'stale' ? 'stale' : 'fresh';
 ---
 
 <BaseLayout title={site.name} description={site.research_oneliner}>
   <main class="home-page">
     <header class="home-intro">
-      <div class="home-intro__line">
-        <span></span>
-        <p class="eyebrow">Personal Archive · Est. 2025</p>
+      <div class="home-intro__copy">
+        <div class="home-intro__line">
+          <span></span>
+          <p class="eyebrow">Personal Archive · Est. 2025</p>
+        </div>
+        <h1>
+          {site.name}<span class="blink-cursor" aria-hidden="true">_</span>
+        </h1>
+        <p>
+          {site.role} in Tokyo, researching {research.focus.toLowerCase()}
+          This is my notebook: essays, research notes, and an append-only worklog.
+        </p>
       </div>
-      <h1>
-        Hi, I'm <span>Ender</span><span class="blink-cursor" aria-hidden="true">_</span>
-      </h1>
-      <p>
-        {site.role} in Tokyo, researching {research.focus.toLowerCase()}
-        This is my notebook: essays, research notes, and an append-only worklog.
-      </p>
+
+      <aside class="home-intro__signal" aria-label="Site signals">
+        <p class="eyebrow">Now</p>
+        <strong>{research.focus}</strong>
+        <dl>
+          <div>
+            <dt>writing</dt>
+            <dd>{posts.length} posts</dd>
+          </div>
+          <div>
+            <dt>worklog</dt>
+            <dd>{worklogs.length} months</dd>
+          </div>
+          <div>
+            <dt>thread</dt>
+            <dd>{threadStateLabel}</dd>
+          </div>
+        </dl>
+      </aside>
     </header>
 
     <div class="bento-grid">
@@ -61,8 +84,11 @@ const quote = quotes[new Date().getUTCDate() % quotes.length];
   }
 
   .home-intro {
-    max-width: 760px;
-    padding: var(--s-8) 0 var(--s-6);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+    gap: clamp(var(--s-6), 6vw, var(--s-16));
+    align-items: end;
+    padding: var(--s-10) 0 var(--s-8);
   }
 
   .home-intro__line {
@@ -81,20 +107,62 @@ const quote = quotes[new Date().getUTCDate() % quotes.length];
   .home-intro h1 {
     margin: 0;
     color: #fff;
-    font-size: clamp(44px, 8vw, 72px);
-    line-height: 1;
-  }
-
-  .home-intro h1 span:first-of-type {
-    color: var(--accent-pink);
+    font-size: clamp(48px, 9vw, 112px);
+    line-height: 0.92;
   }
 
   .home-intro p:not(.eyebrow) {
-    max-width: 680px;
+    max-width: 760px;
     margin: var(--s-5) 0 0;
     color: #cfd5dd;
-    font-size: 16px;
-    line-height: 1.7;
+    font-size: clamp(16px, 2vw, 19px);
+    line-height: 1.68;
+  }
+
+  .home-intro__signal {
+    padding: var(--s-5);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent),
+      rgba(14, 16, 20, 0.72);
+  }
+
+  .home-intro__signal strong {
+    display: block;
+    margin-top: var(--s-4);
+    color: #fff;
+    font-family: var(--font-serif);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.35;
+  }
+
+  .home-intro__signal dl {
+    display: grid;
+    gap: var(--s-3);
+    margin: var(--s-5) 0 0;
+  }
+
+  .home-intro__signal div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--border);
+  }
+
+  .home-intro__signal dt,
+  .home-intro__signal dd {
+    margin: 0;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .home-intro__signal dd {
+    color: var(--accent-blue);
+    text-align: right;
   }
 
   .bento-grid {
@@ -152,6 +220,16 @@ const quote = quotes[new Date().getUTCDate() % quotes.length];
   }
 
   @media (max-width: 1020px) {
+    .home-intro {
+      grid-template-columns: 1fr;
+      align-items: stretch;
+      padding-top: var(--s-8);
+    }
+
+    .home-intro__signal {
+      max-width: 520px;
+    }
+
     .bento-grid {
       grid-template-columns: repeat(6, minmax(0, 1fr));
     }
@@ -166,6 +244,14 @@ const quote = quotes[new Date().getUTCDate() % quotes.length];
     .home-page {
       width: min(100% - 28px, 1312px);
       padding-top: var(--s-8);
+    }
+
+    .home-intro {
+      gap: var(--s-6);
+    }
+
+    .home-intro h1 {
+      font-size: clamp(44px, 15vw, 64px);
     }
 
     .bento-grid {

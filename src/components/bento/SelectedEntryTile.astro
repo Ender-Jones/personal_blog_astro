@@ -20,37 +20,40 @@ const labelByVariant = {
 };
 ---
 
-<BentoTile class="selected-entry" tone={selected.variant === 'research' ? 'green' : 'pink'}>
-  {
-    selected.entry ? (
-      <a class="selected-entry__link" href={postHref(selected.entry)}>
-        <div class="selected-entry__top">
-          <SectionLabel tone="pink">{labelByVariant[selected.variant]}</SectionLabel>
-          <time>{formatDate(selected.entry.data.date)}</time>
-        </div>
-        <div class="selected-entry__body">
-          {selected.entry.data.image && (
-            <img src={selected.entry.data.image} alt={selected.entry.data.image_alt ?? ''} loading="lazy" />
-          )}
-          <div>
-            <h2>{selected.entry.data.title}</h2>
-            {selected.entry.data.description && <p>{selected.entry.data.description}</p>}
+<BentoTile tone={selected.variant === 'research' ? 'green' : 'pink'}>
+  <div class="selected-entry">
+    {
+      selected.entry ? (
+        <a class="selected-entry__link" href={postHref(selected.entry)}>
+          <div class="selected-entry__top">
+            <SectionLabel tone="pink">{labelByVariant[selected.variant]}</SectionLabel>
+            <time>{formatDate(selected.entry.data.date)}</time>
           </div>
+          <div class="selected-entry__body">
+            {selected.entry.data.image && (
+              <img src={selected.entry.data.image} alt={selected.entry.data.image_alt ?? ''} loading="lazy" />
+            )}
+            <div>
+              <h2>{selected.entry.data.title}</h2>
+              {selected.entry.data.description && <p>{selected.entry.data.description}</p>}
+            </div>
+          </div>
+          <span class="selected-entry__cta">read</span>
+        </a>
+      ) : (
+        <div class="selected-entry__fallback">
+          <SectionLabel tone="green">{labelByVariant.research}</SectionLabel>
+          <h2>{research.focus}</h2>
+          <p>{research.abstract}</p>
         </div>
-        <span class="selected-entry__cta">read</span>
-      </a>
-    ) : (
-      <div class="selected-entry__fallback">
-        <SectionLabel tone="green">{labelByVariant.research}</SectionLabel>
-        <h2>{research.focus}</h2>
-        <p>{research.abstract}</p>
-      </div>
-    )
-  }
+      )
+    }
+  </div>
 </BentoTile>
 
 <style>
   .selected-entry {
+    height: 100%;
     min-height: 220px;
   }
 

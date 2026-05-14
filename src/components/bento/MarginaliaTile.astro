@@ -10,18 +10,21 @@ type Props = {
 const { quote } = Astro.props;
 ---
 
-<BentoTile class="marginalia-tile" tone="pink">
-  <SectionLabel tone="pink">Marginalia</SectionLabel>
-  <blockquote>
-    <p>{quote.text}</p>
-    <footer>
-      {quote.source}{quote.work ? ` · ${quote.work}` : ''}{quote.year ? ` · ${quote.year}` : ''}
-    </footer>
-  </blockquote>
+<BentoTile tone="pink">
+  <div class="marginalia-tile">
+    <SectionLabel tone="pink">Marginalia</SectionLabel>
+    <blockquote>
+      <p>{quote.text}</p>
+      <footer>
+        {quote.source}{quote.work ? ` · ${quote.work}` : ''}{quote.year ? ` · ${quote.year}` : ''}
+      </footer>
+    </blockquote>
+  </div>
 </BentoTile>
 
 <style>
   .marginalia-tile {
+    height: 100%;
     min-height: 190px;
     padding: var(--s-6);
   }

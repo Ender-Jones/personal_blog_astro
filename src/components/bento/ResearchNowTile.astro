@@ -4,19 +4,27 @@ import SectionLabel from '../ui/SectionLabel.astro';
 import { research } from '../../lib/data';
 ---
 
-<BentoTile class="research-tile" tone="green">
-  <div class="research-tile__body">
-    <SectionLabel tone="green">Research · Now</SectionLabel>
-    <h2>{research.focus}</h2>
-    <p>{research.abstract}</p>
-    <div class="research-tile__tags">
-      {research.tags.map((tag) => <span>{tag}</span>)}
+<BentoTile tone="green">
+  <div class="research-tile">
+    <div class="research-tile__body">
+      <div>
+        <div class="research-tile__top">
+          <SectionLabel tone="green">Research · Now</SectionLabel>
+          <span></span>
+        </div>
+        <h2>{research.focus}</h2>
+        <p>{research.abstract}</p>
+      </div>
+      <div class="research-tile__tags">
+        {research.tags.map((tag) => <span>{tag}</span>)}
+      </div>
     </div>
   </div>
 </BentoTile>
 
 <style>
   .research-tile {
+    height: 100%;
     min-height: 260px;
     background:
       radial-gradient(620px 260px at 100% 100%, rgba(52, 211, 153, 0.055), transparent 62%),
@@ -30,6 +38,18 @@ import { research } from '../../lib/data';
     justify-content: space-between;
     gap: var(--s-6);
     padding: clamp(var(--s-6), 4vw, var(--s-8));
+  }
+
+  .research-tile__top {
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+  }
+
+  .research-tile__top span {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(52, 211, 153, 0.22), transparent);
   }
 
   .research-tile h2 {
