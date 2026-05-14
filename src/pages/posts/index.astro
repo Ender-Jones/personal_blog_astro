@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import { byDateDesc, formatDate } from '../../lib/content';
+
+const posts = byDateDesc(await getCollection('posts'));
+---
+
+<BaseLayout title="Posts" description="Writing archive by EnderJones.">
+  <main class="page-shell">
+    <section class="route-header">
+      <p class="eyebrow">/ posts</p>
+      <h1>All Writing</h1>
+      <p>{posts.length} posts · archive layout comes next.</p>
+    </section>
+
+    <div class="simple-list surface-panel">
+      {
+        posts.map((post) => (
+          <article class="simple-list__item">
+            <time>{formatDate(post.data.date)}</time>
+            <h2>{post.data.title}</h2>
+            {post.data.description && <p>{post.data.description}</p>}
+          </article>
+        ))
+      }
+    </div>
+  </main>
+</BaseLayout>

@@ -1,0 +1,40 @@
+---
+import { site } from '../../lib/data';
+
+type Props = {
+  currentPath?: string;
+};
+
+const { currentPath = '/' } = Astro.props;
+
+const links = [
+  { href: '/posts/', label: 'Posts' },
+  { href: '/tags/', label: 'Tags' },
+  { href: '/worklog/', label: 'Worklog' },
+  { href: '/about/', label: 'About' },
+];
+
+function isActive(href: string) {
+  return href === '/' ? currentPath === '/' : currentPath.startsWith(href);
+}
+---
+
+<nav class="site-nav" aria-label="Primary navigation">
+  <a class="site-nav__brand" href="/" aria-label={`${site.name} home`}>
+    {site.name}<span class="blink-cursor" aria-hidden="true">_</span>
+  </a>
+
+  <div class="site-nav__links">
+    {
+      links.map((link) => (
+        <a
+          class={isActive(link.href) ? 'site-nav__link is-active' : 'site-nav__link'}
+          href={link.href}
+          aria-current={isActive(link.href) ? 'page' : undefined}
+        >
+          {link.label}
+        </a>
+      ))
+    }
+  </div>
+</nav>

@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import { byDateDesc, formatDate } from '../../lib/content';
+
+const worklogs = byDateDesc(await getCollection('worklogs'));
+---
+
+<BaseLayout title="Worklog" description="Monthly work logs by EnderJones.">
+  <main class="page-shell">
+    <section class="route-header">
+      <p class="eyebrow">/ worklog</p>
+      <h1>Worklog</h1>
+      <p>{worklogs.length} monthly logs · public thread extraction comes later.</p>
+    </section>
+
+    <div class="simple-list surface-panel">
+      {
+        worklogs.map((log) => (
+          <article class="simple-list__item">
+            <time>{formatDate(log.data.date)}</time>
+            <h2>{log.data.title}</h2>
+            {log.data.description && <p>{log.data.description}</p>}
+          </article>
+        ))
+      }
+    </div>
+  </main>
+</BaseLayout>

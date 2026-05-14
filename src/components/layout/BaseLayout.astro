@@ -1,0 +1,38 @@
+---
+import Footer from './Footer.astro';
+import Nav from './Nav.astro';
+import '../../styles/tokens.css';
+import '../../styles/base.css';
+import '../../styles/prose.css';
+
+type Props = {
+  title?: string;
+  description?: string;
+  bodyClass?: string;
+};
+
+const {
+  title = 'EnderJones',
+  description = 'Research notes, essays, and work logs by EnderJones.',
+  bodyClass = '',
+} = Astro.props;
+
+const pageTitle = title === 'EnderJones' ? title : `${title} · EnderJones`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{pageTitle}</title>
+    <slot name="head" />
+  </head>
+  <body class={bodyClass}>
+    <div class="site-bg" aria-hidden="true"></div>
+    <Nav currentPath={Astro.url.pathname} />
+    <slot />
+    <Footer />
+  </body>
+</html>

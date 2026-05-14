@@ -1,47 +1,64 @@
 ---
 import { getCollection } from 'astro:content';
-import '../styles/tokens.css';
-import research from '../data/research.yml';
-import site from '../data/site.yml';
-
-type SiteData = {
-  name: string;
-  role: string;
-  location: string;
-};
-
-type ResearchData = {
-  focus: string;
-};
+import BaseLayout from '../components/layout/BaseLayout.astro';
+import { research, site } from '../lib/data';
 
 const posts = await getCollection('posts');
 const worklogs = await getCollection('worklogs');
-const siteData = site as SiteData;
-const researchData = research as ResearchData;
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>EnderJones</title>
-  </head>
-  <body>
-    <main class="bootstrap-shell">
-      <p class="eyebrow">Astro scaffold ready</p>
-      <h1>{siteData.name}</h1>
+<BaseLayout title={site.name} description={site.research_oneliner}>
+  <main class="page-shell">
+    <section class="home-foundation surface-panel">
+      <p class="eyebrow">Personal Archive · Foundation</p>
+      <h1>{site.name}</h1>
       <p>
-        {siteData.role} · {siteData.location}
+        {site.role} · {site.location}
       </p>
       <p>
-        Data layer smoke test: {posts.length} posts, {worklogs.length} worklogs.
-        Current research focus: {researchData.focus}
+        {research.focus}
       </p>
-      <p>
-        This is still a scaffold page. The Bento homepage implementation starts
-        after the content/data layer is confirmed.
-      </p>
-    </main>
-  </body>
-</html>
+      <div class="home-foundation__meta" aria-label="Content summary">
+        <span>{posts.length} posts</span>
+        <span>{worklogs.length} worklogs</span>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .home-foundation {
+    max-width: 760px;
+    padding: clamp(var(--s-8), 6vw, var(--s-16));
+  }
+
+  .home-foundation h1 {
+    margin: var(--s-4) 0 var(--s-3);
+    color: #fff;
+    font-size: clamp(40px, 8vw, 72px);
+    line-height: 1;
+  }
+
+  .home-foundation p {
+    max-width: 620px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .home-foundation__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-8);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  .home-foundation__meta span {
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    background: rgba(255, 255, 255, 0.025);
+  }
+</style>

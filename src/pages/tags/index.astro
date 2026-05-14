@@ -1,0 +1,51 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import { getTagCounts } from '../../lib/content';
+
+const posts = await getCollection('posts');
+const tags = getTagCounts(posts);
+---
+
+<BaseLayout title="Tags" description="Topic index for EnderJones writing.">
+  <main class="page-shell">
+    <section class="route-header">
+      <p class="eyebrow">/ tags</p>
+      <h1>Topics</h1>
+      <p>{tags.length} tags across {posts.length} posts.</p>
+    </section>
+
+    <div class="tag-cloud surface-panel">
+      {
+        tags.map(([tag, count]) => (
+          <span class="tag-chip">
+            #{tag} <small>{count}</small>
+          </span>
+        ))
+      }
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    padding: var(--s-6);
+  }
+
+  .tag-chip {
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .tag-chip small {
+    color: var(--text-dim);
+  }
+</style>

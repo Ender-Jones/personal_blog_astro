@@ -1,0 +1,62 @@
+.prose {
+  color: #dde1e6;
+  font-size: 16px;
+  line-height: 1.85;
+}
+
+.prose :where(h1, h2, h3, h4) {
+  color: #fff;
+  line-height: 1.25;
+}
+
+.prose h2 {
+  margin-top: var(--s-12);
+}
+
+.prose h3 {
+  margin-top: var(--s-8);
+}
+
+.prose p,
+.prose ul,
+.prose ol,
+.prose blockquote {
+  margin: var(--s-5) 0;
+}
+
+.prose a {
+  color: var(--accent-blue);
+  text-decoration: underline;
+  text-decoration-color: rgba(56, 189, 248, 0.35);
+  text-underline-offset: 3px;
+}
+
+.prose blockquote {
+  padding-left: var(--s-5);
+  color: #d4d8de;
+  font-family: var(--font-serif);
+  font-style: italic;
+  border-left: 3px solid var(--accent-pink);
+}
+
+.prose code {
+  padding: 0.15em 0.35em;
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.prose pre {
+  overflow-x: auto;
+  padding: var(--s-5);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: #050607;
+}
+
+.prose pre code {
+  padding: 0;
+  background: transparent;
+}

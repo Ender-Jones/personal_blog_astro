@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../components/layout/BaseLayout.astro';
+import { research, site } from '../lib/data';
+---
+
+<BaseLayout title="About" description={site.research_oneliner}>
+  <main class="page-shell">
+    <section class="about-card surface-panel">
+      <img src={site.avatar} alt={`${site.name} avatar`} />
+      <div>
+        <p class="eyebrow">/ about</p>
+        <h1>{site.name}</h1>
+        <p>{site.role} · {site.location}</p>
+        <p>{research.abstract}</p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .about-card {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: var(--s-8);
+    max-width: 860px;
+    padding: var(--s-8);
+    align-items: center;
+  }
+
+  .about-card img {
+    aspect-ratio: 1;
+    width: 180px;
+    border: 1px solid var(--border-hi);
+    border-radius: var(--r-lg);
+    object-fit: cover;
+  }
+
+  .about-card h1 {
+    margin: var(--s-3) 0;
+    color: #fff;
+    font-size: clamp(40px, 7vw, 64px);
+    line-height: 1;
+  }
+
+  .about-card p {
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 720px) {
+    .about-card {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
