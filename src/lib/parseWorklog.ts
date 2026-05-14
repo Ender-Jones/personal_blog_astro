@@ -16,6 +16,12 @@ export type CurrentThread =
       reason: 'no-worklog' | 'no-public-block' | 'too-old';
     };
 
+export type PublicThreadSummary = {
+  summary: string;
+  bullets: string[];
+  source: 'frontmatter' | 'block';
+};
+
 const PUBLIC_THREAD_RE = /<!-- public:thread:start -->([\s\S]*?)<!-- public:thread:end -->/;
 
 export function getCurrentThread(worklogs: WorklogEntry[], now = new Date()): CurrentThread {
@@ -27,26 +33,9 @@ export function getCurrentThread(worklogs: WorklogEntry[], now = new Date()): Cu
 
   const updatedAt = latest.data.updated ?? latest.data.date;
 
-  if (latest.data.public_thread) {
-    const state = getStalenessState(updatedAt, now);
+  const thread = getPublicThread(latest);
 
-    if (state === 'collapsed') {
-      return { state, reason: 'too-old', worklog: latest, updatedAt };
-    }
-
-    return {
-      state,
-      worklog: latest,
-      updatedAt,
-      source: 'frontmatter',
-      summary: latest.data.public_thread.summary,
-      bullets: latest.data.public_thread.bullets,
-    };
-  }
-
-  const match = latest.body?.match(PUBLIC_THREAD_RE);
-
-  if (!match) {
+  if (!thread) {
     return {
       state: 'collapsed',
       reason: 'no-public-block',
@@ -55,7 +44,6 @@ export function getCurrentThread(worklogs: WorklogEntry[], now = new Date()): Cu
     };
   }
 
-  const parsed = parsePublicBlock(match[1]);
   const state = getStalenessState(updatedAt, now);
 
   if (state === 'collapsed') {
@@ -66,9 +54,28 @@ export function getCurrentThread(worklogs: WorklogEntry[], now = new Date()): Cu
     state,
     worklog: latest,
     updatedAt,
+    source: thread.source,
+    summary: thread.summary,
+    bullets: thread.bullets,
+  };
+}
+
+export function getPublicThread(worklog: WorklogEntry): PublicThreadSummary | undefined {
+  if (worklog.data.public_thread) {
+    return {
+      source: 'frontmatter',
+      summary: worklog.data.public_thread.summary,
+      bullets: worklog.data.public_thread.bullets,
+    };
+  }
+
+  const match = worklog.body?.match(PUBLIC_THREAD_RE);
+
+  if (!match) return undefined;
+
+  return {
     source: 'block',
-    summary: parsed.summary,
-    bullets: parsed.bullets,
+    ...parsePublicBlock(match[1]),
   };
 }
 

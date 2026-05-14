@@ -1,29 +1,290 @@
 ---
 import { getCollection } from 'astro:content';
+import AuthorRail from '../../components/author/AuthorRail.astro';
+import AuthorStrip from '../../components/author/AuthorStrip.astro';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
-import { byDateDesc, formatDate } from '../../lib/content';
+import { byDateDesc, formatDate, formatShortDate, worklogHref } from '../../lib/content';
+import { getPublicThread } from '../../lib/parseWorklog';
 
 const worklogs = byDateDesc(await getCollection('worklogs'));
+const worklogCards = worklogs.map((worklog) => ({
+  worklog,
+  thread: getPublicThread(worklog),
+  entryCount: (worklog.body ?? '').match(/^## \d{4}-\d{2}-\d{2}/gm)?.length ?? 0,
+  updatedAt: worklog.data.updated ?? worklog.data.date,
+}));
+const latest = worklogCards[0];
 ---
 
 <BaseLayout title="Worklog" description="Monthly work logs by EnderJones.">
-  <main class="page-shell">
-    <section class="route-header">
-      <p class="eyebrow">/ worklog</p>
-      <h1>Worklog</h1>
-      <p>{worklogs.length} monthly logs · public thread extraction comes later.</p>
+  <main class="worklog-index">
+    <section class="worklog-hero">
+      <div>
+        <p class="eyebrow">/ worklog</p>
+        <h1>Worklog</h1>
+        <p>
+          Public monthly notes for research, engineering, and project continuity. Private or sensitive notes should
+          stay outside the build.
+        </p>
+      </div>
+
+      <aside class="worklog-hero__stats" aria-label="Worklog stats">
+        <dl>
+          <div>
+            <dt>months</dt>
+            <dd>{worklogs.length}</dd>
+          </div>
+          <div>
+            <dt>latest</dt>
+            <dd>{latest ? formatShortDate(latest.worklog.data.date) : 'none'}</dd>
+          </div>
+          <div>
+            <dt>thread</dt>
+            <dd>{latest?.thread ? latest.thread.source : 'not set'}</dd>
+          </div>
+        </dl>
+      </aside>
     </section>
 
-    <div class="simple-list surface-panel">
-      {
-        worklogs.map((log) => (
-          <article class="simple-list__item">
-            <time>{formatDate(log.data.date)}</time>
-            <h2>{log.data.title}</h2>
-            {log.data.description && <p>{log.data.description}</p>}
-          </article>
-        ))
-      }
+    <div class="worklog-layout">
+      <aside class="worklog-layout__rail">
+        <AuthorRail />
+      </aside>
+
+      <section class="worklog-list" aria-label="Monthly worklog archive">
+        {
+          worklogCards.map(({ worklog, thread, entryCount, updatedAt }) => (
+            <a class="worklog-card" href={worklogHref(worklog)}>
+              <div class="worklog-card__top">
+                <p class="eyebrow">{formatShortDate(worklog.data.date)}</p>
+                <time datetime={updatedAt.toISOString()}>updated {formatDate(updatedAt)}</time>
+              </div>
+
+              <h2>{worklog.data.title}</h2>
+              {worklog.data.description && <p>{worklog.data.description}</p>}
+
+              <div class={thread ? 'worklog-card__thread' : 'worklog-card__thread is-empty'}>
+                <span>{thread ? `public thread · ${thread.source}` : 'public thread'}</span>
+                <strong>{thread?.summary ?? 'No public thread summary set for this month.'}</strong>
+              </div>
+
+              <div class="worklog-card__meta">
+                <span>{entryCount} dated entries</span>
+                <span>open month</span>
+              </div>
+            </a>
+          ))
+        }
+      </section>
     </div>
+    <AuthorStrip />
   </main>
 </BaseLayout>
+
+<style>
+  .worklog-index {
+    width: min(1320px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: var(--s-16) 0 var(--s-20);
+  }
+
+  .worklog-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+    gap: var(--s-8);
+    align-items: end;
+    margin-bottom: var(--s-12);
+  }
+
+  .worklog-hero h1 {
+    margin: var(--s-4) 0;
+    color: #fff;
+    font-size: clamp(56px, 8vw, 104px);
+    line-height: 0.95;
+  }
+
+  .worklog-hero p:not(.eyebrow) {
+    max-width: 740px;
+    margin: 0;
+    color: #cfd5dd;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  .worklog-hero__stats {
+    padding: var(--s-5);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background: rgba(14, 16, 20, 0.72);
+  }
+
+  .worklog-hero__stats dl {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .worklog-hero__stats div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--border);
+  }
+
+  .worklog-hero__stats div:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .worklog-hero__stats dt,
+  .worklog-hero__stats dd {
+    margin: 0;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .worklog-hero__stats dd {
+    color: var(--accent-blue);
+    text-align: right;
+  }
+
+  .worklog-layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: clamp(var(--s-8), 5vw, var(--s-16));
+    align-items: start;
+  }
+
+  .worklog-layout__rail {
+    position: sticky;
+    top: var(--s-8);
+  }
+
+  .worklog-list {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .worklog-card {
+    display: grid;
+    gap: var(--s-4);
+    padding: clamp(var(--s-5), 3vw, var(--s-8));
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background: rgba(14, 16, 20, 0.78);
+    transition:
+      border-color 160ms ease,
+      background-color 160ms ease,
+      transform 160ms ease;
+  }
+
+  .worklog-card__top,
+  .worklog-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+  }
+
+  .worklog-card time,
+  .worklog-card__meta {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .worklog-card h2 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1.1;
+  }
+
+  .worklog-card p:not(.eyebrow) {
+    max-width: 720px;
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .worklog-card__thread {
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-4);
+    border: 1px solid rgba(56, 189, 248, 0.16);
+    border-radius: var(--r-md);
+    background: rgba(56, 189, 248, 0.035);
+  }
+
+  .worklog-card__thread.is-empty {
+    border-color: var(--border);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .worklog-card__thread span {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .worklog-card__thread strong {
+    color: #dfe4ea;
+    font-family: var(--font-serif);
+    font-size: 19px;
+    font-weight: 400;
+    line-height: 1.45;
+  }
+
+  .worklog-card__meta span:last-child {
+    color: var(--accent-pink);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .worklog-card:hover {
+      border-color: var(--border-hi);
+      background-color: rgba(20, 24, 32, 0.8);
+      transform: translateY(-1px);
+    }
+  }
+
+  @media (max-width: 1020px) {
+    .worklog-index {
+      width: min(780px, calc(100% - 32px));
+      padding-top: var(--s-10);
+    }
+
+    .worklog-hero,
+    .worklog-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .worklog-layout__rail {
+      display: none;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .worklog-index {
+      width: min(100% - 28px, 780px);
+    }
+
+    .worklog-hero {
+      margin-bottom: var(--s-8);
+    }
+
+    .worklog-hero h1 {
+      font-size: clamp(44px, 15vw, 64px);
+    }
+
+    .worklog-card__top,
+    .worklog-card__meta {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>

@@ -3,55 +3,117 @@ import { getCollection, render, type CollectionEntry } from 'astro:content';
 import AuthorRail from '../../components/author/AuthorRail.astro';
 import AuthorStrip from '../../components/author/AuthorStrip.astro';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
-import { formatDate } from '../../lib/content';
+import PostToc from '../../components/post/PostToc.astro';
+import ReadingProgress from '../../components/post/ReadingProgress.astro';
+import { byDateDesc, formatDate, formatShortDate, getReadingStats, worklogHref } from '../../lib/content';
+import { getCurrentThread, getPublicThread, type CurrentThread } from '../../lib/parseWorklog';
 
 export async function getStaticPaths() {
-  const worklogs = await getCollection('worklogs');
+  const worklogs = byDateDesc(await getCollection('worklogs'));
+  const currentThread = getCurrentThread(worklogs);
 
-  return worklogs.map((worklog) => ({
+  return worklogs.map((worklog, index) => ({
     params: { id: worklog.id },
-    props: { worklog },
+    props: {
+      worklog,
+      newer: worklogs[index - 1],
+      older: worklogs[index + 1],
+      currentThread,
+    },
   }));
 }
 
 type Props = {
   worklog: CollectionEntry<'worklogs'>;
+  newer?: CollectionEntry<'worklogs'>;
+  older?: CollectionEntry<'worklogs'>;
+  currentThread?: CurrentThread;
 };
 
-const { worklog } = Astro.props;
-const { Content } = await render(worklog);
+const { worklog, newer, older, currentThread } = Astro.props;
+const { Content, headings } = await render(worklog);
+const publicThread = getPublicThread(worklog);
+const readingStats = getReadingStats(worklog.body);
+const updatedAt = worklog.data.updated ?? worklog.data.date;
 ---
 
 <BaseLayout title={worklog.data.title} description={worklog.data.description}>
   <main class="worklog-page">
+    <ReadingProgress />
     <header class="worklog-header">
-      <p class="eyebrow">Worklog · {formatDate(worklog.data.date)}</p>
-      <h1>{worklog.data.title}</h1>
-      {worklog.data.description && <p>{worklog.data.description}</p>}
+      <div class="worklog-header__copy">
+        <p class="eyebrow">Worklog · {formatShortDate(worklog.data.date)}</p>
+        <h1>{worklog.data.title}</h1>
+        {worklog.data.description && <p>{worklog.data.description}</p>}
+        <div class="worklog-header__meta">
+          <span>{formatDate(worklog.data.date)}</span>
+          <span>updated {formatDate(updatedAt)}</span>
+          <span>{readingStats.words.toLocaleString()} words</span>
+          <span>{readingStats.minutes} min read</span>
+        </div>
+      </div>
+
+      <aside class={publicThread ? 'worklog-thread' : 'worklog-thread is-empty'}>
+        <p class="eyebrow">Public Thread</p>
+        <strong>{publicThread?.summary ?? 'No public thread summary set for this month.'}</strong>
+        <span>{publicThread ? `${publicThread.source} source` : 'full page is still public'}</span>
+      </aside>
     </header>
 
-    <div class="read-layout">
-      <div class="read-layout__rail">
-        <AuthorRail />
-      </div>
-      <article class="read-layout__body prose">
+    <div class="worklog-mobile-toc">
+      <PostToc headings={headings} variant="details" />
+    </div>
+
+    <div class="worklog-reading-layout">
+      <aside class="worklog-reading-layout__left">
+        <AuthorRail currentThread={currentThread} />
+      </aside>
+      <article class="worklog-reading-layout__body worklog-article prose">
         <Content />
       </article>
+      <aside class="worklog-reading-layout__right">
+        <PostToc headings={headings} wordCount={readingStats.words} readingMinutes={readingStats.minutes} />
+      </aside>
     </div>
+
+    <nav class="worklog-neighbors" aria-label="Adjacent worklogs">
+      {
+        older ? (
+          <a href={worklogHref(older)}>
+            <span>previous</span>
+            <strong>{older.data.title}</strong>
+          </a>
+        ) : (
+          <span></span>
+        )
+      }
+      {
+        newer && (
+          <a href={worklogHref(newer)}>
+            <span>next</span>
+            <strong>{newer.data.title}</strong>
+          </a>
+        )
+      }
+    </nav>
     <AuthorStrip />
   </main>
 </BaseLayout>
 
 <style>
   .worklog-page {
-    padding: var(--s-16) 0 var(--s-20);
+    padding-bottom: var(--s-20);
   }
 
   .worklog-header {
-    width: min(980px, calc(100% - 40px));
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+    gap: clamp(var(--s-6), 6vw, var(--s-16));
+    align-items: end;
+    width: min(1320px, calc(100% - 40px));
     margin-right: auto;
     margin-left: auto;
-    margin-bottom: var(--s-12);
+    padding: var(--s-16) 0 var(--s-12);
   }
 
   .worklog-header h1 {
@@ -68,18 +130,192 @@ const { Content } = await render(worklog);
     line-height: 1.7;
   }
 
+  .worklog-header__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-4);
+    margin-top: var(--s-6);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .worklog-thread {
+    display: grid;
+    gap: var(--s-3);
+    padding: var(--s-5);
+    border: 1px solid rgba(56, 189, 248, 0.16);
+    border-radius: var(--r-lg);
+    background:
+      radial-gradient(420px 260px at 100% 0%, rgba(56, 189, 248, 0.055), transparent 64%),
+      rgba(14, 16, 20, 0.76);
+  }
+
+  .worklog-thread.is-empty {
+    border-color: var(--border);
+    background: rgba(14, 16, 20, 0.72);
+  }
+
+  .worklog-thread strong {
+    color: #fff;
+    font-family: var(--font-serif);
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 1.45;
+  }
+
+  .worklog-thread span {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .worklog-mobile-toc {
+    display: none;
+  }
+
+  .worklog-reading-layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 880px) 240px;
+    gap: clamp(var(--s-8), 4vw, var(--s-16));
+    align-items: start;
+    width: min(1560px, calc(100% - clamp(48px, 7vw, 140px)));
+    margin: 0 auto;
+  }
+
+  .worklog-reading-layout__left,
+  .worklog-reading-layout__right {
+    position: sticky;
+    top: var(--s-8);
+  }
+
+  .worklog-reading-layout__body {
+    min-width: 0;
+  }
+
+  .worklog-article {
+    padding: clamp(var(--s-5), 4vw, var(--s-8));
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background: rgba(14, 16, 20, 0.46);
+  }
+
+  .worklog-article :where(h2) {
+    padding-top: var(--s-8);
+    border-top: 1px solid var(--border);
+    font-size: clamp(28px, 3vw, 38px);
+  }
+
+  .worklog-article :where(h2:first-child) {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .worklog-article :where(h3) {
+    color: var(--accent-blue);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .worklog-neighbors {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-4);
+    width: min(880px, calc(100% - 40px));
+    margin: var(--s-12) auto 0;
+  }
+
+  .worklog-neighbors a {
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-5);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background: rgba(14, 16, 20, 0.68);
+  }
+
+  .worklog-neighbors span {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+
+  .worklog-neighbors strong {
+    color: #fff;
+    font-size: 18px;
+    line-height: 1.35;
+  }
+
+  .worklog-neighbors a:last-child {
+    text-align: right;
+  }
+
+  @media (max-width: 1280px) {
+    .worklog-reading-layout {
+      grid-template-columns: 220px minmax(0, 1fr) 220px;
+      gap: var(--s-8);
+      width: min(1180px, calc(100% - 48px));
+    }
+  }
+
+  @media (max-width: 1020px) {
+    .worklog-header {
+      grid-template-columns: 1fr;
+      width: min(720px, calc(100% - 32px));
+      padding-top: var(--s-10);
+      padding-bottom: var(--s-8);
+    }
+
+    .worklog-reading-layout {
+      display: block;
+      width: min(720px, calc(100% - 32px));
+    }
+
+    .worklog-reading-layout__left,
+    .worklog-reading-layout__right {
+      display: none;
+    }
+
+    .worklog-mobile-toc {
+      display: block;
+      width: min(720px, calc(100% - 32px));
+      margin: 0 auto var(--s-6);
+    }
+  }
+
   @media (max-width: 720px) {
     .worklog-page {
-      padding-top: var(--s-10);
+      padding-bottom: var(--s-16);
     }
 
     .worklog-header {
-      width: min(720px, calc(100% - 32px));
-      margin-bottom: var(--s-8);
+      width: min(100% - 28px, 720px);
     }
 
     .worklog-header h1 {
       font-size: clamp(34px, 12vw, 48px);
+    }
+
+    .worklog-mobile-toc,
+    .worklog-reading-layout,
+    .worklog-neighbors {
+      width: min(100% - 28px, 720px);
+    }
+
+    .worklog-article {
+      padding: var(--s-5);
+    }
+
+    .worklog-neighbors {
+      grid-template-columns: 1fr;
+      margin-top: var(--s-8);
+    }
+
+    .worklog-neighbors a:last-child {
+      text-align: left;
     }
   }
 </style>
