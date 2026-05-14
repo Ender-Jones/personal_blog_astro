@@ -9,12 +9,14 @@ import { getCurrentThread, type CurrentThread } from '../../lib/parseWorklog';
 export async function getStaticPaths() {
   const posts = byDateDesc(await getCollection('posts'));
   const currentThread = getCurrentThread(await getCollection('worklogs'));
+  const tags = getTagCounts(posts);
 
-  return getTagCounts(posts).map(([tag]) => ({
+  return tags.map(([tag]) => ({
     params: { tag: tagSlug(tag) },
     props: {
       tag,
       posts: posts.filter((post) => post.data.tags.some((postTag) => tagSlug(postTag) === tagSlug(tag))),
+      tags,
       currentThread,
     },
   }));
@@ -23,10 +25,11 @@ export async function getStaticPaths() {
 type Props = {
   tag: string;
   posts: CollectionEntry<'posts'>[];
+  tags: [string, number][];
   currentThread?: CurrentThread;
 };
 
-const { tag, posts, currentThread } = Astro.props;
+const { tag, posts, tags, currentThread } = Astro.props;
 const title = `#${tag}`;
 ---
 
@@ -36,8 +39,21 @@ const title = `#${tag}`;
       <p class="eyebrow">/ tags</p>
       <h1>{title}</h1>
       <p>{posts.length} {posts.length === 1 ? 'post' : 'posts'} filed under this topic.</p>
-      <a href="/tags/">all topics</a>
+      <div class="tag-page__links">
+        <a href="/tags/">all topics</a>
+        <a href="/posts/">all writing</a>
+      </div>
     </section>
+
+    <nav class="tag-page__topics" aria-label="Other topics">
+      {
+        tags.map(([topic, count]) => (
+          <a class={topic === tag ? 'is-active' : ''} href={`/tags/${tagSlug(topic)}/`}>
+            #{topic} <small>{count}</small>
+          </a>
+        ))
+      }
+    </nav>
 
     <div class="tag-page__posts surface-panel">
       {posts.map((post) => <PostListRow post={post} />)}
@@ -50,12 +66,44 @@ const title = `#${tag}`;
     position: relative;
   }
 
-  .tag-page__header a {
-    display: inline-flex;
-    margin-top: var(--s-3);
+  .tag-page__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-4);
+  }
+
+  .tag-page__links a {
     color: var(--accent-blue);
     font-family: var(--font-mono);
     font-size: 12px;
+  }
+
+  .tag-page__topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    margin-bottom: var(--s-8);
+  }
+
+  .tag-page__topics a {
+    padding: 5px 11px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.025);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .tag-page__topics a.is-active {
+    border-color: rgba(244, 114, 182, 0.26);
+    background: rgba(244, 114, 182, 0.08);
+    color: var(--accent-pink);
+  }
+
+  .tag-page__topics small {
+    color: var(--text-dim);
   }
 
   .tag-page__posts {
@@ -65,5 +113,17 @@ const title = `#${tag}`;
   .tag-page__header h1 {
     overflow-wrap: anywhere;
     font-size: clamp(48px, 7vw, 76px);
+  }
+
+  @media (max-width: 780px) {
+    .tag-page__topics {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: var(--s-1);
+    }
+
+    .tag-page__topics a {
+      flex: 0 0 auto;
+    }
   }
 </style>

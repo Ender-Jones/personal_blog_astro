@@ -7,33 +7,118 @@ import { getCurrentThread } from '../../lib/parseWorklog';
 
 const posts = await getCollection('posts');
 const tags = getTagCounts(posts);
+const tagsByCount = [...tags].sort(([tagA, countA], [tagB, countB]) => countB - countA || tagA.localeCompare(tagB));
+const topTag = tagsByCount[0];
 const currentThread = getCurrentThread(await getCollection('worklogs'));
 ---
 
 <BaseLayout title="Tags" description="Topic index for EnderJones writing.">
   <ArchiveShell currentThread={currentThread}>
-    <section class="route-header tag-index__header">
-      <p class="eyebrow">/ tags</p>
-      <h1>Topics</h1>
-      <p>{tags.length} tags across {posts.length} posts.</p>
+    <section class="tag-index__hero">
+      <div>
+        <p class="eyebrow">/ tags</p>
+        <h1>Topics</h1>
+        <p>
+          A compact map of recurring subjects: research notes, AI practice, personal essays, and memory fragments.
+        </p>
+      </div>
+
+      <aside class="tag-index__stats" aria-label="Topic stats">
+        <dl>
+          <div>
+            <dt>topics</dt>
+            <dd>{tags.length}</dd>
+          </div>
+          <div>
+            <dt>posts</dt>
+            <dd>{posts.length}</dd>
+          </div>
+          <div>
+            <dt>largest</dt>
+            <dd>{topTag ? `#${topTag[0]}` : 'none'}</dd>
+          </div>
+        </dl>
+      </aside>
     </section>
 
-    <div class="tag-cloud surface-panel">
+    <section class="tag-cloud surface-panel" aria-label="All topics">
       {
-        tags.map(([tag, count]) => (
+        tagsByCount.map(([tag, count]) => (
           <a class="tag-chip" href={`/tags/${tagSlug(tag)}/`}>
             <strong>#{tag}</strong>
             <small>{count} {count === 1 ? 'post' : 'posts'}</small>
           </a>
         ))
       }
-    </div>
+    </section>
   </ArchiveShell>
 </BaseLayout>
 
 <style>
-  .tag-index__header h1 {
+  .tag-index__hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+    gap: var(--s-6);
+    align-items: end;
+    margin-bottom: var(--s-10);
+  }
+
+  .tag-index__hero h1 {
+    margin: var(--s-3) 0;
+    color: #fff;
     font-size: clamp(48px, 7vw, 76px);
+    line-height: 0.98;
+  }
+
+  .tag-index__hero p:not(.eyebrow) {
+    max-width: 720px;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  .tag-index__stats {
+    padding: var(--s-5);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background: rgba(14, 16, 20, 0.72);
+  }
+
+  .tag-index__stats dl {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .tag-index__stats div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--border);
+  }
+
+  .tag-index__stats div:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .tag-index__stats dt,
+  .tag-index__stats dd {
+    margin: 0;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .tag-index__stats dd {
+    max-width: 16ch;
+    overflow: hidden;
+    color: var(--accent-blue);
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .tag-cloud {
@@ -53,6 +138,10 @@ const currentThread = getCurrentThread(await getCollection('worklogs'));
     color: var(--text-muted);
     font-family: var(--font-mono);
     background: rgba(255, 255, 255, 0.025);
+    transition:
+      border-color 160ms ease,
+      background-color 160ms ease,
+      transform 160ms ease;
   }
 
   .tag-chip strong {
@@ -65,7 +154,9 @@ const currentThread = getCurrentThread(await getCollection('worklogs'));
 
   .tag-chip:hover {
     border-color: rgba(56, 189, 248, 0.26);
+    background: rgba(56, 189, 248, 0.035);
     color: var(--accent-blue);
+    transform: translateY(-1px);
   }
 
   .tag-chip small {
@@ -73,14 +164,24 @@ const currentThread = getCurrentThread(await getCollection('worklogs'));
     font-size: 11px;
   }
 
-  @media (max-width: 760px) {
-    .tag-cloud {
+  @media (max-width: 860px) {
+    .tag-index__hero {
       grid-template-columns: 1fr;
+    }
+
+    .tag-cloud {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       padding: var(--s-4);
     }
 
     .tag-chip {
       min-height: 76px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .tag-cloud {
+      grid-template-columns: 1fr;
     }
   }
 </style>
