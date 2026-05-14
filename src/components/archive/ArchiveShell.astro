@@ -1,0 +1,54 @@
+---
+import AuthorRail from '../author/AuthorRail.astro';
+import AuthorStrip from '../author/AuthorStrip.astro';
+import type { CurrentThread } from '../../lib/parseWorklog';
+
+type Props = {
+  currentThread?: CurrentThread;
+};
+
+const { currentThread } = Astro.props;
+---
+
+<main class="archive-shell">
+  <aside class="archive-shell__rail">
+    <AuthorRail currentThread={currentThread} />
+  </aside>
+  <section class="archive-shell__main">
+    <slot />
+  </section>
+</main>
+<AuthorStrip />
+
+<style>
+  .archive-shell {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: clamp(var(--s-8), 4vw, var(--s-16));
+    align-items: start;
+    width: min(1320px, calc(100% - clamp(40px, 7vw, 120px)));
+    margin: 0 auto;
+    padding: var(--s-16) 0 var(--s-20);
+  }
+
+  .archive-shell__rail {
+    position: sticky;
+    top: var(--s-8);
+  }
+
+  .archive-shell__main {
+    min-width: 0;
+  }
+
+  @media (max-width: 1020px) {
+    .archive-shell {
+      display: block;
+      width: min(760px, calc(100% - 32px));
+      padding-top: var(--s-10);
+    }
+
+    .archive-shell__rail {
+      display: none;
+    }
+  }
+</style>

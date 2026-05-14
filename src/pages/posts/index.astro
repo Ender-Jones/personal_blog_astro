@@ -1,17 +1,20 @@
 ---
 import { getCollection } from 'astro:content';
 import ArchiveFilters from '../../components/archive/ArchiveFilters.astro';
+import ArchiveShell from '../../components/archive/ArchiveShell.astro';
 import ArchiveYear from '../../components/archive/ArchiveYear.astro';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
 import { byDateDesc, groupPostsByYear } from '../../lib/content';
+import { getCurrentThread } from '../../lib/parseWorklog';
 
 const posts = byDateDesc(await getCollection('posts'));
 const yearGroups = groupPostsByYear(posts);
+const currentThread = getCurrentThread(await getCollection('worklogs'));
 ---
 
 <BaseLayout title="Posts" description="Writing archive by EnderJones.">
-  <main class="page-shell">
-    <section class="route-header">
+  <ArchiveShell currentThread={currentThread}>
+    <section class="route-header archive-intro">
       <p class="eyebrow">/ posts</p>
       <h1>All Writing</h1>
       <p>{posts.length} posts · essays, research notes, and small field reports.</p>
@@ -24,5 +27,20 @@ const yearGroups = groupPostsByYear(posts);
         <ArchiveYear year={group.year} posts={group.posts} pinned={group.pinned} />
       ))
     }
-  </main>
+  </ArchiveShell>
 </BaseLayout>
+
+<style>
+  .archive-intro {
+    max-width: 760px;
+  }
+
+  .archive-intro h1 {
+    font-size: clamp(48px, 7vw, 76px);
+  }
+
+  .archive-intro p:not(.eyebrow) {
+    font-size: 17px;
+    line-height: 1.7;
+  }
+</style>

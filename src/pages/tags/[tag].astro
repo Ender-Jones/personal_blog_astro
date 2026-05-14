@@ -1,17 +1,21 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
+import ArchiveShell from '../../components/archive/ArchiveShell.astro';
 import PostListRow from '../../components/archive/PostListRow.astro';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
 import { byDateDesc, getTagCounts, tagSlug } from '../../lib/content';
+import { getCurrentThread, type CurrentThread } from '../../lib/parseWorklog';
 
 export async function getStaticPaths() {
   const posts = byDateDesc(await getCollection('posts'));
+  const currentThread = getCurrentThread(await getCollection('worklogs'));
 
   return getTagCounts(posts).map(([tag]) => ({
     params: { tag: tagSlug(tag) },
     props: {
       tag,
       posts: posts.filter((post) => post.data.tags.some((postTag) => tagSlug(postTag) === tagSlug(tag))),
+      currentThread,
     },
   }));
 }
@@ -19,14 +23,15 @@ export async function getStaticPaths() {
 type Props = {
   tag: string;
   posts: CollectionEntry<'posts'>[];
+  currentThread?: CurrentThread;
 };
 
-const { tag, posts } = Astro.props;
+const { tag, posts, currentThread } = Astro.props;
 const title = `#${tag}`;
 ---
 
 <BaseLayout title={title} description={`Posts tagged ${tag}.`}>
-  <main class="page-shell tag-page">
+  <ArchiveShell currentThread={currentThread}>
     <section class="route-header tag-page__header">
       <p class="eyebrow">/ tags</p>
       <h1>{title}</h1>
@@ -37,7 +42,7 @@ const title = `#${tag}`;
     <div class="tag-page__posts surface-panel">
       {posts.map((post) => <PostListRow post={post} />)}
     </div>
-  </main>
+  </ArchiveShell>
 </BaseLayout>
 
 <style>
@@ -55,5 +60,10 @@ const title = `#${tag}`;
 
   .tag-page__posts {
     overflow: hidden;
+  }
+
+  .tag-page__header h1 {
+    overflow-wrap: anywhere;
+    font-size: clamp(48px, 7vw, 76px);
   }
 </style>
