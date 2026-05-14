@@ -44,6 +44,23 @@ export function getTagCounts(posts: PostEntry[]) {
   return [...counts.entries()].sort(([a], [b]) => a.localeCompare(b));
 }
 
+export function groupPostsByYear(posts: PostEntry[]) {
+  const groups = new Map<number, PostEntry[]>();
+
+  for (const post of byDateDesc(posts)) {
+    const year = post.data.date.getFullYear();
+    groups.set(year, [...(groups.get(year) ?? []), post]);
+  }
+
+  return [...groups.entries()]
+    .sort(([a], [b]) => b - a)
+    .map(([year, yearPosts]) => ({
+      year,
+      posts: yearPosts,
+      pinned: yearPosts.find((post) => post.data.pinned),
+    }));
+}
+
 export function tagSlug(tag: string) {
   return tag
     .toLowerCase()

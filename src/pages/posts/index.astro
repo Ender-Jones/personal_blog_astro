@@ -1,9 +1,12 @@
 ---
 import { getCollection } from 'astro:content';
+import ArchiveFilters from '../../components/archive/ArchiveFilters.astro';
+import ArchiveYear from '../../components/archive/ArchiveYear.astro';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
-import { byDateDesc, formatDate } from '../../lib/content';
+import { byDateDesc, groupPostsByYear } from '../../lib/content';
 
 const posts = byDateDesc(await getCollection('posts'));
+const yearGroups = groupPostsByYear(posts);
 ---
 
 <BaseLayout title="Posts" description="Writing archive by EnderJones.">
@@ -11,19 +14,15 @@ const posts = byDateDesc(await getCollection('posts'));
     <section class="route-header">
       <p class="eyebrow">/ posts</p>
       <h1>All Writing</h1>
-      <p>{posts.length} posts · archive layout comes next.</p>
+      <p>{posts.length} posts · essays, research notes, and small field reports.</p>
     </section>
 
-    <div class="simple-list surface-panel">
-      {
-        posts.map((post) => (
-          <article class="simple-list__item">
-            <time>{formatDate(post.data.date)}</time>
-            <h2>{post.data.title}</h2>
-            {post.data.description && <p>{post.data.description}</p>}
-          </article>
-        ))
-      }
-    </div>
+    <ArchiveFilters posts={posts} />
+
+    {
+      yearGroups.map((group) => (
+        <ArchiveYear year={group.year} posts={group.posts} pinned={group.pinned} />
+      ))
+    }
   </main>
 </BaseLayout>
