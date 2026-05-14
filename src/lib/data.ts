@@ -6,7 +6,6 @@ export type SocialLinks = {
   github?: string;
   twitter?: string;
   email?: string;
-  rss?: string;
 };
 
 export type SiteData = {
