@@ -93,6 +93,7 @@
 
 ## CSS / Responsive 规则
 
+- 当可维护性与视觉/阅读体验冲突时，优先保证页面好看、好读、贴近 reference；再用清晰目录和局部 CSS 收住复杂度。
 - CSS 要保持低优先级、局部化、可维护。
 - 优先使用 Astro component-scoped `<style>`；跨页面共享样式只放真正通用的 tokens/base/prose。
 - 不使用 `!important` 作为常规手段。

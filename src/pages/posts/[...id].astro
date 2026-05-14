@@ -8,10 +8,12 @@ import PostHeader from '../../components/post/PostHeader.astro';
 import PostPrevNext from '../../components/post/PostPrevNext.astro';
 import PostToc from '../../components/post/PostToc.astro';
 import ReadingProgress from '../../components/post/ReadingProgress.astro';
-import { byDateDesc } from '../../lib/content';
+import { byDateDesc, getReadingStats } from '../../lib/content';
+import { getCurrentThread, type CurrentThread } from '../../lib/parseWorklog';
 
 export async function getStaticPaths() {
   const posts = byDateDesc(await getCollection('posts'));
+  const currentThread = getCurrentThread(await getCollection('worklogs'));
 
   return posts.map((post, index) => ({
     params: { id: post.id },
@@ -19,6 +21,7 @@ export async function getStaticPaths() {
       post,
       newer: posts[index - 1],
       older: posts[index + 1],
+      currentThread,
     },
   }));
 }
@@ -27,26 +30,37 @@ type Props = {
   post: CollectionEntry<'posts'>;
   newer?: CollectionEntry<'posts'>;
   older?: CollectionEntry<'posts'>;
+  currentThread?: CurrentThread;
 };
 
-const { post, newer, older } = Astro.props;
+const { post, newer, older, currentThread } = Astro.props;
 const { Content, headings } = await render(post);
+const readingStats = getReadingStats(post.body);
+const i18nHref = post.data.i18n_alt ? `/posts/${post.data.i18n_alt}/` : undefined;
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description}>
   <main class="post-page">
     <ReadingProgress />
-    <PostHeader post={post} />
-    <div class="read-layout">
-      <div class="read-layout__rail">
-        <div class="post-page__rail-stack">
-          <AuthorRail />
-          <PostToc headings={headings} />
-        </div>
-      </div>
-      <article class="read-layout__body prose">
+    <PostHeader post={post} readingMinutes={readingStats.minutes} />
+    <div class="post-mobile-toc">
+      <PostToc headings={headings} variant="details" />
+    </div>
+    <div class="post-reading-layout">
+      <aside class="post-reading-layout__left">
+        <AuthorRail currentThread={currentThread} />
+      </aside>
+      <article class="post-reading-layout__body post-article prose">
         <Content />
       </article>
+      <aside class="post-reading-layout__right">
+        <PostToc
+          headings={headings}
+          wordCount={readingStats.words}
+          readingMinutes={readingStats.minutes}
+          i18nHref={i18nHref}
+        />
+      </aside>
     </div>
     <PostPrevNext newer={newer} older={older} />
     <PostComments enabled={post.data.comments} />
@@ -59,8 +73,93 @@ const { Content, headings } = await render(post);
     padding-bottom: var(--s-20);
   }
 
-  .post-page__rail-stack {
+  .post-reading-layout {
     display: grid;
-    gap: var(--s-4);
+    grid-template-columns: 260px minmax(0, 980px) 260px;
+    gap: clamp(var(--s-8), 4vw, var(--s-16));
+    align-items: start;
+    width: min(1740px, calc(100% - clamp(48px, 8vw, 160px)));
+    margin: 0 auto;
+    padding-top: var(--s-16);
+  }
+
+  .post-reading-layout__left,
+  .post-reading-layout__right {
+    position: sticky;
+    top: var(--s-8);
+  }
+
+  .post-reading-layout__body {
+    min-width: 0;
+  }
+
+  .post-mobile-toc {
+    display: none;
+  }
+
+  .post-article {
+    font-size: 18px;
+    line-height: 1.95;
+  }
+
+  .post-article :where(h2) {
+    margin-top: var(--s-16);
+    font-size: clamp(34px, 3vw, 44px);
+    line-height: 1.15;
+  }
+
+  .post-article :where(h3) {
+    margin-top: var(--s-12);
+    font-size: clamp(24px, 2vw, 30px);
+  }
+
+  .post-article :where(blockquote) {
+    margin: 0 0 var(--s-12);
+    padding: var(--s-8) var(--s-10);
+    border-left-width: 4px;
+    border-radius: var(--r-lg);
+    background: rgba(14, 16, 20, 0.55);
+    font-size: 20px;
+    line-height: 1.85;
+  }
+
+  @media (max-width: 1280px) {
+    .post-reading-layout {
+      grid-template-columns: 220px minmax(0, 1fr) 220px;
+      gap: var(--s-8);
+      width: min(1180px, calc(100% - 48px));
+    }
+  }
+
+  @media (max-width: 1020px) {
+    .post-reading-layout {
+      display: block;
+      width: min(720px, calc(100% - 32px));
+      padding-top: var(--s-8);
+    }
+
+    .post-reading-layout__left,
+    .post-reading-layout__right {
+      display: none;
+    }
+
+    .post-mobile-toc {
+      display: block;
+      width: min(720px, calc(100% - 32px));
+      margin: var(--s-8) auto 0;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .post-article {
+      font-size: 16px;
+      line-height: 1.85;
+    }
+
+    .post-article :where(blockquote) {
+      margin-bottom: var(--s-8);
+      padding: var(--s-5);
+      font-size: 17px;
+    }
   }
 </style>

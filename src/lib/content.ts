@@ -24,6 +24,28 @@ export function formatShortDate(date: Date) {
   }).format(date);
 }
 
+export function formatPostDate(date: Date) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+
+  return parts.replaceAll('-', '.');
+}
+
+export function getReadingStats(markdown = '') {
+  const text = markdown
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/[#*_>`{}[\]().,;:!?'"“”‘’—–-]/g, ' ');
+  const words = text.match(/[\p{L}\p{N}]+/gu)?.length ?? 0;
+  const minutes = Math.max(1, Math.round(words / 220));
+
+  return { words, minutes };
+}
+
 export function postHref(post: PostEntry) {
   return `/posts/${post.id}/`;
 }

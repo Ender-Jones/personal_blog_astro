@@ -1,26 +1,40 @@
 ---
 import type { PostEntry } from '../../lib/content';
-import { formatDate, getCoverMode } from '../../lib/content';
+import { formatPostDate, getCoverMode } from '../../lib/content';
 
 type Props = {
   post: PostEntry;
+  readingMinutes: number;
 };
 
-const { post } = Astro.props;
+const { post, readingMinutes } = Astro.props;
 const coverMode = getCoverMode(post);
 const hasImage = Boolean(post.data.image && coverMode !== 'none');
 const showInlineImage = hasImage && coverMode !== 'showcase';
 const showShowcase = hasImage && coverMode === 'showcase';
+const year = post.data.date.getFullYear();
 ---
 
 <header class={`post-header post-header--${coverMode}`} style={`--post-image-focus: ${post.data.image_focus};`}>
   {showInlineImage && <img src={post.data.image} alt="" aria-hidden="true" />}
   <div class="post-header__body">
-    <p class="eyebrow">{post.data.pinned ? 'Pinned Essay' : 'Writing'} · {formatDate(post.data.date)}</p>
+    <p class="eyebrow">{post.data.pinned ? '★ Pinned' : 'Writing'} · Essay · {year}</p>
     <h1>{post.data.title}</h1>
     {post.data.description && <p>{post.data.description}</p>}
-    <div class="post-header__tags" aria-label="Post tags">
-      {post.data.tags.map((tag) => <span>#{tag}</span>)}
+    <div class="post-header__meta" aria-label="Post metadata">
+      <time datetime={post.data.date.toISOString()}>{formatPostDate(post.data.date)}</time>
+      <span class="post-header__sep">·</span>
+      <span>{readingMinutes} min read</span>
+      {
+        post.data.i18n_alt && (
+          <>
+            <span class="post-header__sep">·</span>
+            <a href={`/posts/${post.data.i18n_alt}/`}>中文 version →</a>
+          </>
+        )
+      }
+      <span class="post-header__sep">·</span>
+      {post.data.tags.map((tag) => <span class="post-header__tag">#{tag}</span>)}
     </div>
   </div>
 </header>
@@ -38,7 +52,7 @@ const showShowcase = hasImage && coverMode === 'showcase';
   .post-header {
     position: relative;
     overflow: hidden;
-    min-height: 320px;
+    min-height: 360px;
   }
 
   .post-header--none,
@@ -47,7 +61,7 @@ const showShowcase = hasImage && coverMode === 'showcase';
   }
 
   .post-header--strip {
-    min-height: 220px;
+    min-height: 260px;
   }
 
   .post-header > img {
@@ -57,7 +71,7 @@ const showShowcase = hasImage && coverMode === 'showcase';
     height: 100%;
     object-fit: cover;
     object-position: var(--post-image-focus, 50% 50%);
-    filter: brightness(0.68) saturate(0.92);
+    filter: brightness(0.58) saturate(0.9);
   }
 
   .post-header--strip > img {
@@ -68,7 +82,9 @@ const showShowcase = hasImage && coverMode === 'showcase';
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(7, 8, 9, 0.2), rgba(7, 8, 9, 0.95));
+    background:
+      linear-gradient(90deg, rgba(7, 8, 9, 0.18), rgba(7, 8, 9, 0.54)),
+      linear-gradient(180deg, rgba(7, 8, 9, 0.16), rgba(7, 8, 9, 0.92));
   }
 
   .post-header--none::after,
@@ -79,20 +95,20 @@ const showShowcase = hasImage && coverMode === 'showcase';
   .post-header__body {
     position: relative;
     z-index: 1;
-    width: min(860px, calc(100% - 40px));
+    width: min(1720px, calc(100% - clamp(40px, 8vw, 160px)));
     margin: 0 auto;
-    padding: var(--s-16) 0 var(--s-10);
+    padding: var(--s-20) 0 var(--s-12);
   }
 
   .post-header--hero-large .post-header__body {
-    padding-top: 220px;
+    padding-top: 112px;
   }
 
   .post-header h1 {
     max-width: 860px;
-    margin: var(--s-4) 0;
+    margin: var(--s-5) 0 var(--s-4);
     color: #fff;
-    font-size: clamp(38px, 7vw, 64px);
+    font-size: clamp(52px, 6vw, 78px);
     line-height: 1.1;
   }
 
@@ -100,24 +116,34 @@ const showShowcase = hasImage && coverMode === 'showcase';
     max-width: 720px;
     margin: 0;
     color: var(--text-muted);
-    font-size: 17px;
+    font-size: 22px;
     line-height: 1.65;
   }
 
-  .post-header__tags {
+  .post-header__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--s-2);
-    margin-top: var(--s-5);
+    gap: var(--s-3);
+    align-items: center;
+    margin-top: var(--s-8);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 14px;
   }
 
-  .post-header__tags span {
+  .post-header__meta a {
+    color: var(--accent-blue);
+  }
+
+  .post-header__sep {
+    color: var(--text-dim);
+  }
+
+  .post-header__tag {
     padding: 3px 8px;
     border-radius: var(--r-sm);
     background: rgba(255, 255, 255, 0.05);
-    color: #cfd5dd;
-    font-family: var(--font-mono);
-    font-size: 11px;
+    color: #fff;
   }
 
   .post-showcase {
@@ -144,7 +170,7 @@ const showShowcase = hasImage && coverMode === 'showcase';
 
   @media (max-width: 720px) {
     .post-header {
-      min-height: 260px;
+      min-height: 360px;
     }
 
     .post-header--none,
@@ -158,19 +184,25 @@ const showShowcase = hasImage && coverMode === 'showcase';
 
     .post-header__body {
       width: min(100% - 32px, 720px);
-      padding: var(--s-10) 0 var(--s-8);
+      padding: var(--s-16) 0 var(--s-8);
     }
 
     .post-header--hero-large .post-header__body {
-      padding-top: 150px;
+      padding-top: var(--s-16);
     }
 
     .post-header h1 {
-      font-size: clamp(34px, 12vw, 48px);
+      font-size: clamp(42px, 13vw, 56px);
     }
 
     .post-header__body > p:not(.eyebrow) {
-      font-size: 16px;
+      font-size: 17px;
+    }
+
+    .post-header__meta {
+      gap: var(--s-2);
+      margin-top: var(--s-5);
+      font-size: 12px;
     }
 
     .post-showcase {

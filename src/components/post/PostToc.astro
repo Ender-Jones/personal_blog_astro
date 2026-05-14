@@ -7,41 +7,72 @@ type Heading = {
 
 type Props = {
   headings: Heading[];
+  variant?: 'rail' | 'details';
+  wordCount?: number;
+  readingMinutes?: number;
+  i18nHref?: string;
 };
 
-const { headings } = Astro.props;
+const { headings, variant = 'rail', wordCount, readingMinutes, i18nHref } = Astro.props;
 const tocHeadings = headings.filter((heading) => heading.depth === 2 || heading.depth === 3).slice(0, 12);
+const wordLabel = typeof wordCount === 'number' ? wordCount.toLocaleString('en') : undefined;
 ---
 
 {
-  tocHeadings.length > 0 && (
-    <nav class="post-toc" aria-label="Table of contents">
-      <p>On this page</p>
+  tocHeadings.length > 0 && variant === 'details' && (
+    <details class="post-toc post-toc--details">
+      <summary>On this page</summary>
       <ol>
-        {tocHeadings.map((heading) => (
-          <li class={`post-toc__item post-toc__item--${heading.depth}`}>
+        {tocHeadings.map((heading, index) => (
+          <li class={`post-toc__item post-toc__item--${heading.depth} ${index === 1 ? 'is-active' : ''}`}>
             <a href={`#${heading.slug}`}>{heading.text}</a>
           </li>
         ))}
       </ol>
-    </nav>
+    </details>
+  )
+}
+
+{
+  tocHeadings.length > 0 && variant === 'rail' && (
+    <aside class="post-toc" aria-label="Article tools">
+      <nav aria-label="Table of contents">
+        <p>On this page</p>
+        <ol>
+          {tocHeadings.map((heading, index) => (
+            <li class={`post-toc__item post-toc__item--${heading.depth} ${index === 1 ? 'is-active' : ''}`}>
+              <a href={`#${heading.slug}`}>{heading.text}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+
+      <div class="post-toc__meta">
+        {wordLabel && <span>{wordLabel} words</span>}
+        {readingMinutes && <span>{readingMinutes} min read</span>}
+        {i18nHref && <a href={i18nHref}>↳ 中文 version</a>}
+        <span>↳ Share · cite · raw</span>
+      </div>
+
+      <p class="post-toc__note">TOC visible ≥ 1024px · collapses to ▾ on mobile</p>
+    </aside>
   )
 }
 
 <style>
   .post-toc {
-    margin-top: var(--s-4);
-    padding: var(--s-5);
-    border: 1px solid var(--border);
-    border-radius: var(--r-md);
-    background: rgba(14, 16, 20, 0.58);
+    padding-left: var(--s-6);
+    border-left: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
   }
 
   .post-toc p {
     margin: 0 0 var(--s-3);
     color: var(--text-dim);
-    font-family: var(--font-mono);
     font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
   }
 
@@ -55,7 +86,7 @@ const tocHeadings = headings.filter((heading) => heading.depth === 2 || heading.
 
   .post-toc a {
     color: var(--text-muted);
-    font-size: 12px;
+    font-size: 15px;
     line-height: 1.45;
   }
 
@@ -63,7 +94,79 @@ const tocHeadings = headings.filter((heading) => heading.depth === 2 || heading.
     color: var(--accent-blue);
   }
 
+  .post-toc__item {
+    position: relative;
+  }
+
+  .post-toc__item.is-active::before {
+    content: '';
+    position: absolute;
+    top: 0.25em;
+    bottom: 0.25em;
+    left: calc(var(--s-6) * -1 - 1px);
+    width: 3px;
+    border-radius: 999px;
+    background: var(--accent-pink);
+    box-shadow: 0 0 14px rgba(244, 114, 182, 0.5);
+  }
+
+  .post-toc__item.is-active a {
+    color: #fff;
+    font-weight: 700;
+  }
+
   .post-toc__item--3 {
     padding-left: var(--s-3);
+  }
+
+  .post-toc__meta {
+    display: grid;
+    gap: var(--s-2);
+    margin-top: var(--s-10);
+    padding-top: var(--s-6);
+    border-top: 1px solid var(--border);
+  }
+
+  .post-toc__meta span,
+  .post-toc__meta a {
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .post-toc__meta a {
+    color: var(--accent-blue);
+  }
+
+  .post-toc__note {
+    margin-top: var(--s-10);
+    color: color-mix(in srgb, var(--text-dim), transparent 35%);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.7;
+    text-transform: none;
+  }
+
+  .post-toc--details {
+    padding: var(--s-4);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: rgba(14, 16, 20, 0.72);
+  }
+
+  .post-toc--details summary {
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .post-toc--details ol {
+    margin-top: var(--s-4);
+  }
+
+  .post-toc--details a {
+    font-size: 13px;
   }
 </style>

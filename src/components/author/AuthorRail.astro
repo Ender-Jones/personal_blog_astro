@@ -1,69 +1,158 @@
 ---
 import { site } from '../../lib/data';
+import { formatDate, worklogHref } from '../../lib/content';
+import type { CurrentThread } from '../../lib/parseWorklog';
 
 const links = [
-  ['GitHub', site.socials.github],
-  ['Email', site.socials.email],
-  ['RSS', site.socials.rss],
-].filter(([, href]) => Boolean(href));
+  ['github', 'Ender-Jones', site.socials.github],
+  ['twitter', '@EnderJones1872', site.socials.twitter],
+  ['email', site.socials.email?.replace('mailto:', ''), site.socials.email],
+  ['rss', '/rss.xml', site.socials.rss],
+].filter(([, , href]) => Boolean(href));
+
+type Props = {
+  currentThread?: CurrentThread;
+};
+
+const { currentThread } = Astro.props;
+const publicThread =
+  currentThread?.state === 'normal' || currentThread?.state === 'stale' ? currentThread : undefined;
 ---
 
 <aside class="author-rail" aria-label="Author">
-  <img src={site.avatar} alt={site.name} loading="lazy" />
-  <strong>{site.name}</strong>
-  <p>{site.role} · {site.location}</p>
-  <small>{site.research_oneliner}</small>
-  <nav aria-label="Author links">
-    {links.map(([label, href]) => <a href={href}>{label}</a>)}
-  </nav>
+  <section class="author-rail__identity">
+    <img src={site.avatar} alt={site.name} loading="lazy" />
+    <strong>{site.name}</strong>
+    <p>{site.role}</p>
+    <p>{site.location}</p>
+  </section>
+
+  <section class="author-rail__section">
+    <h2>Researching</h2>
+    <p class="author-rail__serif">{site.research_oneliner}</p>
+  </section>
+
+  {
+    publicThread && (
+      <section class="author-rail__section">
+        <h2>Current Thread</h2>
+        <p>{publicThread.summary}</p>
+        <a class="author-rail__thread" href={worklogHref(publicThread.worklog)}>
+          updated {formatDate(publicThread.updatedAt)} · open worklog →
+        </a>
+      </section>
+    )
+  }
+
+  <section class="author-rail__section">
+    <h2>Reach Me</h2>
+    <dl>
+      {links.map(([label, value, href]) => (
+        <div>
+          <dt>{label}</dt>
+          <dd><a href={href}>{value}</a></dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  <small class="author-rail__note">data/site.yml · sticky on ≥ 1024px</small>
 </aside>
 
 <style>
   .author-rail {
-    padding: var(--s-5);
-    border: 1px solid var(--border);
-    border-radius: var(--r-md);
-    background: rgba(14, 16, 20, 0.72);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
   }
 
   .author-rail img {
-    width: 64px;
-    height: 64px;
+    width: 86px;
+    height: 86px;
     margin-bottom: var(--s-4);
     border: 1px solid var(--border-hi);
-    border-radius: 50%;
+    border-radius: var(--r-md);
     object-fit: cover;
   }
 
   .author-rail strong {
     display: block;
     color: #fff;
+    font-family: var(--font-sans);
+    font-size: 22px;
+  }
+
+  .author-rail p {
+    margin: var(--s-1) 0 0;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .author-rail__section {
+    margin-top: var(--s-8);
+    padding-top: var(--s-6);
+    border-top: 1px solid var(--border);
+  }
+
+  .author-rail h2 {
+    margin: 0 0 var(--s-4);
+    color: var(--text-dim);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .author-rail__serif {
+    color: #fff;
+    font-family: var(--font-serif);
     font-size: 15px;
   }
 
-  .author-rail p,
-  .author-rail small {
-    margin: var(--s-2) 0 0;
-    color: var(--text-muted);
-    font-size: 12px;
-    line-height: 1.55;
+  .author-rail__thread {
+    display: inline-flex;
+    margin-top: var(--s-4);
   }
 
-  .author-rail small {
-    display: block;
+  .author-rail dl {
+    display: grid;
+    gap: var(--s-2);
+    margin: 0;
+  }
+
+  .author-rail dl div {
+    display: grid;
+    grid-template-columns: 78px minmax(0, 1fr);
+    gap: var(--s-3);
+  }
+
+  .author-rail dt,
+  .author-rail dd {
+    margin: 0;
+    min-width: 0;
+    font-size: 13px;
+  }
+
+  .author-rail dt {
     color: var(--text-dim);
   }
 
-  .author-rail nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-3);
-    margin-top: var(--s-4);
+  .author-rail dd {
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .author-rail a {
     color: var(--accent-blue);
-    font-family: var(--font-mono);
-    font-size: 11px;
+  }
+
+  .author-rail__note {
+    display: block;
+    margin-top: var(--s-10);
+    color: color-mix(in srgb, var(--text-dim), transparent 35%);
+    font-size: 12px;
+    line-height: 1.7;
   }
 </style>
