@@ -1,0 +1,231 @@
+---
+import SectionLabel from '../ui/SectionLabel.astro';
+import type { SiteData } from '../../lib/data';
+import type { CurrentThread } from '../../lib/parseWorklog';
+import type { PostEntry } from '../../lib/content';
+import { formatDate, getTagCounts, tagSlug, worklogHref } from '../../lib/content';
+
+type Props = {
+  thread: CurrentThread;
+  posts: PostEntry[];
+  site: SiteData;
+};
+
+const { thread, posts, site } = Astro.props;
+const hasThread = thread.state !== 'collapsed';
+const updatedAt = 'updatedAt' in thread ? thread.updatedAt : undefined;
+const threadHref = 'worklog' in thread && thread.worklog ? worklogHref(thread.worklog) : '/worklog/';
+const topics = getTagCounts(posts)
+  .sort(([tagA, countA], [tagB, countB]) => countB - countA || tagA.localeCompare(tagB))
+  .slice(0, 5);
+---
+
+<section class="activity-evidence" aria-labelledby="activity-title">
+  <article class="thread-expanded">
+    <div class="thread-expanded__top">
+      <SectionLabel tone="pink">Current Thread / Expanded</SectionLabel>
+      <a href={threadHref}>open worklog</a>
+    </div>
+
+    <h2 id="activity-title">{hasThread ? thread.summary : 'No public thread set yet.'}</h2>
+
+    {
+      hasThread && thread.bullets.length > 0 && (
+        <ul>
+          {thread.bullets.map((bullet) => (
+            <li>{bullet}</li>
+          ))}
+        </ul>
+      )
+    }
+
+    <p class="thread-expanded__meta">
+      {updatedAt ? `updated ${formatDate(updatedAt)}` : 'public thread summary is not configured yet'}
+    </p>
+  </article>
+
+  <aside class="activity-evidence__side" aria-label="Activity links">
+    {
+      site.socials.github && (
+        <a class="github-evidence" href={site.socials.github}>
+          <SectionLabel tone="blue">GitHub</SectionLabel>
+          <strong>Code, experiments, and small tools.</strong>
+          <span>@Ender-Jones</span>
+        </a>
+      )
+    }
+
+    <div class="topic-evidence">
+      <div class="topic-evidence__top">
+        <SectionLabel tone="green">Topics</SectionLabel>
+        <a href="/tags/">all tags</a>
+      </div>
+
+      <div class="topic-evidence__list">
+        {
+          topics.map(([tag, count]) => (
+            <a href={`/tags/${tagSlug(tag)}/`}>
+              <span>{tag}</span>
+              <small>{count}</small>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </aside>
+</section>
+
+<style>
+  .activity-evidence {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+    gap: clamp(var(--s-6), 5vw, var(--s-10));
+    align-items: stretch;
+  }
+
+  .thread-expanded {
+    min-width: 0;
+    padding: clamp(var(--s-6), 4vw, var(--s-8));
+    border: 1px solid rgba(244, 114, 182, 0.17);
+    border-radius: var(--r-xl);
+    background:
+      linear-gradient(180deg, rgba(244, 114, 182, 0.045), transparent 42%),
+      rgba(14, 16, 20, 0.74);
+  }
+
+  .thread-expanded__top,
+  .topic-evidence__top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-4);
+  }
+
+  .thread-expanded__top a,
+  .topic-evidence__top a,
+  .thread-expanded__meta,
+  .github-evidence span,
+  .topic-evidence small {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .thread-expanded__top a,
+  .topic-evidence__top a {
+    color: var(--accent-blue);
+  }
+
+  .thread-expanded h2 {
+    max-width: 760px;
+    margin: var(--s-6) 0 0;
+    color: #fff;
+    font-size: clamp(30px, 4vw, 46px);
+    line-height: 1.06;
+  }
+
+  .thread-expanded ul {
+    display: grid;
+    gap: var(--s-4);
+    max-width: 720px;
+    margin: var(--s-8) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .thread-expanded li {
+    position: relative;
+    padding-left: var(--s-5);
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.68;
+  }
+
+  .thread-expanded li::before {
+    position: absolute;
+    top: 0.75em;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--accent-pink);
+    content: '';
+  }
+
+  .thread-expanded__meta {
+    margin: var(--s-8) 0 0;
+  }
+
+  .activity-evidence__side {
+    display: grid;
+    gap: var(--s-6);
+  }
+
+  .github-evidence,
+  .topic-evidence {
+    display: grid;
+    gap: var(--s-4);
+    padding: var(--s-6);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background: rgba(11, 15, 22, 0.66);
+  }
+
+  .github-evidence strong {
+    color: #fff;
+    font-size: 22px;
+    line-height: 1.24;
+  }
+
+  .github-evidence span {
+    color: var(--accent-blue);
+  }
+
+  .topic-evidence__list {
+    display: grid;
+    border-top: 1px solid var(--border);
+  }
+
+  .topic-evidence__list a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding: var(--s-3) 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topic-evidence span {
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+
+  @media (max-width: 920px) {
+    .activity-evidence {
+      grid-template-columns: 1fr;
+    }
+
+    .activity-evidence__side {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .activity-evidence__side {
+      grid-template-columns: 1fr;
+    }
+
+    .thread-expanded,
+    .github-evidence,
+    .topic-evidence {
+      padding: var(--s-5);
+    }
+
+    .thread-expanded__top,
+    .topic-evidence__top {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: var(--s-2);
+    }
+  }
+</style>

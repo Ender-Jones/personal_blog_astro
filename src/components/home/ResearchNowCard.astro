@@ -1,0 +1,70 @@
+---
+import SectionLabel from '../ui/SectionLabel.astro';
+import type { ResearchData } from '../../lib/data';
+
+type Props = {
+  research: ResearchData;
+};
+
+const { research } = Astro.props;
+const thesis = research.focus.replace(/\.$/, '.');
+---
+
+<article class="research-card">
+  <SectionLabel tone="green">Research · Now</SectionLabel>
+  <h2>{thesis}</h2>
+  <div class="research-card__tags" aria-label="Research topics">
+    {research.tags.slice(0, 4).map((tag) => <span>{tag}</span>)}
+  </div>
+</article>
+
+<style>
+  .research-card {
+    display: flex;
+    min-height: 238px;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--s-6);
+    padding: var(--s-6);
+    border: 1px solid rgba(52, 211, 153, 0.18);
+    border-radius: var(--r-xl);
+    background:
+      linear-gradient(180deg, rgba(52, 211, 153, 0.045), transparent),
+      rgba(10, 18, 28, 0.88);
+  }
+
+  .research-card h2 {
+    margin: 0;
+    overflow: hidden;
+    color: #fff;
+    display: -webkit-box;
+    font-family: var(--font-serif);
+    font-size: clamp(24px, 2.35vw, 30px);
+    font-weight: 400;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.18;
+  }
+
+  .research-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .research-card__tags span {
+    padding: 4px 9px;
+    border: 1px solid rgba(52, 211, 153, 0.18);
+    border-radius: 999px;
+    color: #cfd5dd;
+    font-family: var(--font-mono);
+    font-size: 10px;
+  }
+
+  @media (max-width: 560px) {
+    .research-card {
+      min-height: 0;
+    }
+
+  }
+</style>
