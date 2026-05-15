@@ -5,8 +5,13 @@
   .site-backdrop::before,
   .site-backdrop::after {
     position: fixed;
-    inset: 0;
+    top: 0;
+    right: 0;
+    left: 0;
     z-index: -1;
+    width: 100vw;
+    height: 100dvh;
+    min-height: 100lvh;
     pointer-events: none;
   }
 
@@ -21,14 +26,65 @@
   .site-backdrop::before,
   .site-backdrop::after {
     content: '';
-    opacity: 0.07;
   }
 
   .site-backdrop::before {
+    opacity: 0.045;
     background: radial-gradient(75vw 70vh at 0% 100%, rgba(244, 114, 182, 0.9), transparent 68%);
+    animation: pink-glow-wander 78s ease-in-out infinite;
+    will-change: transform;
   }
 
   .site-backdrop::after {
-    background: radial-gradient(70vw 62vh at 100% 0%, rgba(56, 189, 248, 0.82), transparent 68%);
+    opacity: 0.03;
+    background: radial-gradient(70vw 62vh at 100% 0%, rgba(56, 189, 248, 0.62), transparent 68%);
+    animation: blue-glow-wander 84s ease-in-out -42s infinite;
+    will-change: transform;
+  }
+
+  @keyframes pink-glow-wander {
+    0%,
+    100% {
+      transform: translate3d(-4%, 2%, 0) scale(1);
+    }
+
+    28% {
+      transform: translate3d(6%, -4%, 0) scale(1.025);
+    }
+
+    54% {
+      transform: translate3d(8%, 5%, 0) scale(0.99);
+    }
+
+    78% {
+      transform: translate3d(-7%, -5%, 0) scale(1.015);
+    }
+  }
+
+  @keyframes blue-glow-wander {
+    0%,
+    100% {
+      transform: translate3d(5%, -3%, 0) scale(1);
+    }
+
+    26% {
+      transform: translate3d(-7%, 4%, 0) scale(1.02);
+    }
+
+    52% {
+      transform: translate3d(-4%, -6%, 0) scale(0.99);
+    }
+
+    80% {
+      transform: translate3d(8%, 5%, 0) scale(1.015);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-backdrop::before,
+    .site-backdrop::after {
+      animation: none;
+      transform: none;
+    }
   }
 </style>

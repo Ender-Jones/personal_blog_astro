@@ -41,7 +41,7 @@ const { quote } = Astro.props;
   .marginalia {
     position: relative;
     display: grid;
-    min-height: 300px;
+    min-height: 240px;
     overflow: hidden;
     margin: 0;
     border: 1px solid rgba(244, 114, 182, 0.14);
@@ -78,7 +78,7 @@ const { quote } = Astro.props;
     width: 100%;
     flex-direction: column;
     justify-content: center;
-    padding: clamp(28px, 5vw, 60px);
+    padding: clamp(24px, 4vw, 44px);
   }
 
   .marginalia blockquote {
@@ -104,7 +104,7 @@ const { quote } = Astro.props;
 
   @media (max-width: 560px) {
     .marginalia {
-      min-height: 260px;
+      min-height: 220px;
     }
 
     .marginalia__body {

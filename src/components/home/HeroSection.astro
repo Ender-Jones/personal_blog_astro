@@ -42,7 +42,7 @@ const socials = [
 <style>
   .home-hero {
     position: relative;
-    min-height: 400px;
+    min-height: 340px;
     overflow: hidden;
     border: 1px solid rgba(244, 114, 182, 0.18);
     border-radius: var(--r-lg);
@@ -63,11 +63,13 @@ const socials = [
     height: 100%;
     object-fit: cover;
     object-position: center 30%;
-    filter: brightness(0.4) saturate(0.55);
+    filter: brightness(0.3) saturate(0.45);
   }
 
   .home-hero__shade {
-    background: linear-gradient(180deg, rgba(8, 11, 21, 0.08), rgba(8, 11, 21, 0.54) 46%, rgba(8, 11, 21, 0.98) 94%);
+    background:
+      linear-gradient(180deg, rgba(7, 9, 18, 0.4), transparent 60%),
+      linear-gradient(180deg, rgba(7, 9, 18, 0.08), rgba(7, 9, 18, 0.54) 46%, rgba(7, 9, 18, 0.98) 94%);
   }
 
   .home-hero__body {
@@ -80,7 +82,7 @@ const socials = [
 
   .home-hero h1 {
     margin: 0;
-    font-size: clamp(40px, 5vw, 60px);
+    font-size: clamp(36px, 3.8vw, 48px);
     font-weight: 800;
     letter-spacing: -0.025em;
     line-height: 0.92;
@@ -139,11 +141,11 @@ const socials = [
 
   @media (max-width: 720px) {
     .home-hero {
-      min-height: 440px;
+      min-height: 380px;
     }
 
     .home-hero h1 {
-      font-size: clamp(48px, 15vw, 68px);
+      font-size: clamp(38px, 12vw, 50px);
     }
 
     .home-hero__role {
