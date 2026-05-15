@@ -1,5 +1,5 @@
 ---
-import SectionLabel from '../ui/SectionLabel.astro';
+import SectionMarker from '../ui/SectionMarker.astro';
 import type { QuoteData, SiteData } from '../../lib/data';
 
 type Props = {
@@ -9,17 +9,14 @@ type Props = {
 
 const { quote, site } = Astro.props;
 const socials = [
-  ['github', site.socials.github, '@enderjones'],
-  ['x', site.socials.twitter, '@enderjones'],
-  ['email', site.socials.email, 'hi@...'],
-].filter((item): item is [string, string, string] => Boolean(item[1]));
+  ['github', '⌘', site.socials.github, '@enderjones'],
+  ['x', '𝕏', site.socials.twitter, '@enderjones'],
+  ['email', '✉', site.socials.email, 'hi@...'],
+].filter((item): item is [string, string, string, string] => Boolean(item[2]));
 ---
 
 <section class="home-coda" aria-label="Personality and contact">
-  <header class="home-section-head">
-    <SectionLabel tone="pink">§ 04 · marginalia</SectionLabel>
-    <span>quiet decorative coda</span>
-  </header>
+  <SectionMarker number="04" name="MARGINALIA" />
 
   {
     quote && (
@@ -28,22 +25,12 @@ const socials = [
         <div class="marginalia__shade" aria-hidden="true"></div>
 
         <div class="marginalia__body">
-          <div class="marginalia__kicker">
-            <SectionLabel tone="pink">※ Marginalia</SectionLabel>
-            <span>quotes.yml</span>
-          </div>
           <blockquote>{quote.text}</blockquote>
           <figcaption>
             — {quote.source}
             {quote.work ? `, ${quote.work}` : ''}
             {quote.year ? `, ${quote.year}` : ''}
           </figcaption>
-        </div>
-
-        <div class="marginalia__annotation" aria-hidden="true">
-          <span>handwritten edge</span>
-          <i></i>
-          <small>personal archive</small>
         </div>
       </figure>
     )
@@ -53,9 +40,9 @@ const socials = [
     <span>reach me</span>
     <div>
       {
-        socials.map(([label, href, value]) => (
-          <a href={href}>
-            <b>{label}</b>
+        socials.map(([label, icon, href, value]) => (
+          <a href={href} aria-label={label}>
+            <b aria-hidden="true">{icon}</b>
             <small>{value}</small>
           </a>
         ))
@@ -70,28 +57,10 @@ const socials = [
     gap: var(--s-6);
   }
 
-  .home-section-head {
-    display: flex;
-    align-items: baseline;
-    gap: var(--s-5);
-  }
-
-  .home-section-head::after {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(244, 114, 182, 0.2), transparent 75%);
-    content: '';
-  }
-
-  .home-section-head span {
-    color: var(--text-dim);
-    font-family: var(--font-mono);
-    font-size: 11px;
-  }
-
   .marginalia {
     position: relative;
-    min-height: 310px;
+    display: grid;
+    min-height: 300px;
     overflow: hidden;
     margin: 0;
     border: 1px solid rgba(244, 114, 182, 0.14);
@@ -125,62 +94,31 @@ const socials = [
   .marginalia__body {
     position: relative;
     display: flex;
-    height: 100%;
+    width: 100%;
     flex-direction: column;
     justify-content: center;
-    padding: clamp(var(--s-7), 6vw, 72px);
-  }
-
-  .marginalia__kicker,
-  .marginalia__annotation {
-    display: flex;
-    align-items: center;
-    gap: var(--s-3);
-  }
-
-  .marginalia__kicker span,
-  .marginalia__annotation span,
-  .marginalia__annotation small {
-    color: var(--text-dim);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    padding: clamp(28px, 5vw, 60px);
   }
 
   .marginalia blockquote {
-    max-width: 880px;
-    margin: var(--s-6) 0 0;
+    max-width: min(1080px, 100%);
+    margin: 0;
     color: #e8eaed;
     font-family: var(--font-serif);
-    font-size: clamp(30px, 5vw, 54px);
+    font-size: clamp(28px, 4vw, 44px);
     font-style: italic;
     font-weight: 300;
-    letter-spacing: -0.01em;
-    line-height: 1.18;
+    line-height: 1.16;
+    overflow-wrap: break-word;
     text-shadow: 0 1px 12px rgba(0, 0, 0, 0.5);
-    text-wrap: balance;
+    text-wrap: pretty;
   }
 
   .marginalia figcaption {
-    margin-top: var(--s-6);
+    margin-top: var(--s-5);
     color: rgba(255, 255, 255, 0.56);
     font-family: var(--font-mono);
     font-size: 11px;
-  }
-
-  .marginalia__annotation {
-    position: absolute;
-    right: var(--s-8);
-    bottom: var(--s-7);
-    z-index: 1;
-    width: min(260px, 32%);
-  }
-
-  .marginalia__annotation i {
-    flex: 1;
-    height: 1px;
-    background: rgba(244, 114, 182, 0.2);
   }
 
   .contact-strip {
@@ -194,10 +132,11 @@ const socials = [
   }
 
   .contact-strip > span {
-    color: var(--text-dim);
+    color: #fff;
     font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.18em;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
   }
 
@@ -209,9 +148,10 @@ const socials = [
 
   .contact-strip a {
     display: inline-flex;
-    align-items: baseline;
+    align-items: center;
     gap: var(--s-2);
-    padding: 7px 14px;
+    min-height: 34px;
+    padding: 7px 14px 7px 10px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.025);
@@ -219,9 +159,17 @@ const socials = [
   }
 
   .contact-strip b {
+    display: inline-grid;
+    width: 20px;
+    height: 20px;
+    place-items: center;
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.08);
     color: #fff;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
+    line-height: 1;
   }
 
   .contact-strip small {
@@ -229,26 +177,9 @@ const socials = [
     font-size: 10.5px;
   }
 
-  @media (max-width: 920px) {
-    .home-section-head {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: var(--s-3);
-    }
-
-    .home-section-head::after {
-      width: 100%;
-      flex: none;
-    }
-
-    .marginalia__annotation {
-      display: none;
-    }
-  }
-
   @media (max-width: 560px) {
     .marginalia {
-      min-height: 280px;
+      min-height: 260px;
     }
 
     .marginalia__body {
@@ -256,9 +187,15 @@ const socials = [
     }
 
     .marginalia blockquote {
-      font-size: clamp(25px, 9vw, 34px);
-      line-height: 1.28;
+      max-width: 100%;
+      font-size: clamp(24px, 8vw, 31px);
+      line-height: 1.24;
       text-wrap: pretty;
+    }
+
+    .marginalia figcaption {
+      font-size: 10px;
+      line-height: 1.6;
     }
 
     .contact-strip {

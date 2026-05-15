@@ -1,9 +1,10 @@
 ---
+import { execFileSync } from 'node:child_process';
 import SectionLabel from '../ui/SectionLabel.astro';
+import SectionMarker from '../ui/SectionMarker.astro';
 import type { SiteData } from '../../lib/data';
 import {
   formatDate,
-  getReadingStats,
   getTagCounts,
   tagSlug,
   worklogHref,
@@ -23,26 +24,77 @@ const worklog = 'worklog' in thread ? thread.worklog : undefined;
 const updatedAt = 'updatedAt' in thread ? thread.updatedAt : undefined;
 const href = worklog ? worklogHref(worklog) : '/worklog/';
 const source = worklog ? `worklogs/${worklog.id}.md` : 'worklogs/';
-const worklogBody = worklog?.body ?? '';
-const stats = getReadingStats(worklogBody);
-const entryCount = Math.max((worklogBody.match(/^##\s+/gm) ?? []).length, hasThread ? 1 : 0);
 const topics = getTagCounts(posts).sort(([tagA, countA], [tagB, countB]) => countB - countA || tagA.localeCompare(tagB));
+const visibleTopics = topics.filter(([, count]) => count >= 2);
+const hiddenTopicCount = topics.length - visibleTopics.length;
+const gitActivityDays = getGitActivityDays();
 
 function topicTone(tag: string) {
   const normalized = tag.toLowerCase();
-  if (normalized.includes('research') || normalized.includes('stress')) return 'green';
+  if (normalized.includes('research') || normalized.includes('stress')) return 'teal';
   if (normalized.includes('poem') || normalized.includes('memory') || normalized.includes('blog')) return 'pink';
   if (normalized.includes('other')) return 'muted';
   return 'blue';
 }
+
+function getGitActivityDays(weeks = 12) {
+  const dayCount = weeks * 7;
+  const today = new Date();
+  const start = new Date(today);
+  start.setDate(today.getDate() - dayCount + 1);
+  start.setHours(0, 0, 0, 0);
+
+  const counts = new Map<string, number>();
+
+  try {
+    const output = execFileSync(
+      'git',
+      ['log', `--since=${formatDateKey(start)}`, '--date=format:%Y-%m-%d', '--format=%ad'],
+      { encoding: 'utf8' },
+    );
+
+    for (const date of output.split('\n').filter(Boolean)) {
+      counts.set(date, (counts.get(date) ?? 0) + 1);
+    }
+  } catch {
+    // Git history may be unavailable in some build environments.
+  }
+
+  const days = Array.from({ length: dayCount }, (_, index) => {
+    const date = new Date(start);
+    date.setDate(start.getDate() + index);
+    const key = formatDateKey(date);
+    const count = counts.get(key) ?? 0;
+
+    return {
+      date: key,
+      count,
+      level: getCommitLevel(count),
+    };
+  });
+
+  return days;
+}
+
+function getCommitLevel(count: number) {
+  if (count <= 0) return 0;
+  if (count === 1) return 1;
+  if (count <= 3) return 2;
+  if (count <= 7) return 3;
+  return 4;
+}
+
+function formatDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
 ---
 
 <section class="home-activity" aria-labelledby="activity-title">
-  <header class="home-section-head">
-    <SectionLabel tone="blue">§ 03 · activity</SectionLabel>
-    <p>evidence the notebook is still alive.</p>
-    <span>{updatedAt ? `${formatDate(updatedAt)} · ${source}` : 'quiet'}</span>
-  </header>
+  <SectionMarker number="03" name="ACTIVITY" />
 
   <article class="thread-editorial">
     <div class="thread-editorial__wash" aria-hidden="true"></div>
@@ -53,16 +105,15 @@ function topicTone(tag: string) {
           <b>$</b>
           <span>public:thread</span>
         </div>
-        <small>parsed from <em>{source}</em></small>
+        <small>
+          {updatedAt ? `updated ${formatDate(updatedAt)}` : 'quiet'} · sourced from <em>{source}</em>
+        </small>
       </div>
 
       <div class="thread-editorial__headline">
         <i aria-hidden="true"></i>
         <div>
           <h2 id="activity-title">{hasThread ? thread.summary : 'No public thread set yet.'}</h2>
-          <p>
-            A cleaned public thread from the worklog; the rest of the notebook stays off this surface.
-          </p>
         </div>
       </div>
     </div>
@@ -81,22 +132,6 @@ function topicTone(tag: string) {
           </ul>
         )
       }
-
-      <dl>
-        <div>
-          <dt>entries</dt>
-          <dd>{entryCount}</dd>
-        </div>
-        <div>
-          <dt>words</dt>
-          <dd>{stats.words.toLocaleString()}</dd>
-        </div>
-        <div>
-          <dt>updated</dt>
-          <dd>{updatedAt ? formatDate(updatedAt) : 'quiet'}</dd>
-        </div>
-      </dl>
-
       <a href={href}>open worklog →</a>
     </aside>
   </article>
@@ -105,25 +140,40 @@ function topicTone(tag: string) {
     {
       site.socials.github && (
         <a class="github-card" href={site.socials.github}>
-          <div>
+          <div class="github-card__top">
             <SectionLabel tone="blue">GitHub</SectionLabel>
             <span>@Ender-Jones</span>
           </div>
-          <strong>Code, experiments, and small tools.</strong>
-          <p>Repositories, experiments, and the rough edges of things I am building.</p>
+          <div class="github-card__copy">
+            <strong>Code, experiments, and small tools.</strong>
+            <p>Repositories, experiments, and the rough edges of things I am building.</p>
+          </div>
+
+          <div class="commit-wall" aria-label="Site commit activity">
+            <ol aria-hidden="true">
+              {
+                gitActivityDays.map((day) => (
+                  <li
+                    class={`level-${day.level}`}
+                    title={`${day.date}: ${day.count} commit${day.count === 1 ? '' : 's'}`}
+                  ></li>
+                ))
+              }
+            </ol>
+          </div>
         </a>
       )
     }
 
     <article class="topics-index">
       <div class="topics-index__top">
-        <SectionLabel tone="pink">Tag index · {topics.length}</SectionLabel>
+        <SectionLabel tone="pink">Tag index</SectionLabel>
         <span>sorted by frequency</span>
       </div>
 
       <ol>
         {
-          topics.map(([tag, count]) => (
+          visibleTopics.map(([tag, count]) => (
             <li class={`tone-${topicTone(tag)}`}>
               <a href={`/tags/${tagSlug(tag)}/`}>#{tag}</a>
               <i></i>
@@ -131,10 +181,18 @@ function topicTone(tag: string) {
             </li>
           ))
         }
+        {
+          hiddenTopicCount > 0 && (
+            <li class="tone-muted">
+              <a href="/tags/">+ {hiddenTopicCount} more</a>
+              <i></i>
+              <span>all</span>
+            </li>
+          )
+        }
       </ol>
 
       <div class="topics-index__foot">
-        <span>↳ blue · research · pink</span>
         <a href="/tags/">all tags →</a>
       </div>
     </article>
@@ -145,33 +203,6 @@ function topicTone(tag: string) {
   .home-activity {
     display: grid;
     gap: var(--s-6);
-  }
-
-  .home-section-head {
-    display: flex;
-    align-items: baseline;
-    gap: var(--s-5);
-  }
-
-  .home-section-head::after {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(56, 189, 248, 0.2), transparent 75%);
-    content: '';
-  }
-
-  .home-section-head p {
-    margin: 0;
-    color: #fff;
-    font-family: var(--font-serif);
-    font-size: clamp(18px, 2vw, 22px);
-    font-style: italic;
-  }
-
-  .home-section-head span {
-    color: var(--text-dim);
-    font-family: var(--font-mono);
-    font-size: 11px;
   }
 
   .thread-editorial,
@@ -199,7 +230,7 @@ function topicTone(tag: string) {
     inset: 0;
     background:
       radial-gradient(900px 480px at 0% 0%, rgba(56, 189, 248, 0.06), transparent 60%),
-      radial-gradient(700px 380px at 100% 100%, rgba(167, 139, 250, 0.04), transparent 65%);
+      radial-gradient(700px 380px at 100% 100%, rgba(93, 202, 165, 0.04), transparent 65%);
     pointer-events: none;
   }
 
@@ -274,17 +305,6 @@ function topicTone(tag: string) {
     text-wrap: pretty;
   }
 
-  .thread-editorial__headline p {
-    max-width: 540px;
-    margin: var(--s-5) 0 0;
-    color: var(--text-muted);
-    font-family: var(--font-serif);
-    font-size: 16px;
-    font-weight: 300;
-    line-height: 1.65;
-    text-wrap: pretty;
-  }
-
   .thread-editorial__side {
     display: flex;
     flex-direction: column;
@@ -335,34 +355,6 @@ function topicTone(tag: string) {
     content: '›';
   }
 
-  .thread-editorial dl {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--s-4);
-    margin: 0;
-    padding-top: var(--s-5);
-    border-top: 1px dashed rgba(255, 255, 255, 0.07);
-  }
-
-  .thread-editorial dt,
-  .thread-editorial dd {
-    margin: 0;
-    font-family: var(--font-mono);
-  }
-
-  .thread-editorial dt {
-    color: var(--text-dim);
-    font-size: 9.5px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-
-  .thread-editorial dd {
-    margin-top: var(--s-1);
-    color: #fff;
-    font-size: 16px;
-  }
-
   .thread-editorial__side > a {
     display: inline-flex;
     width: max-content;
@@ -396,18 +388,19 @@ function topicTone(tag: string) {
   }
 
   .github-card {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    gap: var(--s-5);
   }
 
-  .github-card > div,
+  .github-card__top,
   .topics-index__top {
     display: flex;
     justify-content: space-between;
     gap: var(--s-4);
   }
 
-  .github-card > div span,
+  .github-card__top span,
   .topics-index__top span {
     color: var(--text-dim);
     font-family: var(--font-mono);
@@ -415,20 +408,62 @@ function topicTone(tag: string) {
   }
 
   .github-card strong {
+    display: block;
     max-width: 420px;
-    margin-top: var(--s-6);
     color: #fff;
-    font-size: clamp(28px, 3vw, 36px);
+    font-size: clamp(26px, 2.7vw, 34px);
     line-height: 1.1;
   }
 
   .github-card p {
     max-width: 480px;
-    margin: auto 0 0;
+    margin: var(--s-4) 0 0;
     color: var(--text-dim);
     font-family: var(--font-mono);
     font-size: 11px;
     line-height: 1.7;
+  }
+
+  .commit-wall {
+    align-self: end;
+    padding-top: var(--s-2);
+  }
+
+  .commit-wall ol {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    grid-auto-columns: minmax(7px, 1fr);
+    grid-auto-flow: column;
+    grid-template-rows: repeat(7, 10px);
+    gap: 4px;
+    list-style: none;
+  }
+
+  .commit-wall li {
+    min-width: 0;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.045);
+  }
+
+  .commit-wall .level-1 {
+    background: rgba(56, 189, 248, 0.2);
+  }
+
+  .commit-wall .level-2 {
+    background: rgba(56, 189, 248, 0.36);
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.08);
+  }
+
+  .commit-wall .level-3 {
+    background: rgba(93, 202, 165, 0.5);
+    box-shadow: 0 0 10px rgba(93, 202, 165, 0.12);
+  }
+
+  .commit-wall .level-4 {
+    background: linear-gradient(135deg, rgba(244, 114, 182, 0.82), rgba(56, 189, 248, 0.68));
+    box-shadow: 0 0 12px rgba(244, 114, 182, 0.16);
   }
 
   .topics-index {
@@ -478,8 +513,8 @@ function topicTone(tag: string) {
     color: var(--accent-blue);
   }
 
-  .topics-index .tone-green a {
-    color: var(--accent-green);
+  .topics-index .tone-teal a {
+    color: var(--accent-teal);
   }
 
   .topics-index .tone-pink a {
@@ -492,7 +527,7 @@ function topicTone(tag: string) {
 
   .topics-index__foot {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: var(--s-4);
     margin-top: auto;
     padding-top: var(--s-3);
@@ -507,21 +542,9 @@ function topicTone(tag: string) {
   }
 
   @media (max-width: 980px) {
-    .home-section-head,
     .thread-editorial,
     .activity-bottom {
       grid-template-columns: 1fr;
-    }
-
-    .home-section-head {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: var(--s-3);
-    }
-
-    .home-section-head::after {
-      width: 100%;
-      flex: none;
     }
 
     .thread-editorial {
@@ -543,8 +566,18 @@ function topicTone(tag: string) {
       padding: var(--s-5);
     }
 
-    .thread-editorial dl {
-      grid-template-columns: 1fr;
+    .github-card {
+      min-height: 0;
     }
+
+    .github-card strong {
+      font-size: 26px;
+    }
+
+    .commit-wall ol {
+      grid-template-rows: repeat(7, 8px);
+      gap: 3px;
+    }
+
   }
 </style>

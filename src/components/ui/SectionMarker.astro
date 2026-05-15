@@ -1,0 +1,37 @@
+---
+type Props = {
+  id?: string;
+  name: string;
+  number: string;
+};
+
+const { id, name, number } = Astro.props;
+---
+
+<p class="section-marker" id={id}>
+  <span>§ {number} ·</span>
+  <b>{name}</b>
+</p>
+
+<style>
+  .section-marker {
+    display: inline-flex;
+    gap: 0.55em;
+    margin: 0;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .section-marker span {
+    color: var(--accent-pink);
+  }
+
+  .section-marker b {
+    color: var(--text-muted);
+    font: inherit;
+  }
+</style>

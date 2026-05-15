@@ -1,6 +1,5 @@
 ---
-import SectionLabel from '../ui/SectionLabel.astro';
-import { formatDate, worklogHref } from '../../lib/content';
+import { worklogHref } from '../../lib/content';
 import type { CurrentThread } from '../../lib/parseWorklog';
 
 type Props = {
@@ -10,27 +9,17 @@ type Props = {
 const { thread } = Astro.props;
 const hasThread = thread.state !== 'collapsed';
 const href = 'worklog' in thread && thread.worklog ? worklogHref(thread.worklog) : '/worklog/';
-const updatedAt = 'updatedAt' in thread ? thread.updatedAt : undefined;
-const source = 'worklog' in thread && thread.worklog ? `worklogs/${thread.worklog.id}.md` : 'worklogs/';
 const headline = hasThread ? thread.summary : 'No public thread set yet.';
 ---
 
 <article class="margins-card">
   <div class="margins-card__wash" aria-hidden="true"></div>
 
-  <div class="margins-card__top">
-    <span>↳</span>
-    <SectionLabel tone="blue">in the margins · this week</SectionLabel>
-    <small>{updatedAt ? formatDate(updatedAt) : 'quiet'}</small>
-  </div>
-
   <div class="margins-card__note">
     <p>{headline}</p>
-    {hasThread && thread.bullets[0] && <em>— {thread.bullets[0]}</em>}
   </div>
 
   <div class="margins-card__foot">
-    <span>{source}</span>
     <a href={href}>open worklog →</a>
   </div>
 </article>
@@ -64,26 +53,6 @@ const headline = hasThread ? thread.summary : 'No public thread set yet.';
     position: relative;
   }
 
-  .margins-card__top {
-    display: flex;
-    align-items: center;
-    gap: var(--s-3);
-  }
-
-  .margins-card__top > span {
-    color: var(--accent-blue);
-    font-family: var(--font-mono);
-    font-size: 13px;
-    font-weight: 700;
-  }
-
-  .margins-card__top small {
-    margin-left: auto;
-    color: var(--accent-blue);
-    font-family: var(--font-mono);
-    font-size: 10px;
-  }
-
   .margins-card__note p {
     max-width: 380px;
     margin: 0;
@@ -97,45 +66,18 @@ const headline = hasThread ? thread.summary : 'No public thread set yet.';
     text-wrap: pretty;
   }
 
-  .margins-card__note em {
-    display: block;
-    margin-top: var(--s-2);
-    color: var(--text-muted);
-    font-family: var(--font-serif);
-    font-size: 13px;
-    line-height: 1.5;
-  }
-
   .margins-card__foot {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: var(--s-4);
     padding-top: var(--s-3);
     border-top: 1px dashed rgba(255, 255, 255, 0.07);
     font-family: var(--font-mono);
     font-size: 10.5px;
   }
-
-  .margins-card__foot span {
-    color: var(--text-dim);
-  }
-
   .margins-card__foot a {
     flex-shrink: 0;
     color: var(--accent-blue);
-  }
-
-  @media (max-width: 560px) {
-    .margins-card__top,
-    .margins-card__foot {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: var(--s-2);
-    }
-
-    .margins-card__top small {
-      margin-left: 0;
-    }
   }
 </style>

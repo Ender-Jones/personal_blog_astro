@@ -7,6 +7,7 @@ import PersonalityContact from '../components/home/PersonalityContact.astro';
 import ResearchNowCard from '../components/home/ResearchNowCard.astro';
 import WritingSurface from '../components/home/WritingSurface.astro';
 import BaseLayout from '../components/layout/BaseLayout.astro';
+import SectionMarker from '../components/ui/SectionMarker.astro';
 import { byDateDesc, type PostEntry } from '../lib/content';
 import { quotes, research, site } from '../lib/data';
 import { getCurrentThread } from '../lib/parseWorklog';
@@ -18,12 +19,6 @@ const worklogs = await getCollection('worklogs');
 const currentThread = getCurrentThread(worklogs);
 const featured = resolveFeaturedPost(posts);
 const quote = quotes[new Date().getUTCDate() % quotes.length];
-const latestWorklog = byDateDesc(worklogs)[0];
-const archiveMeta = [
-  `${posts.length} posts`,
-  latestWorklog ? `${worklogs.length} worklogs` : 'worklog quiet',
-  latestWorklog ? formatMetaDate(latestWorklog.data.updated ?? latestWorklog.data.date) : 'no active month',
-].join(' · ');
 
 function resolveFeaturedPost(items: PostEntry[]): { post: PostEntry | null; source: FeaturedSource } {
   const selected = items.find((post) => post.data.selected);
@@ -40,31 +35,20 @@ function resolveFeaturedPost(items: PostEntry[]): { post: PostEntry | null; sour
 
   return { post: null, source: 'latest' };
 }
-
-function formatMetaDate(date: Date) {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Tokyo',
-    year: 'numeric',
-    month: '2-digit',
-  }).format(date);
-}
 ---
 
 <BaseLayout title={site.name} description={site.research_oneliner}>
   <main class="home-page">
-    <div class="home-archive-strip">
-      <span></span>
-      <p>Personal Archive · No. 01 · Est. 2025 · Tokyo</p>
-      <i></i>
-      <small>{archiveMeta}</small>
-    </div>
+    <section class="home-identity" aria-labelledby="identity-title">
+      <SectionMarker id="identity-title" number="01" name="IDENTITY" />
 
-    <section class="home-first" aria-label="First impression">
-      <HeroSection site={site} />
+      <div class="home-first">
+        <HeroSection site={site} />
 
-      <div class="home-first__support">
-        <ResearchNowCard research={research} />
-        <CurrentThreadCompact thread={currentThread} />
+        <div class="home-first__support">
+          <ResearchNowCard research={research} />
+          <CurrentThreadCompact thread={currentThread} />
+        </div>
       </div>
     </section>
 
@@ -85,47 +69,14 @@ function formatMetaDate(date: Date) {
     padding: var(--s-8) 0 var(--s-20);
   }
 
-  .home-archive-strip {
-    display: flex;
-    align-items: center;
-    gap: var(--s-3);
-    margin-top: var(--s-2);
-  }
-
-  .home-archive-strip span {
-    width: 24px;
-    height: 1px;
-    background: var(--accent-pink);
-  }
-
-  .home-archive-strip i {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(244, 114, 182, 0.22), transparent);
-  }
-
-  .home-archive-strip p,
-  .home-archive-strip small {
-    margin: 0;
-    color: var(--accent-pink);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  .home-archive-strip small {
-    color: var(--text-dim);
-    font-size: 10px;
-    font-weight: 400;
-    letter-spacing: 0.06em;
-    text-transform: none;
+  .home-identity {
+    display: grid;
+    gap: var(--s-4);
   }
 
   .home-first {
     display: grid;
-    grid-auto-rows: 256px;
+    grid-auto-rows: 192px;
     grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr);
     gap: var(--s-4);
     align-items: stretch;
@@ -170,14 +121,5 @@ function formatMetaDate(date: Date) {
       padding-top: var(--s-6);
     }
 
-    .home-archive-strip {
-      align-items: flex-start;
-      flex-direction: column;
-    }
-
-    .home-archive-strip i {
-      width: 100%;
-      flex: none;
-    }
   }
 </style>

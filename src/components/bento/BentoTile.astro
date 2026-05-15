@@ -1,7 +1,7 @@
 ---
 type Props = {
   class?: string;
-  tone?: 'pink' | 'blue' | 'green' | 'plain';
+  tone?: 'pink' | 'blue' | 'teal' | 'plain';
 };
 
 const { class: className = '', tone = 'plain' } = Astro.props;
@@ -43,7 +43,7 @@ const { class: className = '', tone = 'plain' } = Astro.props;
     border-color: rgba(56, 189, 248, 0.18);
   }
 
-  .bento-tile--green {
-    border-color: rgba(52, 211, 153, 0.16);
+  .bento-tile--teal {
+    border-color: rgba(93, 202, 165, 0.16);
   }
 </style>

@@ -20,7 +20,7 @@ const labelByVariant = {
 };
 ---
 
-<BentoTile tone={selected.variant === 'research' ? 'green' : 'pink'}>
+<BentoTile tone={selected.variant === 'research' ? 'teal' : 'pink'}>
   <div class="selected-entry">
     {
       selected.entry ? (
@@ -42,7 +42,7 @@ const labelByVariant = {
         </a>
       ) : (
         <div class="selected-entry__fallback">
-          <SectionLabel tone="green">{labelByVariant.research}</SectionLabel>
+          <SectionLabel tone="teal">{labelByVariant.research}</SectionLabel>
           <h2>{research.focus}</h2>
           <p>{research.abstract}</p>
         </div>

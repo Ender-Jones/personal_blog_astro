@@ -1,6 +1,6 @@
 ---
 type Props = {
-  tone?: 'pink' | 'blue' | 'green' | 'muted';
+  tone?: 'pink' | 'blue' | 'teal' | 'muted';
 };
 
 const { tone = 'muted' } = Astro.props;
@@ -29,7 +29,7 @@ const { tone = 'muted' } = Astro.props;
     color: var(--accent-blue);
   }
 
-  .section-label--green {
-    color: var(--accent-green);
+  .section-label--teal {
+    color: var(--accent-teal);
   }
 </style>
