@@ -64,7 +64,7 @@ function resolveFeaturedPost(items: PostEntry[]): { post: PostEntry | null; sour
   .home-page {
     display: grid;
     gap: 56px;
-    width: min(1272px, calc(100% - 40px));
+    width: min(1400px, calc(100% - 80px));
     margin: 0 auto;
     padding: var(--s-8) 0 var(--s-20);
   }
@@ -116,7 +116,7 @@ function resolveFeaturedPost(items: PostEntry[]): { post: PostEntry | null; sour
 
   @media (max-width: 560px) {
     .home-page {
-      width: min(100% - 28px, 1272px);
+      width: min(100% - 28px, 1400px);
       gap: var(--s-10);
       padding-top: var(--s-6);
     }
