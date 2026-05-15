@@ -33,22 +33,30 @@
   <script type="text/babel" src="design-canvas.jsx"></script>
   <script type="text/babel" src="homepage-designs.jsx"></script>
   <script type="text/babel" src="e-bento.jsx"></script>
+  <script type="text/babel" src="homepage-v5.jsx"></script>
   <script type="text/babel" src="archive-page.jsx"></script>
   <script type="text/babel" src="post-detail.jsx"></script>
 
   <script type="text/babel">
     const { DesignCanvas, DCSection, DCArtboard } = window;
     const { BentoArchive, CurrentThreadStates, SelectedEntryStates,
-            ArchivePage, PostDetailPage, PostCoverVariants } = window;
+            ArchivePage, PostDetailPage, PostCoverVariants,
+            EditorialHome } = window;
 
     function App() {
       return (
         <DesignCanvas
-          title="EnderJones — Site Redesign · v4 final · Codex handoff"
-          subtitle="Visitor-first homepage · Current Thread alongside Recent Writing · adaptive archive · 5 cover modes (incl. showcase) · AuthorRail · Giscus comments opt-in. See CODEX_HANDOFF.md for the implementation brief."
+          title="EnderJones — Site Redesign · v5 editorial homepage"
+          subtitle="Homepage reset: less bento, more notebook. One strong direction — editorial type, soft surfaces, lists & rails. v4 bento kept below for reference. Archive and post pages unchanged."
         >
-          <DCSection id="home" title="① Homepage · /">
-            <DCArtboard id="e-bento" label="Homepage v4 — Identity + Research above · Recent Writing + Current Thread as second major layer" width={1440} height={2080}>
+          <DCSection id="home-v5" title="① Homepage · / · v5 editorial notebook">
+            <DCArtboard id="editorial-home" label="§01 hero + thesis + margins · §02 drum rail + wide preview (compact) · §03 thread + github & topics · §04 marginalia full-width" width={1440} height={2580}>
+              <EditorialHome />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="home" title="① · prior · v4 bento (kept for comparison)">
+            <DCArtboard id="e-bento" label="Homepage v4 — bento dashboard (superseded by v5 above)" width={1440} height={2080}>
               <BentoArchive />
             </DCArtboard>
             <DCArtboard id="current-thread-states" label="Current Thread — normal · stale · collapsed (worklog-derived activity signal)" width={1440} height={580}>
