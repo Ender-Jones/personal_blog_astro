@@ -1,6 +1,7 @@
 ---
 import Footer from './Footer.astro';
 import Nav from './Nav.astro';
+import SiteBackdrop from './SiteBackdrop.astro';
 import '../../styles/tokens.css';
 import '../../styles/base.css';
 import '../../styles/prose.css';
@@ -30,7 +31,7 @@ const pageTitle = title === 'EnderJones' ? title : `${title} · EnderJones`;
     <slot name="head" />
   </head>
   <body class={bodyClass}>
-    <div class="site-bg" aria-hidden="true"></div>
+    <SiteBackdrop />
     <Nav currentPath={Astro.url.pathname} />
     <slot />
     <Footer />
