@@ -1,9 +1,15 @@
 ---
 import SectionLabel from '../ui/SectionLabel.astro';
 import type { SiteData } from '../../lib/data';
+import {
+  formatDate,
+  getReadingStats,
+  getTagCounts,
+  tagSlug,
+  worklogHref,
+  type PostEntry,
+} from '../../lib/content';
 import type { CurrentThread } from '../../lib/parseWorklog';
-import type { PostEntry } from '../../lib/content';
-import { formatDate, getTagCounts, tagSlug, worklogHref } from '../../lib/content';
 
 type Props = {
   thread: CurrentThread;
@@ -13,219 +19,532 @@ type Props = {
 
 const { thread, posts, site } = Astro.props;
 const hasThread = thread.state !== 'collapsed';
+const worklog = 'worklog' in thread ? thread.worklog : undefined;
 const updatedAt = 'updatedAt' in thread ? thread.updatedAt : undefined;
-const threadHref = 'worklog' in thread && thread.worklog ? worklogHref(thread.worklog) : '/worklog/';
-const topics = getTagCounts(posts)
-  .sort(([tagA, countA], [tagB, countB]) => countB - countA || tagA.localeCompare(tagB))
-  .slice(0, 5);
+const href = worklog ? worklogHref(worklog) : '/worklog/';
+const source = worklog ? `worklogs/${worklog.id}.md` : 'worklogs/';
+const worklogBody = worklog?.body ?? '';
+const stats = getReadingStats(worklogBody);
+const entryCount = Math.max((worklogBody.match(/^##\s+/gm) ?? []).length, hasThread ? 1 : 0);
+const topics = getTagCounts(posts).sort(([tagA, countA], [tagB, countB]) => countB - countA || tagA.localeCompare(tagB));
+
+function topicTone(tag: string) {
+  const normalized = tag.toLowerCase();
+  if (normalized.includes('research') || normalized.includes('stress')) return 'green';
+  if (normalized.includes('poem') || normalized.includes('memory') || normalized.includes('blog')) return 'pink';
+  if (normalized.includes('other')) return 'muted';
+  return 'blue';
+}
 ---
 
-<section class="activity-evidence" aria-labelledby="activity-title">
-  <article class="thread-expanded">
-    <div class="thread-expanded__top">
-      <SectionLabel tone="pink">Current Thread / Expanded</SectionLabel>
-      <a href={threadHref}>open worklog</a>
+<section class="home-activity" aria-labelledby="activity-title">
+  <header class="home-section-head">
+    <SectionLabel tone="blue">§ 03 · activity</SectionLabel>
+    <p>evidence the notebook is still alive.</p>
+    <span>{updatedAt ? `${formatDate(updatedAt)} · ${source}` : 'quiet'}</span>
+  </header>
+
+  <article class="thread-editorial">
+    <div class="thread-editorial__wash" aria-hidden="true"></div>
+
+    <div class="thread-editorial__main">
+      <div>
+        <div class="thread-editorial__stamp">
+          <b>$</b>
+          <span>public:thread</span>
+        </div>
+        <small>parsed from <em>{source}</em></small>
+      </div>
+
+      <div class="thread-editorial__headline">
+        <i aria-hidden="true"></i>
+        <div>
+          <h2 id="activity-title">{hasThread ? thread.summary : 'No public thread set yet.'}</h2>
+          <p>
+            A cleaned public thread from the worklog; the rest of the notebook stays off this surface.
+          </p>
+        </div>
+      </div>
     </div>
 
-    <h2 id="activity-title">{hasThread ? thread.summary : 'No public thread set yet.'}</h2>
+    <aside class="thread-editorial__side">
+      <div>
+        <span>public bullets</span>
+        <i></i>
+      </div>
+      {
+        hasThread && thread.bullets.length > 0 && (
+          <ul>
+            {thread.bullets.map((bullet) => (
+              <li>{bullet}</li>
+            ))}
+          </ul>
+        )
+      }
 
-    {
-      hasThread && thread.bullets.length > 0 && (
-        <ul>
-          {thread.bullets.map((bullet) => (
-            <li>{bullet}</li>
-          ))}
-        </ul>
-      )
-    }
+      <dl>
+        <div>
+          <dt>entries</dt>
+          <dd>{entryCount}</dd>
+        </div>
+        <div>
+          <dt>words</dt>
+          <dd>{stats.words.toLocaleString()}</dd>
+        </div>
+        <div>
+          <dt>updated</dt>
+          <dd>{updatedAt ? formatDate(updatedAt) : 'quiet'}</dd>
+        </div>
+      </dl>
 
-    <p class="thread-expanded__meta">
-      {updatedAt ? `updated ${formatDate(updatedAt)}` : 'public thread summary is not configured yet'}
-    </p>
+      <a href={href}>open worklog →</a>
+    </aside>
   </article>
 
-  <aside class="activity-evidence__side" aria-label="Activity links">
+  <div class="activity-bottom">
     {
       site.socials.github && (
-        <a class="github-evidence" href={site.socials.github}>
-          <SectionLabel tone="blue">GitHub</SectionLabel>
+        <a class="github-card" href={site.socials.github}>
+          <div>
+            <SectionLabel tone="blue">GitHub</SectionLabel>
+            <span>@Ender-Jones</span>
+          </div>
           <strong>Code, experiments, and small tools.</strong>
-          <span>@Ender-Jones</span>
+          <p>Repositories, experiments, and the rough edges of things I am building.</p>
         </a>
       )
     }
 
-    <div class="topic-evidence">
-      <div class="topic-evidence__top">
-        <SectionLabel tone="green">Topics</SectionLabel>
-        <a href="/tags/">all tags</a>
+    <article class="topics-index">
+      <div class="topics-index__top">
+        <SectionLabel tone="pink">Tag index · {topics.length}</SectionLabel>
+        <span>sorted by frequency</span>
       </div>
 
-      <div class="topic-evidence__list">
+      <ol>
         {
           topics.map(([tag, count]) => (
-            <a href={`/tags/${tagSlug(tag)}/`}>
-              <span>{tag}</span>
-              <small>{count}</small>
-            </a>
+            <li class={`tone-${topicTone(tag)}`}>
+              <a href={`/tags/${tagSlug(tag)}/`}>#{tag}</a>
+              <i></i>
+              <span>{String(count).padStart(2, '0')}</span>
+            </li>
           ))
         }
+      </ol>
+
+      <div class="topics-index__foot">
+        <span>↳ blue · research · pink</span>
+        <a href="/tags/">all tags →</a>
       </div>
-    </div>
-  </aside>
+    </article>
+  </div>
 </section>
 
 <style>
-  .activity-evidence {
+  .home-activity {
     display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
-    gap: clamp(var(--s-6), 5vw, var(--s-10));
-    align-items: stretch;
+    gap: var(--s-6);
   }
 
-  .thread-expanded {
-    min-width: 0;
-    padding: clamp(var(--s-6), 4vw, var(--s-8));
-    border: 1px solid rgba(244, 114, 182, 0.17);
-    border-radius: var(--r-xl);
-    background:
-      linear-gradient(180deg, rgba(244, 114, 182, 0.045), transparent 42%),
-      rgba(14, 16, 20, 0.74);
-  }
-
-  .thread-expanded__top,
-  .topic-evidence__top {
+  .home-section-head {
     display: flex;
     align-items: baseline;
-    justify-content: space-between;
-    gap: var(--s-4);
+    gap: var(--s-5);
   }
 
-  .thread-expanded__top a,
-  .topic-evidence__top a,
-  .thread-expanded__meta,
-  .github-evidence span,
-  .topic-evidence small {
+  .home-section-head::after {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.2), transparent 75%);
+    content: '';
+  }
+
+  .home-section-head p {
+    margin: 0;
+    color: #fff;
+    font-family: var(--font-serif);
+    font-size: clamp(18px, 2vw, 22px);
+    font-style: italic;
+  }
+
+  .home-section-head span {
     color: var(--text-dim);
     font-family: var(--font-mono);
     font-size: 11px;
   }
 
-  .thread-expanded__top a,
-  .topic-evidence__top a {
-    color: var(--accent-blue);
+  .thread-editorial,
+  .github-card,
+  .topics-index {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--r-lg);
+    background: var(--surface);
+    box-shadow:
+      0 0 28px rgba(56, 189, 248, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
 
-  .thread-expanded h2 {
-    max-width: 760px;
-    margin: var(--s-6) 0 0;
-    color: #fff;
-    font-size: clamp(30px, 4vw, 46px);
-    line-height: 1.06;
-  }
-
-  .thread-expanded ul {
+  .thread-editorial {
     display: grid;
-    gap: var(--s-4);
-    max-width: 720px;
-    margin: var(--s-8) 0 0;
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, 1fr);
+    gap: 56px;
+    padding: var(--s-8) var(--s-10);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+  }
+
+  .thread-editorial__wash {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(900px 480px at 0% 0%, rgba(56, 189, 248, 0.06), transparent 60%),
+      radial-gradient(700px 380px at 100% 100%, rgba(167, 139, 250, 0.04), transparent 65%);
+    pointer-events: none;
+  }
+
+  .thread-editorial > *:not(.thread-editorial__wash) {
+    position: relative;
+  }
+
+  .thread-editorial__main > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    margin-bottom: var(--s-6);
+  }
+
+  .thread-editorial__stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: 4px 11px;
+    border: 1px solid rgba(56, 189, 248, 0.26);
+    border-radius: 3px;
+    background: rgba(56, 189, 248, 0.08);
+  }
+
+  .thread-editorial__stamp b,
+  .thread-editorial__stamp span {
+    color: var(--accent-blue);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  .thread-editorial__stamp span {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .thread-editorial small {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+  }
+
+  .thread-editorial small em {
+    color: var(--text-muted);
+    font-style: normal;
+  }
+
+  .thread-editorial__headline {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--s-5);
+  }
+
+  .thread-editorial__headline > i {
+    width: 3px;
+    align-self: stretch;
+    margin-top: 6px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--accent-blue), rgba(56, 189, 248, 0.15));
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.35);
+  }
+
+  .thread-editorial h2 {
+    margin: 0;
+    color: #fff;
+    font-family: var(--font-serif);
+    font-size: clamp(28px, 3vw, 36px);
+    font-weight: 400;
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+    text-wrap: pretty;
+  }
+
+  .thread-editorial__headline p {
+    max-width: 540px;
+    margin: var(--s-5) 0 0;
+    color: var(--text-muted);
+    font-family: var(--font-serif);
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+
+  .thread-editorial__side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-6);
+    padding-left: var(--s-10);
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .thread-editorial__side > div:first-child {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+  }
+
+  .thread-editorial__side > div:first-child span {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .thread-editorial__side > div:first-child i {
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .thread-editorial ul {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .thread-expanded li {
-    position: relative;
-    padding-left: var(--s-5);
-    color: var(--text-muted);
-    font-size: 16px;
-    line-height: 1.68;
+  .thread-editorial li {
+    display: flex;
+    gap: var(--s-3);
+    color: #cfd5dd;
+    font-size: 13.5px;
+    line-height: 1.55;
   }
 
-  .thread-expanded li::before {
-    position: absolute;
-    top: 0.75em;
-    left: 0;
-    width: 6px;
-    height: 6px;
-    border-radius: 999px;
-    background: var(--accent-pink);
-    content: '';
+  .thread-editorial li::before {
+    color: var(--accent-blue);
+    font-family: var(--font-mono);
+    content: '›';
   }
 
-  .thread-expanded__meta {
-    margin: var(--s-8) 0 0;
-  }
-
-  .activity-evidence__side {
+  .thread-editorial dl {
     display: grid;
-    gap: var(--s-6);
-  }
-
-  .github-evidence,
-  .topic-evidence {
-    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--s-4);
-    padding: var(--s-6);
-    border: 1px solid var(--border);
-    border-radius: var(--r-lg);
-    background: rgba(11, 15, 22, 0.66);
+    margin: 0;
+    padding-top: var(--s-5);
+    border-top: 1px dashed rgba(255, 255, 255, 0.07);
   }
 
-  .github-evidence strong {
+  .thread-editorial dt,
+  .thread-editorial dd {
+    margin: 0;
+    font-family: var(--font-mono);
+  }
+
+  .thread-editorial dt {
+    color: var(--text-dim);
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .thread-editorial dd {
+    margin-top: var(--s-1);
     color: #fff;
-    font-size: 22px;
-    line-height: 1.24;
+    font-size: 16px;
   }
 
-  .github-evidence span {
+  .thread-editorial__side > a {
+    display: inline-flex;
+    width: max-content;
+    align-items: center;
+    gap: var(--s-2);
+    padding: 8px 16px;
+    border: 1px solid rgba(56, 189, 248, 0.42);
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(56, 189, 248, 0.06));
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    box-shadow:
+      0 0 18px rgba(56, 189, 248, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .activity-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-4);
+  }
+
+  .github-card,
+  .topics-index {
+    min-height: 278px;
+    padding: var(--s-6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .github-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .github-card > div,
+  .topics-index__top {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-4);
+  }
+
+  .github-card > div span,
+  .topics-index__top span {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 10px;
+  }
+
+  .github-card strong {
+    max-width: 420px;
+    margin-top: var(--s-6);
+    color: #fff;
+    font-size: clamp(28px, 3vw, 36px);
+    line-height: 1.1;
+  }
+
+  .github-card p {
+    max-width: 480px;
+    margin: auto 0 0;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.7;
+  }
+
+  .topics-index {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topics-index ol {
+    display: grid;
+    gap: 7px;
+    margin: var(--s-5) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .topics-index li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+  }
+
+  .topics-index li a,
+  .topics-index li span {
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+
+  .topics-index li a {
+    flex-shrink: 0;
+  }
+
+  .topics-index li i {
+    flex: 1;
+    border-bottom: 1px dotted rgba(255, 255, 255, 0.1);
+    transform: translateY(-3px);
+  }
+
+  .topics-index li span {
+    width: 18px;
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 11px;
+    text-align: right;
+  }
+
+  .topics-index .tone-blue a {
     color: var(--accent-blue);
   }
 
-  .topic-evidence__list {
-    display: grid;
-    border-top: 1px solid var(--border);
+  .topics-index .tone-green a {
+    color: var(--accent-green);
   }
 
-  .topic-evidence__list a {
+  .topics-index .tone-pink a {
+    color: var(--accent-pink);
+  }
+
+  .topics-index .tone-muted a {
+    color: var(--text-dim);
+  }
+
+  .topics-index__foot {
     display: flex;
-    align-items: center;
     justify-content: space-between;
     gap: var(--s-4);
-    padding: var(--s-3) 0;
-    border-bottom: 1px solid var(--border);
+    margin-top: auto;
+    padding-top: var(--s-3);
+    border-top: 1px dashed rgba(255, 255, 255, 0.05);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
   }
 
-  .topic-evidence span {
-    color: var(--text-muted);
-    font-size: 15px;
+  .topics-index__foot a {
+    color: var(--accent-pink);
   }
 
-  @media (max-width: 920px) {
-    .activity-evidence {
+  @media (max-width: 980px) {
+    .home-section-head,
+    .thread-editorial,
+    .activity-bottom {
       grid-template-columns: 1fr;
     }
 
-    .activity-evidence__side {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .home-section-head {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: var(--s-3);
+    }
+
+    .home-section-head::after {
+      width: 100%;
+      flex: none;
+    }
+
+    .thread-editorial {
+      gap: var(--s-8);
+    }
+
+    .thread-editorial__side {
+      padding-top: var(--s-6);
+      padding-left: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-left: 0;
     }
   }
 
-  @media (max-width: 640px) {
-    .activity-evidence__side {
-      grid-template-columns: 1fr;
-    }
-
-    .thread-expanded,
-    .github-evidence,
-    .topic-evidence {
+  @media (max-width: 560px) {
+    .thread-editorial,
+    .github-card,
+    .topics-index {
       padding: var(--s-5);
     }
 
-    .thread-expanded__top,
-    .topic-evidence__top {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: var(--s-2);
+    .thread-editorial dl {
+      grid-template-columns: 1fr;
     }
   }
 </style>

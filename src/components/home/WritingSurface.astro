@@ -1,7 +1,6 @@
 ---
 import SectionLabel from '../ui/SectionLabel.astro';
-import type { PostEntry } from '../../lib/content';
-import { formatDate, postHref } from '../../lib/content';
+import { formatPostDate, getReadingStats, postHref, type PostEntry } from '../../lib/content';
 
 type FeaturedSource = 'selected' | 'pinned' | 'latest' | 'startHere';
 
@@ -11,186 +10,678 @@ type Props = {
   source: FeaturedSource;
 };
 
-const { featured, posts, source } = Astro.props;
-const sourceLabel = {
-  selected: 'Selected',
-  pinned: 'Start Here',
-  latest: 'Latest',
-  startHere: 'Start Here',
-}[source];
-const featuredMeta = featured
-  ? [formatDate(featured.data.date), ...featured.data.tags.slice(0, 2)].join(' · ')
-  : '';
+const { featured, posts } = Astro.props;
+const initialIndex = Math.max(
+  posts.findIndex((post) => featured && post.id === featured.id),
+  0,
+);
+const previewPosts = posts.map((post) => {
+  const stats = getReadingStats(post.body);
+
+  return {
+    id: post.id,
+    href: postHref(post),
+    title: post.data.title,
+    date: formatPostDate(post.data.date),
+    dateShort: new Intl.DateTimeFormat('en', {
+      timeZone: 'Asia/Tokyo',
+      month: 'short',
+      day: '2-digit',
+    }).format(post.data.date),
+    year: String(post.data.date.getFullYear()),
+    tags: post.data.tags,
+    readTime: `${stats.minutes} min`,
+    excerpt: post.data.description ?? '',
+    img: post.data.image ?? '',
+    imageAlt: post.data.image_alt ?? '',
+    pinned: post.data.pinned,
+    language: post.data.language,
+  };
+});
+const previewJson = JSON.stringify(previewPosts).replace(/</g, '\\u003c');
 ---
 
-<section class="writing-surface" aria-labelledby="writing-title">
-  <div class="writing-surface__preview">
-    <SectionLabel tone="pink">Featured / {sourceLabel}</SectionLabel>
-    {
-      featured ? (
-        <a class="writing-feature" href={postHref(featured)}>
-          <div class="writing-feature__copy">
-            <h2 id="writing-title">{featured.data.title}</h2>
-            <p class="writing-feature__meta">{featuredMeta}</p>
-          </div>
-          {featured.data.image && (
-            <img src={featured.data.image} alt={featured.data.image_alt ?? ''} loading="lazy" />
-          )}
-          {featured.data.description && <p>{featured.data.description}</p>}
-          <span>read →</span>
-        </a>
-      ) : (
-        <div class="writing-feature writing-feature--empty">
-          <h2 id="writing-title">Writing starts here.</h2>
-          <p>Add a post to surface the latest writing on the homepage.</p>
+<section class="home-writing" data-home-writing data-initial-index={initialIndex} aria-labelledby="writing-title">
+  <header class="home-section-head">
+    <SectionLabel tone="pink">§ 02 · writing</SectionLabel>
+    <p>essays, paper notes, the occasional poem.</p>
+    <span>↳ {posts.length} posts · scroll to preview</span>
+  </header>
+
+  <div class="home-writing__grid">
+    <aside class="post-drum" aria-label="Post rail">
+      <div class="post-drum__top">
+        <SectionLabel tone="blue">↳ Post rail</SectionLabel>
+        <span data-rail-count>{String(initialIndex + 1).padStart(2, '0')} / {String(posts.length).padStart(2, '0')}</span>
+      </div>
+
+      <div class="post-drum__window">
+        <div class="post-drum__center" aria-hidden="true">
+          <span></span>
+          <i></i>
+          <small>now</small>
         </div>
-      )
-    }
+
+        <ol class="post-drum__list" data-post-rail>
+          {
+            previewPosts.map((post, index) => (
+              <li>
+                <button
+                  type="button"
+                  class={index === initialIndex ? 'is-active' : ''}
+                  data-home-rail-item
+                  data-index={index}
+                  style={`--distance: ${Math.abs(index - initialIndex)}`}
+                >
+                  <span class="post-drum__date">
+                    <b>{post.dateShort}</b>
+                    <small>{post.year}</small>
+                  </span>
+                  <span class="post-drum__copy">
+                    <strong>
+                      {post.pinned && <i>★</i>}
+                      {post.title}
+                    </strong>
+                    <span>
+                      {post.tags.slice(0, 2).map((tag) => <em>#{tag}</em>)}
+                      {post.language === 'zh' && <em>中</em>}
+                      <em>{post.readTime}</em>
+                    </span>
+                  </span>
+                  <span class="post-drum__dot">●</span>
+                </button>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <div class="post-drum__foot">
+        <span>⇅ scroll · or click</span>
+        <a href="/posts/">all writing →</a>
+      </div>
+    </aside>
+
+    <article class="preview-card" data-home-preview>
+      <a class="preview-card__cover" href={previewPosts[initialIndex]?.href ?? '/posts/'} data-preview-link>
+        <img
+          src={previewPosts[initialIndex]?.img}
+          alt={previewPosts[initialIndex]?.imageAlt}
+          loading="lazy"
+          data-preview-image
+        />
+        <span class="preview-card__badge" data-preview-badge>
+          {previewPosts[initialIndex]?.pinned ? '★ Featured · pinned' : '↳ Preview · from the rail'}
+        </span>
+        <span class="preview-card__date" data-preview-date>
+          {previewPosts[initialIndex]?.date} · {previewPosts[initialIndex]?.readTime}
+        </span>
+        <span class="preview-card__tags" data-preview-tags>
+          {previewPosts[initialIndex]?.tags.map((tag) => <em>#{tag}</em>)}
+        </span>
+      </a>
+
+      <div class="preview-card__body" data-preview-body>
+        <h2 id="writing-title" data-preview-title>{previewPosts[initialIndex]?.title}</h2>
+        <p data-preview-excerpt>{previewPosts[initialIndex]?.excerpt}</p>
+        <div class="preview-card__foot">
+          <span data-preview-slug>posts/{previewPosts[initialIndex]?.id}/</span>
+          <a href={previewPosts[initialIndex]?.href ?? '/posts/'} data-preview-read>read essay →</a>
+        </div>
+      </div>
+    </article>
   </div>
 
-  <aside class="post-rail" aria-label="Post rail">
-    <div class="post-rail__header">
-      <SectionLabel tone="blue">Post Rail</SectionLabel>
-      <a href="/posts/">all writing</a>
-    </div>
-    <div class="post-rail__list">
-      {
-        posts.map((post) => (
-          <a class={featured?.id === post.id ? 'is-active' : ''} href={postHref(post)}>
-            <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
-            <strong>{post.data.title}</strong>
-          </a>
-        ))
+  <script is:inline type="application/json" data-home-post-data set:html={previewJson}></script>
+  <script is:inline>
+    const roots = document.querySelectorAll('[data-home-writing]');
+
+    for (const root of roots) {
+      const dataEl = root.querySelector('[data-home-post-data]');
+      const rail = root.querySelector('[data-post-rail]');
+      const items = [...root.querySelectorAll('[data-home-rail-item]')];
+      const count = root.querySelector('[data-rail-count]');
+      const previewLink = root.querySelector('[data-preview-link]');
+      const previewRead = root.querySelector('[data-preview-read]');
+      const previewImage = root.querySelector('[data-preview-image]');
+      const previewBadge = root.querySelector('[data-preview-badge]');
+      const previewDate = root.querySelector('[data-preview-date]');
+      const previewTags = root.querySelector('[data-preview-tags]');
+      const previewBody = root.querySelector('[data-preview-body]');
+      const previewTitle = root.querySelector('[data-preview-title]');
+      const previewExcerpt = root.querySelector('[data-preview-excerpt]');
+      const previewSlug = root.querySelector('[data-preview-slug]');
+      const posts = JSON.parse(dataEl?.textContent || '[]');
+      let activeIndex = Number(root.getAttribute('data-initial-index') || 0);
+      let ticking = false;
+
+      function centerRailItem(item) {
+        if (!rail || !item) return;
+        rail.scrollTop = item.offsetTop - rail.clientHeight / 2 + item.offsetHeight / 2;
       }
-    </div>
-  </aside>
+
+      function setActive(index) {
+        const post = posts[index];
+        if (!post) return;
+        activeIndex = index;
+
+        items.forEach((item, itemIndex) => {
+          item.classList.toggle('is-active', itemIndex === index);
+          item.style.setProperty('--distance', String(Math.abs(itemIndex - index)));
+        });
+
+        if (count) count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(posts.length).padStart(2, '0')}`;
+        if (previewLink) previewLink.href = post.href;
+        if (previewRead) previewRead.href = post.href;
+        if (previewImage) {
+          previewImage.src = post.img;
+          previewImage.alt = post.imageAlt || '';
+        }
+        if (previewBadge) previewBadge.textContent = post.pinned ? '★ Featured · pinned' : '↳ Preview · from the rail';
+        if (previewDate) previewDate.textContent = `${post.date} · ${post.readTime}`;
+        if (previewTags) {
+          previewTags.replaceChildren(
+            ...post.tags.map((tag) => {
+              const tagEl = document.createElement('em');
+              tagEl.textContent = `#${tag}`;
+              return tagEl;
+            }),
+          );
+        }
+        if (previewTitle) previewTitle.textContent = post.title;
+        if (previewExcerpt) previewExcerpt.textContent = post.excerpt;
+        if (previewSlug) previewSlug.textContent = `posts/${post.id}/`;
+        if (previewBody) {
+          previewBody.classList.remove('is-swapping');
+          requestAnimationFrame(() => previewBody.classList.add('is-swapping'));
+        }
+      }
+
+      function updateFromScroll() {
+        if (!rail) return;
+        const railRect = rail.getBoundingClientRect();
+        const center = railRect.top + railRect.height / 2;
+        let nextIndex = activeIndex;
+        let nextDistance = Infinity;
+
+        items.forEach((item, index) => {
+          const rect = item.getBoundingClientRect();
+          const itemCenter = rect.top + rect.height / 2;
+          const distance = Math.abs(itemCenter - center);
+          if (distance < nextDistance) {
+            nextDistance = distance;
+            nextIndex = index;
+          }
+        });
+
+        if (nextIndex !== activeIndex) setActive(nextIndex);
+      }
+
+      rail?.addEventListener('scroll', () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(() => {
+            updateFromScroll();
+            ticking = false;
+          });
+        }
+      }, { passive: true });
+
+      items.forEach((item, index) => {
+        item.addEventListener('click', () => {
+          centerRailItem(item);
+          setActive(index);
+        });
+      });
+
+      centerRailItem(items[activeIndex]);
+      setActive(activeIndex);
+    }
+  </script>
 </section>
 
 <style>
-  .writing-surface {
-    display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.7fr);
-    gap: clamp(var(--s-6), 5vw, var(--s-12));
-    align-items: start;
+  @keyframes home-preview-fade {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+      filter: blur(2px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
   }
 
-  .writing-surface__preview {
-    min-width: 0;
+  .home-writing {
+    display: grid;
+    gap: var(--s-4);
   }
 
-  .writing-feature {
-    display: grid;
+  .home-section-head {
+    display: flex;
+    align-items: baseline;
     gap: var(--s-5);
-    margin-top: var(--s-4);
-    padding: clamp(var(--s-5), 4vw, var(--s-8));
-    border: 1px solid var(--border);
-    border-radius: var(--r-xl);
-    background: rgba(14, 16, 20, 0.72);
   }
 
-  .writing-feature h2 {
-    max-width: 760px;
+  .home-section-head::after {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(244, 114, 182, 0.2), transparent 75%);
+    content: '';
+  }
+
+  .home-section-head p {
     margin: 0;
     color: #fff;
-    font-size: clamp(34px, 5vw, 54px);
-    line-height: 1.04;
+    font-family: var(--font-serif);
+    font-size: clamp(18px, 2vw, 22px);
+    font-style: italic;
   }
 
-  .writing-feature__meta,
-  .writing-feature span {
-    margin: 0;
+  .home-section-head span {
     color: var(--text-dim);
     font-family: var(--font-mono);
     font-size: 11px;
   }
 
-  .writing-feature img {
-    width: min(520px, 100%);
-    aspect-ratio: 2 / 1;
-    border: 1px solid var(--border);
+  .home-writing__grid {
+    display: grid;
+    min-height: 340px;
+    grid-template-columns: minmax(280px, 1fr) minmax(0, 1.65fr);
+    gap: var(--s-4);
+    align-items: stretch;
+  }
+
+  .post-drum,
+  .preview-card {
+    overflow: hidden;
     border-radius: var(--r-lg);
-    object-fit: cover;
-    filter: brightness(0.9) saturate(0.94);
+    background: var(--surface);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
 
-  .writing-feature > p:not(.writing-feature__meta) {
-    max-width: 680px;
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 17px;
-    line-height: 1.7;
+  .post-drum {
+    display: flex;
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    flex-direction: column;
   }
 
-  .writing-feature span {
-    color: var(--accent-pink);
-  }
-
-  .post-rail {
-    padding-top: var(--s-2);
-  }
-
-  .post-rail__header {
+  .post-drum__top,
+  .post-drum__foot {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: var(--s-4);
-    margin-bottom: var(--s-4);
+    padding: 14px 22px 10px;
   }
 
-  .post-rail__header a {
-    color: var(--accent-blue);
-    font-family: var(--font-mono);
-    font-size: 11px;
-  }
-
-  .post-rail__list {
-    display: grid;
-    border-top: 1px solid var(--border);
-  }
-
-  .post-rail__list a {
-    display: grid;
-    gap: var(--s-2);
-    padding: var(--s-5) var(--s-3);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .post-rail__list a.is-active {
-    border-radius: var(--r-md);
-    background: rgba(244, 114, 182, 0.055);
-    box-shadow: inset 0 0 0 1px rgba(244, 114, 182, 0.1);
-  }
-
-  .post-rail time {
+  .post-drum__top span,
+  .post-drum__foot span,
+  .post-drum__foot a {
     color: var(--text-dim);
     font-family: var(--font-mono);
+    font-size: 10px;
+  }
+
+  .post-drum__foot {
+    padding-top: 10px;
+    padding-bottom: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .post-drum__foot a {
+    color: var(--accent-blue);
+    font-size: 12px;
+  }
+
+  .post-drum__window {
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  .post-drum__window::before,
+  .post-drum__window::after {
+    position: absolute;
+    right: 0;
+    left: 0;
+    z-index: 3;
+    height: 64px;
+    content: '';
+    pointer-events: none;
+  }
+
+  .post-drum__window::before {
+    top: 0;
+    background: linear-gradient(180deg, var(--surface), transparent);
+  }
+
+  .post-drum__window::after {
+    bottom: 0;
+    background: linear-gradient(0deg, var(--surface), transparent);
+  }
+
+  .post-drum__center {
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    left: 18px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .post-drum__center span {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--accent-blue);
+    box-shadow: 0 0 8px var(--accent-blue);
+  }
+
+  .post-drum__center i {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.5), rgba(56, 189, 248, 0.08) 90%);
+  }
+
+  .post-drum__center small {
+    color: var(--accent-blue);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .post-drum__list {
+    height: 100%;
+    margin: 0;
+    overflow-y: auto;
+    padding: 110px 0;
+    list-style: none;
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+  }
+
+  .post-drum__list::-webkit-scrollbar {
+    width: 0;
+  }
+
+  .post-drum__list li {
+    scroll-snap-align: center;
+  }
+
+  .post-drum button {
+    display: grid;
+    width: 100%;
+    min-height: 74px;
+    grid-template-columns: 54px 1fr auto;
+    gap: var(--s-4);
+    align-items: flex-start;
+    padding: var(--s-3) 22px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    opacity: max(0.18, calc(1 - (var(--distance) * 0.32)));
+    text-align: left;
+    transform: scale(calc(1 - min(var(--distance), 3) * 0.04));
+    transform-origin: left center;
+    transition: opacity 0.32s ease, transform 0.32s ease;
+  }
+
+  .post-drum button.is-active {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .post-drum__date {
+    padding-top: 2px;
+  }
+
+  .post-drum__date b,
+  .post-drum__date small,
+  .post-drum__copy em,
+  .post-drum__dot {
+    display: block;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-style: normal;
+  }
+
+  .post-drum__date b {
+    color: var(--accent-blue);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .post-drum__date small {
+    margin-top: var(--s-1);
+    opacity: 0.75;
+  }
+
+  .post-drum__copy strong {
+    display: flex;
+    gap: var(--s-2);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-wrap: pretty;
+  }
+
+  .post-drum__copy i {
+    color: var(--accent-pink);
+    font-style: normal;
+  }
+
+  .post-drum__copy > span {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    align-items: center;
+    margin-top: var(--s-2);
+  }
+
+  .post-drum__copy em {
+    padding: 1px 7px;
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    border-radius: 3px;
+    background: rgba(56, 189, 248, 0.06);
+    color: var(--text-muted);
+  }
+
+  .post-drum__dot {
+    align-self: center;
+    color: transparent;
+    font-size: 12px;
+  }
+
+  .post-drum button.is-active .post-drum__dot {
+    color: var(--accent-blue);
+  }
+
+  .preview-card {
+    border: 1px solid rgba(244, 114, 182, 0.22);
+    transition: border-color 0.32s, box-shadow 0.32s;
+  }
+
+  .preview-card__cover {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 21 / 6;
+  }
+
+  .preview-card__cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.82) saturate(0.92);
+  }
+
+  .preview-card__cover::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(7, 8, 9, 0.18), rgba(7, 8, 9, 0.88));
+    content: '';
+  }
+
+  .preview-card__badge,
+  .preview-card__date,
+  .preview-card__tags {
+    position: absolute;
+    z-index: 1;
+  }
+
+  .preview-card__badge {
+    top: var(--s-4);
+    left: var(--s-5);
+    padding: 5px 12px;
+    border: 1px solid rgba(244, 114, 182, 0.32);
+    border-radius: 999px;
+    background: rgba(7, 8, 9, 0.6);
+    color: var(--accent-pink);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    backdrop-filter: blur(8px);
+  }
+
+  .preview-card__date {
+    right: var(--s-5);
+    bottom: var(--s-4);
+    color: rgba(255, 255, 255, 0.88);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  .preview-card__tags {
+    bottom: var(--s-4);
+    left: var(--s-5);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .preview-card__tags em {
+    padding: 2px 9px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    background: rgba(7, 8, 9, 0.55);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-style: normal;
+    backdrop-filter: blur(8px);
+  }
+
+  .preview-card__body {
+    padding: 14px var(--s-8);
+  }
+
+  .preview-card__body.is-swapping {
+    animation: home-preview-fade 0.42s ease-out;
+  }
+
+  .preview-card h2 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(24px, 3vw, 30px);
+    font-weight: 700;
+    letter-spacing: -0.018em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  .preview-card__body p {
+    max-width: 660px;
+    margin: var(--s-3) 0 0;
+    color: var(--text-muted);
+    font-family: var(--font-serif);
+    font-size: 14.5px;
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  .preview-card__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    margin-top: var(--s-3);
+    padding-top: var(--s-3);
+    border-top: 1px dashed rgba(255, 255, 255, 0.07);
+    font-family: var(--font-mono);
     font-size: 11px;
   }
 
-  .post-rail strong {
-    color: #fff;
-    font-size: 18px;
-    line-height: 1.35;
+  .preview-card__foot span {
+    color: var(--text-dim);
   }
 
-  @media (max-width: 920px) {
-    .writing-surface {
+  .preview-card__foot a {
+    padding: 6px 15px;
+    border: 1px solid rgba(244, 114, 182, 0.46);
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(244, 114, 182, 0.24), rgba(244, 114, 182, 0.08));
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    box-shadow:
+      0 0 22px rgba(244, 114, 182, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
+
+  @media (max-width: 980px) {
+    .home-section-head,
+    .home-writing__grid {
       grid-template-columns: 1fr;
+    }
+
+    .home-section-head {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: var(--s-3);
+    }
+
+    .home-section-head::after {
+      width: 100%;
+      flex: none;
+    }
+
+    .post-drum__list {
+      height: 360px;
     }
   }
 
   @media (max-width: 560px) {
-    .writing-feature {
+    .preview-card__cover {
+      aspect-ratio: 16 / 8;
+    }
+
+    .preview-card__body {
       padding: var(--s-5);
     }
 
-    .writing-feature h2 {
-      font-size: clamp(30px, 10vw, 42px);
+    .preview-card__date {
+      display: none;
     }
 
-    .post-rail__list a {
-      padding-right: 0;
-      padding-left: 0;
+    .preview-card__foot {
+      align-items: flex-start;
+      flex-direction: column;
     }
   }
 </style>

@@ -1,5 +1,4 @@
 ---
-import SectionLabel from '../ui/SectionLabel.astro';
 import type { ResearchData } from '../../lib/data';
 
 type Props = {
@@ -7,64 +6,161 @@ type Props = {
 };
 
 const { research } = Astro.props;
-const thesis = research.focus.replace(/\.$/, '.');
+const updated = new Intl.DateTimeFormat('en', {
+  timeZone: 'Asia/Tokyo',
+  year: 'numeric',
+  month: '2-digit',
+}).format(new Date(research.updated));
+const classes = research.tags.slice(0, 3).join(' · ');
 ---
 
-<article class="research-card">
-  <SectionLabel tone="green">Research · Now</SectionLabel>
-  <h2>{thesis}</h2>
-  <div class="research-card__tags" aria-label="Research topics">
-    {research.tags.slice(0, 4).map((tag) => <span>{tag}</span>)}
+<article class="thesis-card">
+  <div class="thesis-card__wash" aria-hidden="true"></div>
+  <span class="thesis-card__corner thesis-card__corner--tl" aria-hidden="true"></span>
+  <span class="thesis-card__corner thesis-card__corner--br" aria-hidden="true"></span>
+
+  <div class="thesis-card__stamp">
+    <span>※ The Thesis</span>
+    <i></i>
+    <small>{updated}</small>
+  </div>
+
+  <div>
+    <h2>
+      Stress detection from <em>multi-modal</em> physiological signals.
+    </h2>
+    <p>What I'm building, on the bench and on paper.</p>
+  </div>
+
+  <div class="thesis-card__class">
+    <span>cl.</span>
+    <i></i>
+    <small>{classes}</small>
   </div>
 </article>
 
 <style>
-  .research-card {
+  .thesis-card {
+    position: relative;
     display: flex;
-    min-height: 238px;
+    min-height: 0;
+    overflow: hidden;
     flex-direction: column;
     justify-content: space-between;
-    gap: var(--s-6);
-    padding: var(--s-6);
-    border: 1px solid rgba(52, 211, 153, 0.18);
-    border-radius: var(--r-xl);
+    gap: var(--s-5);
+    padding: 26px 30px;
+    border: 1px solid rgba(52, 211, 153, 0.2);
+    border-radius: var(--r-lg);
+    background: var(--surface);
+    box-shadow:
+      0 0 28px rgba(52, 211, 153, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .thesis-card__wash {
+    position: absolute;
+    inset: 0;
     background:
-      linear-gradient(180deg, rgba(52, 211, 153, 0.045), transparent),
-      rgba(10, 18, 28, 0.88);
+      radial-gradient(420px 220px at 100% 100%, rgba(52, 211, 153, 0.08), transparent 60%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.005), transparent);
+    pointer-events: none;
   }
 
-  .research-card h2 {
-    margin: 0;
-    overflow: hidden;
-    color: #fff;
-    display: -webkit-box;
-    font-family: var(--font-serif);
-    font-size: clamp(24px, 2.35vw, 30px);
-    font-weight: 400;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-height: 1.18;
+  .thesis-card__corner {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    opacity: 0.9;
   }
 
-  .research-card__tags {
+  .thesis-card__corner--tl {
+    top: 14px;
+    left: 14px;
+    border-top: 1px solid rgba(52, 211, 153, 0.45);
+    border-left: 1px solid rgba(52, 211, 153, 0.45);
+  }
+
+  .thesis-card__corner--br {
+    right: 14px;
+    bottom: 14px;
+    border-right: 1px solid rgba(52, 211, 153, 0.45);
+    border-bottom: 1px solid rgba(52, 211, 153, 0.45);
+  }
+
+  .thesis-card > *:not(.thesis-card__wash, .thesis-card__corner) {
+    position: relative;
+  }
+
+  .thesis-card__stamp,
+  .thesis-card__class {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-2);
+    align-items: center;
+    gap: var(--s-3);
   }
 
-  .research-card__tags span {
-    padding: 4px 9px;
-    border: 1px solid rgba(52, 211, 153, 0.18);
-    border-radius: 999px;
-    color: #cfd5dd;
+  .thesis-card__stamp > span {
+    padding: 3px 10px;
+    border: 1px solid rgba(52, 211, 153, 0.25);
+    border-radius: 3px;
+    background: rgba(52, 211, 153, 0.04);
+    color: var(--accent-green);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .thesis-card__stamp i,
+  .thesis-card__class i {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(52, 211, 153, 0.2), transparent);
+  }
+
+  .thesis-card__stamp small,
+  .thesis-card__class small {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+
+  .thesis-card h2 {
+    margin: 0;
+    color: #fff;
+    font-family: var(--font-serif);
+    font-size: clamp(24px, 2.3vw, 30px);
+    font-weight: 400;
+    letter-spacing: -0.005em;
+    line-height: 1.18;
+    text-wrap: pretty;
+  }
+
+  .thesis-card h2 em {
+    color: var(--accent-green);
+    font-style: italic;
+  }
+
+  .thesis-card p {
+    max-width: 360px;
+    margin: var(--s-3) 0 0;
+    color: var(--text-muted);
+    font-family: var(--font-serif);
+    font-size: 13px;
+    font-style: italic;
+    line-height: 1.55;
+  }
+
+  .thesis-card__class > span {
+    flex-shrink: 0;
+    color: var(--accent-green);
     font-family: var(--font-mono);
     font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
   }
 
-  @media (max-width: 560px) {
-    .research-card {
-      min-height: 0;
-    }
-
+  .thesis-card__class small {
+    overflow-wrap: anywhere;
   }
 </style>

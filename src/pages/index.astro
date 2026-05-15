@@ -18,6 +18,12 @@ const worklogs = await getCollection('worklogs');
 const currentThread = getCurrentThread(worklogs);
 const featured = resolveFeaturedPost(posts);
 const quote = quotes[new Date().getUTCDate() % quotes.length];
+const latestWorklog = byDateDesc(worklogs)[0];
+const archiveMeta = [
+  `${posts.length} posts`,
+  latestWorklog ? `${worklogs.length} worklogs` : 'worklog quiet',
+  latestWorklog ? formatMetaDate(latestWorklog.data.updated ?? latestWorklog.data.date) : 'no active month',
+].join(' · ');
 
 function resolveFeaturedPost(items: PostEntry[]): { post: PostEntry | null; source: FeaturedSource } {
   const selected = items.find((post) => post.data.selected);
@@ -34,10 +40,25 @@ function resolveFeaturedPost(items: PostEntry[]): { post: PostEntry | null; sour
 
   return { post: null, source: 'latest' };
 }
+
+function formatMetaDate(date: Date) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric',
+    month: '2-digit',
+  }).format(date);
+}
 ---
 
 <BaseLayout title={site.name} description={site.research_oneliner}>
   <main class="home-page">
+    <div class="home-archive-strip">
+      <span></span>
+      <p>Personal Archive · No. 01 · Est. 2025 · Tokyo</p>
+      <i></i>
+      <small>{archiveMeta}</small>
+    </div>
+
     <section class="home-first" aria-label="First impression">
       <HeroSection site={site} />
 
@@ -58,47 +79,105 @@ function resolveFeaturedPost(items: PostEntry[]): { post: PostEntry | null; sour
 <style>
   .home-page {
     display: grid;
-    gap: clamp(var(--s-16), 8vw, 112px);
+    gap: 56px;
     width: min(1272px, calc(100% - 40px));
     margin: 0 auto;
-    padding: var(--s-10) 0 var(--s-20);
+    padding: var(--s-8) 0 var(--s-20);
+  }
+
+  .home-archive-strip {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    margin-top: var(--s-2);
+  }
+
+  .home-archive-strip span {
+    width: 24px;
+    height: 1px;
+    background: var(--accent-pink);
+  }
+
+  .home-archive-strip i {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(244, 114, 182, 0.22), transparent);
+  }
+
+  .home-archive-strip p,
+  .home-archive-strip small {
+    margin: 0;
+    color: var(--accent-pink);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .home-archive-strip small {
+    color: var(--text-dim);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: none;
   }
 
   .home-first {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(340px, 430px);
-    gap: var(--s-6);
+    grid-auto-rows: 256px;
+    grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr);
+    gap: var(--s-4);
     align-items: stretch;
-    min-height: clamp(560px, calc(100vh - 148px), 680px);
   }
 
   .home-first__support {
     display: grid;
-    gap: var(--s-6);
+    grid-row: span 2;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--s-4);
+  }
+
+  .home-first > :first-child {
+    grid-row: span 2;
   }
 
   @media (max-width: 1060px) {
     .home-page {
       width: min(100% - 32px, 760px);
-      gap: var(--s-16);
+      gap: var(--s-12);
     }
 
     .home-first {
       grid-template-columns: 1fr;
-      min-height: 0;
+      grid-auto-rows: auto;
+    }
+
+    .home-first__support {
+      grid-row: auto;
+      grid-template-rows: auto;
+    }
+
+    .home-first > :first-child {
+      grid-row: auto;
     }
   }
 
   @media (max-width: 560px) {
     .home-page {
       width: min(100% - 28px, 1272px);
-      gap: var(--s-12);
-      padding-top: var(--s-8);
+      gap: var(--s-10);
+      padding-top: var(--s-6);
     }
 
-    .home-first,
-    .home-first__support {
-      gap: var(--s-4);
+    .home-archive-strip {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .home-archive-strip i {
+      width: 100%;
+      flex: none;
     }
   }
 </style>
