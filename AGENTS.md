@@ -9,7 +9,7 @@
 ## 项目目标
 
 - 用 Astro 重构个人 blog / research portfolio，静态构建并部署到 Cloudflare Pages。
-- 首页是 Bento-style landing page。
+- 首页曾以 Bento-style landing page 为起点；当前已转向 `homepage-v5.jsx` 的 editorial notebook / research archive landing。
 - 文章归档页是 magazine/archive style。
 - 单篇文章页强调阅读体验。
 - 保留作者识别度：头像、小资料卡、contact/social links、research identity。
@@ -35,6 +35,14 @@
   - `reference/claude_redesign/post-detail.jsx`
   - `reference/claude_redesign/tokens.css`
 - `Homepage Redesign.html` 是视觉规格参考；JSX 原型只作像素与结构参考，不直接搬代码。
+- 当前 homepage 的最新主要参考是：
+  - `reference/claude_redesign/Homepage Redesign.html`
+  - `reference/claude_redesign/homepage-v5.jsx`
+- `homepage-v5.jsx` 的核心方向是 editorial notebook：
+  - §01 Hero + The Thesis + In the margins
+  - §02 左侧 scroll-drum post rail + 右侧 writing preview
+  - §03 Current Thread editorial card + GitHub/profile + tag index
+  - §04 full-width Marginalia + slim contact strip
 - `reference/old_blog/` 只作旧内容、氛围、头像/author presence、旧文章结构参考，不直接复刻旧站，不搬旧站代码。
 
 如果 reference 与用户明确约束冲突，以用户明确约束为准。
@@ -79,11 +87,43 @@
   - lazy Giscus mount
 - 不做页面运行时 API 调用；GitHub contribution 等数据只能用 build-time/cache snapshot。
 - `AuthorRail` 用于 post/archive/worklog 桌面布局，移动端用 `AuthorStrip`。
-- Homepage 使用 `IdentityTile`，不要同时渲染 `AuthorRail`。
+- Homepage 使用 `src/components/home/*` 的专用组件，不要同时渲染 `AuthorRail`。
 - `i18n_alt` 只是指向另一语言文章的 slug，不做完整多语言路由系统。
+
+## 当前进度快照
+
+截至 2026-05-15：
+- Astro 6+ 基础项目已建立，使用 Docker Compose 的 `site` 服务运行 Node/npm，减少污染本机包环境。
+- 已实现 content collections：`posts` 与 `worklogs`。
+- 已实现数据集中维护：`src/data/site.yml`、`src/data/research.yml`、`src/data/quotes.yml`。
+- 已实现主要页面：
+  - Homepage：当前已按 `homepage-v5.jsx` 重写为 editorial notebook 方向。
+  - Archive/posts：magazine/archive style 已有基础实现。
+  - Post detail：阅读体验与 cover modes 已有基础实现。
+  - Worklog：公开 worklog 页面与 homepage current thread 数据来源已打通。
+  - Tags/About：已有基础页面。
+- Homepage 当前结构：
+  - `src/pages/index.astro` 负责首页数据装配与页面级 section 排布。
+  - `src/components/home/HeroSection.astro`
+  - `src/components/home/ResearchNowCard.astro`
+  - `src/components/home/CurrentThreadCompact.astro`
+  - `src/components/home/WritingSurface.astro`
+  - `src/components/home/ActivityEvidence.astro`
+  - `src/components/home/PersonalityContact.astro`
+- Homepage 已处理：
+  - 首屏不再是拥挤 dashboard。
+  - Writing section 使用轻量 client JS 做 post rail preview 切换。
+  - Current Thread compact 与 expanded 复用 `getCurrentThread()` / `parseWorklog` 数据来源。
+  - 不展示 raw worklog notes。
+  - 不做 RSS、fake comments、fake GitHub heatmap/commits/live widgets。
+- 最近一次验证：
+  - `docker compose run --rm site npm run build` 通过。
+  - Browser 检查过 1440x900 与 390x844。
+  - 当时无横向溢出、无 broken images、无 console errors。
 
 ## 当前目录约定
 
+- `src/components/home/`：首页 v5 editorial notebook sections。
 - `src/components/bento/`：首页 Bento tiles。
 - `src/components/archive/`：文章归档页组件。
 - `src/components/post/`：单篇文章页专用组件，例如 cover/header。
@@ -101,7 +141,7 @@
 - 页面文件负责页面级 grid/section 排布；tile/card/row 组件负责自己的内部样式。
 - 不让一个页面级 CSS 文件深度选择组件内部 DOM。
 - 移动端不是桌面缩小版，要按内容优先级重新排序。
-- 首页 Bento 在桌面使用 12 栏；平板收敛；手机单列。
+- 首页当前不是严格 12 栏 Bento；桌面以 v5 editorial grid 为准，平板收敛，手机单列。
 - 手机端优先保留：Identity、Research Now、Recent Writing、Current Thread、Selected Entry。
 - 手机端减少 padding、固定图片比例/高度、避免长标题挤爆卡片。
 - Archive 手机端可隐藏缩略图和多余 tags，保留日期、标题、摘要。
@@ -124,7 +164,7 @@
 
 ## 验收重点
 
-- Homepage 匹配 Bento v4 设计与内容优先级。
+- Homepage 匹配 `homepage-v5.jsx` / `Homepage Redesign.html` 的 editorial notebook 方向，同时保留旧站 dark navy / pink / cyan / research notebook DNA。
 - Archive 根据文章数量自适应搜索/filter/view toggle。
 - Post detail 支持 5 个 cover mode。
 - `comments: false` 或缺省时没有 Giscus script。
