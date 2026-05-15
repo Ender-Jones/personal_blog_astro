@@ -9,11 +9,6 @@ const socials = [
 ---
 
 <footer class="site-footer">
-  <div>
-    <strong>{site.name}</strong>
-    <span>{site.role} · {site.location}</span>
-  </div>
-
   <div class="site-footer__links">
     {socials.map(([label, href]) => <a href={href}>{label}</a>)}
   </div>

@@ -1,18 +1,12 @@
 ---
 import SectionMarker from '../ui/SectionMarker.astro';
-import type { QuoteData, SiteData } from '../../lib/data';
+import type { QuoteData } from '../../lib/data';
 
 type Props = {
   quote?: QuoteData;
-  site: SiteData;
 };
 
-const { quote, site } = Astro.props;
-const socials = [
-  ['github', '⌘', site.socials.github, '@enderjones'],
-  ['x', '𝕏', site.socials.twitter, '@enderjones'],
-  ['email', '✉', site.socials.email, 'hi@...'],
-].filter((item): item is [string, string, string, string] => Boolean(item[2]));
+const { quote } = Astro.props;
 ---
 
 <section class="home-coda" aria-label="Personality and contact">
@@ -36,19 +30,6 @@ const socials = [
     )
   }
 
-  <nav class="contact-strip" aria-label="Contact links">
-    <span>reach me</span>
-    <div>
-      {
-        socials.map(([label, icon, href, value]) => (
-          <a href={href} aria-label={label}>
-            <b aria-hidden="true">{icon}</b>
-            <small>{value}</small>
-          </a>
-        ))
-      }
-    </div>
-  </nav>
 </section>
 
 <style>
@@ -121,62 +102,6 @@ const socials = [
     font-size: 11px;
   }
 
-  .contact-strip {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--s-6);
-    padding: var(--s-4) 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  }
-
-  .contact-strip > span {
-    color: #fff;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-
-  .contact-strip > div {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-3);
-  }
-
-  .contact-strip a {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--s-2);
-    min-height: 34px;
-    padding: 7px 14px 7px 10px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.025);
-    font-family: var(--font-mono);
-  }
-
-  .contact-strip b {
-    display: inline-grid;
-    width: 20px;
-    height: 20px;
-    place-items: center;
-    border: 1px solid rgba(56, 189, 248, 0.22);
-    border-radius: 999px;
-    background: rgba(56, 189, 248, 0.08);
-    color: #fff;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1;
-  }
-
-  .contact-strip small {
-    color: var(--accent-blue);
-    font-size: 10.5px;
-  }
-
   @media (max-width: 560px) {
     .marginalia {
       min-height: 260px;
@@ -198,19 +123,5 @@ const socials = [
       line-height: 1.6;
     }
 
-    .contact-strip {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: var(--s-4);
-    }
-
-    .contact-strip > div {
-      width: 100%;
-    }
-
-    .contact-strip a {
-      justify-content: space-between;
-      width: 100%;
-    }
   }
 </style>
