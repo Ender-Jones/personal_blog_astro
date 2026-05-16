@@ -18,7 +18,6 @@ const posts = defineCollection({
       date: z.coerce.date(),
       description: z.string().optional(),
       tags: z.array(z.string()).default([]),
-      selected: z.boolean().default(false),
       pinned: z.boolean().default(false),
       comments: z.boolean().default(false),
       language: z.enum(['en', 'zh']).default('en'),

@@ -34,11 +34,11 @@ cover_mode: hero-large
 >
 > <footer>— Francis Jammes, "Prière pour aimer la douleur"</footer>
 >
-> <details style="margin-top: 1.5em;">
+> <details class="translation-details">
 > <summary class="translation-button">
 > <span class="icon">▶</span> <em>Show English Translation</em>
 > </summary>
-> <div style="font-size: 0.8em; color: #888; margin-top: 1em; padding-left: 1em; border-left: 2px solid #333;">
+> <div class="translation-details__body">
 > <p><em>I have only my pain, and I want nothing more than her.<br>
 > She has been, and is still, faithful to me.<br>
 > Why would I resent her, since in the hours<br>
@@ -56,17 +56,6 @@ cover_mode: hero-large
 > to try and enter my heart once more.</em></p>
 > </div>
 > </details>
->
-> <style>
->   details[open] summary .icon {
->     transform: rotate(90deg);
->   }
->   summary .icon {
->     display: inline-block;
->     transition: transform 0.2s ease-in-out;
->     margin-right: 0.5em;
->   }
-> </style>
 
 ## A New Start
 
@@ -82,7 +71,7 @@ This blog marks one of my attempts to forge a new life—working with greater pu
 
 ### Life
 
-![A vibrant blue cocktail in a glass at a bar, representing a moment of reflection on past trauma and life struggles.](/assets/img/whoami/bar.png){: width="972" height="589" .w-50 .right}
+![A vibrant blue cocktail in a glass at a bar, representing a moment of reflection on past trauma and life struggles.](/assets/img/whoami/bar.png)
 
 In my younger years, the world seemed much smaller. I was beaten by my own parents almost every month until halfway through high school. I studied at my old school with consistently poor grades and had a crush on one who never even acknowledged me as a normal person. I had very little money for the things I loved... those days were darker than now.  
 Of course, the trouble wasn't purely physical. My father placed me in a class with students far more advanced than I was, telling me, "Study is all you need now." Meanwhile, my classmates would laugh at me as though I were the dumbest person in the world. Even the beatings from my parents weren't particularly "hard" in a physical sense.  
@@ -102,7 +91,7 @@ I genuinely enjoy learning English—it's one area where I've outperformed most 
 Moreover, I need English for practical reasons: all the papers, theses, documentation, and GitHub projects are written in English, not to mention communication with my foreign friends.  
 Lastly, I still need to improve my English—throughout these years, I've merely used the language without studying it systematically, especially when it comes to writing. As a Chinese person, I appreciate the beauty of Chinese/Japanese characters, while also taking pride in my growing ability to recognize beauty in other languages.  
 
-![A quiet street scene in Yokosuka, Japan, showing a flower shop and a 7-Eleven, reflecting the author's connection to the city.](/assets/img/whoami/yokosuka.png){: width="972" height="589" .w-75}  
+![A quiet street scene in Yokosuka, Japan, showing a flower shop and a 7-Eleven, reflecting the author's connection to the city.](/assets/img/whoami/yokosuka.png)
 
 > <p><em>— Qui aimes-tu le mieux, homme énigmatique, dis ?</em><br>
 > <em>— J’aime les nuages… les nuages qui passent… là-bas… là-bas… les merveilleux nuages !</em></p>

@@ -4,9 +4,10 @@ import AuthorRail from '../../components/author/AuthorRail.astro';
 import AuthorStrip from '../../components/author/AuthorStrip.astro';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
 import { byDateDesc, formatDate, formatShortDate, worklogHref } from '../../lib/content';
-import { getPublicThread } from '../../lib/parseWorklog';
+import { getCurrentThread, getPublicThread } from '../../lib/parseWorklog';
 
 const worklogs = byDateDesc(await getCollection('worklogs'));
+const currentThread = getCurrentThread(worklogs);
 const worklogCards = worklogs.map((worklog) => ({
   worklog,
   thread: getPublicThread(worklog),
@@ -40,7 +41,7 @@ const latest = worklogCards[0];
           </div>
           <div>
             <dt>thread</dt>
-            <dd>{latest?.thread ? latest.thread.source : 'not set'}</dd>
+            <dd>{latest?.thread ? 'available' : 'not set'}</dd>
           </div>
         </dl>
       </aside>
@@ -48,7 +49,7 @@ const latest = worklogCards[0];
 
     <div class="worklog-layout">
       <aside class="worklog-layout__rail">
-        <AuthorRail />
+        <AuthorRail currentThread={currentThread} />
       </aside>
 
       <section class="worklog-list" aria-label="Monthly worklog archive">
@@ -64,7 +65,7 @@ const latest = worklogCards[0];
               {worklog.data.description && <p>{worklog.data.description}</p>}
 
               <div class={thread ? 'worklog-card__thread' : 'worklog-card__thread is-empty'}>
-                <span>{thread ? `public thread · ${thread.source}` : 'public thread'}</span>
+                <span>{thread ? 'public thread available' : 'public thread'}</span>
                 <strong>{thread?.summary ?? 'No public thread summary set for this month.'}</strong>
               </div>
 

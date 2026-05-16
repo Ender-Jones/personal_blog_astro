@@ -55,10 +55,8 @@ For instance:
 > "Assume you are a seasoned professor of AI research. Please guide me through the core concepts of reinforcement learning."
 
 This often yields more detailed and contextually appropriate responses than a generic query.
-{: .prompt-tip }
 
 > Structure and persona turn a generic request into a precise directive, like aiming a spotlight instead of just turning on the room lights.
-{: .prompt-tip }
 
 ## Core Principles That Always Matter
 
@@ -84,7 +82,6 @@ If you don't know the steps, you can ask the AI to propose a plan.
  Still, applying your own domain knowledge to deconstruct the task will **always** produce a superior outcome.
 
 > Great prompts are built on two pillars: a focused signal and manageable steps.
-{: .prompt-tip }
 
 ## My Practical Checklist
 
@@ -132,7 +129,6 @@ Through my long-term coding collaboration with Gemini 2.5 Pro, its most impressi
 The main drawback, however, is its tendency to **hallucinate**. This can manifest in subtle ways, but sometimes it's stark. For instance, when asked to find research papers, it might invent one with a plausible title, authors, and a fake URL that leads nowhere.
 
 > Each AI model has its own 'personality' and skillset. Finding the right one for your task is the first step to a great result.
-{: .prompt-tip }
 
 
 ## Debatable "Best Practices"
@@ -150,4 +146,3 @@ In the end, effective interaction with AI is less about secret handshakes and mo
 ---
 
 > This post reflects my current understanding and personal experience. The field of AI is evolving at an incredible pace, and these takes are subject to change as the models—and my interactions with them—continue to develop.
-{: .prompt-info }

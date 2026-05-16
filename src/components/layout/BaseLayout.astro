@@ -5,6 +5,7 @@ import SiteBackdrop from './SiteBackdrop.astro';
 import '../../styles/tokens.css';
 import '../../styles/base.css';
 import '../../styles/prose.css';
+import 'katex/dist/katex.min.css';
 
 type Props = {
   title?: string;
@@ -27,6 +28,9 @@ const pageTitle = title === 'EnderJones' ? title : `${title} · EnderJones`;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <link rel="icon" href="/assets/img/favicons/favicon.ico" sizes="any" />
+    <link rel="icon" href="/assets/img/favicons/favicon-96x96.png" type="image/png" sizes="96x96" />
+    <link rel="apple-touch-icon" href="/assets/img/favicons/apple-touch-icon.png" />
     <title>{pageTitle}</title>
     <slot name="head" />
   </head>

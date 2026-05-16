@@ -13,6 +13,7 @@ export type SiteData = {
   role: string;
   location: string;
   avatar: string;
+  hero_portrait?: string;
   research_oneliner: string;
   socials: SocialLinks;
   comments?: {
@@ -30,11 +31,6 @@ export type SiteData = {
       lang?: string;
       loading?: string;
     };
-  };
-  tiles: {
-    github: boolean;
-    marginalia: boolean;
-    weather: boolean;
   };
 };
 

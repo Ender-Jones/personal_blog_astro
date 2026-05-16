@@ -12,11 +12,15 @@ const coverMode = getCoverMode(post);
 const hasImage = Boolean(post.data.image && coverMode !== 'none');
 const showBackdropImage = hasImage && coverMode !== 'showcase';
 const showShowcase = hasImage && coverMode === 'showcase';
+const isSemanticCover = post.data.image_role === 'semantic';
+const coverImageAlt = isSemanticCover ? (post.data.image_alt ?? post.data.title) : '';
+const coverImageHidden = isSemanticCover ? undefined : 'true';
+const imageFocus = post.data.image_focus ?? '50% 50%';
 const year = post.data.date.getFullYear();
 ---
 
-<header class={`post-header post-header--${coverMode}`} style={`--post-image-focus: ${post.data.image_focus};`}>
-  {showBackdropImage && <img src={post.data.image} alt="" aria-hidden="true" />}
+<header class={`post-header post-header--${coverMode}`} style={`--post-image-focus: ${imageFocus};`}>
+  {showBackdropImage && <img src={post.data.image} alt={coverImageAlt} aria-hidden={coverImageHidden} />}
   <div class="post-header__body">
     <p class="eyebrow">{post.data.pinned ? '★ Pinned' : 'Writing'} · Essay · {year}</p>
     <h1>{post.data.title}</h1>

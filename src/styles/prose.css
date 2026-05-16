@@ -81,6 +81,73 @@
   border-collapse: collapse;
 }
 
+.prose .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  padding: var(--s-2) 0;
+}
+
+.prose .katex {
+  color: #eef2f6;
+}
+
+/* Keep migrated post-specific HTML styling out of Markdown content. */
+.prose .translation-details {
+  margin-top: 1.5em;
+}
+
+.prose .translation-button {
+  cursor: pointer;
+}
+
+.prose .translation-button .icon {
+  display: inline-block;
+  margin-right: 0.5em;
+  transition: transform 0.2s ease-in-out;
+}
+
+.prose .translation-details[open] .translation-button .icon {
+  transform: rotate(90deg);
+}
+
+.prose .translation-details__body {
+  margin-top: 1em;
+  padding-left: 1em;
+  border-left: 2px solid rgba(148, 163, 184, 0.22);
+  color: #888;
+  font-size: 0.8em;
+}
+
+.prose .poem-body {
+  width: max-content;
+  max-width: 100%;
+  margin: 1.8rem auto 2.2rem;
+  font-family: var(--font-serif);
+  font-size: 1.18rem;
+  line-height: 1.9;
+  text-align: center;
+}
+
+.prose .poem-body p {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.prose .poem-body h2 {
+  margin-bottom: 3rem;
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.prose .poem-body__closing {
+  margin-top: 1.2rem;
+  color: var(--text);
+}
+
 .prose th,
 .prose td {
   padding: var(--s-2) var(--s-3);
@@ -102,5 +169,14 @@
     margin-left: calc(var(--s-2) * -1);
     padding: var(--s-4);
     border-radius: var(--r-sm);
+  }
+
+  .prose .poem-body {
+    width: auto;
+    font-size: 1.08rem;
+  }
+
+  .prose .poem-body p {
+    white-space: normal;
   }
 }

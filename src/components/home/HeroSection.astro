@@ -6,150 +6,503 @@ type Props = {
 };
 
 const { site } = Astro.props;
-const socials = [
-  ['github', site.socials.github, '@enderjones'],
-  ['x', site.socials.twitter, '@enderjones'],
-  ['email', site.socials.email, 'hi@...'],
-].filter((item): item is [string, string, string] => Boolean(item[1]));
+const portrait = site.hero_portrait ?? site.avatar;
 ---
 
-<article class="home-hero" aria-label="First impression">
-  <img class="home-hero__photo" src={site.avatar} alt="" loading="eager" />
-  <div class="home-hero__shade" aria-hidden="true"></div>
+<article class="identity-console" aria-label="Identity">
+  <div class="identity-terminal">
+    <div class="identity-terminal__bar" aria-hidden="true">
+      <span class="identity-terminal__dot identity-terminal__dot--red"></span>
+      <span class="identity-terminal__dot identity-terminal__dot--yellow"></span>
+      <span class="identity-terminal__dot identity-terminal__dot--green"></span>
+      <span class="identity-terminal__title">ender@lovely_daughter:~/Blog - zsh</span>
+    </div>
 
-  <div class="home-hero__body">
-    <h1>
-      <span class="home-hero__name">EnderJones</span><span class="blink-cursor" aria-hidden="true">_</span>
-    </h1>
-    <p class="home-hero__role">
-      {site.role} in {site.location}, researching <b>affective computing</b> and
-      <b> multi-modal physiological signals</b>.
-    </p>
+    <div class="identity-terminal__grid">
+      <span class="line-no" aria-hidden="true">01</span>
+      <p class="line-body command"><span>&gt;</span> cat profile.md</p>
 
-    <nav class="home-hero__links" aria-label="Primary contact links">
-      {
-        socials.map(([label, href, value]) => (
-          <a href={href}>
-            <span>{label}</span>
-            <small>{value}</small>
-          </a>
-        ))
-      }
-    </nav>
+      <span class="line-no" aria-hidden="true">02</span>
+      <p class="line-body kv"><span>name</span> <strong>{site.name}</strong></p>
+
+      <span class="line-no" aria-hidden="true">03</span>
+      <p class="line-body kv"><span>role</span> <b>PhD Candidate · Affective Computing</b></p>
+
+      <span class="line-no" aria-hidden="true">04</span>
+      <p class="line-body kv"><span>focus</span> <mark>Contactless Stress Estimation</mark></p>
+
+      <span class="line-no" aria-hidden="true">05</span>
+      <p class="line-body kv">
+        <span>stack</span>
+        <code>PyTorch</code> <i>·</i> <code>Time-series</code> <i>·</i> <code>Multimodal ML</code>
+      </p>
+
+      <span class="line-no" aria-hidden="true">06</span>
+      <div class="line-body blank" aria-hidden="true"></div>
+
+      <span class="line-no" aria-hidden="true">07</span>
+      <p class="line-body command"><span>&gt;</span> grep -i thesis research.md</p>
+
+      <span class="line-no" aria-hidden="true">08</span>
+      <div class="line-body blank" aria-hidden="true"></div>
+
+      <span class="line-no" aria-hidden="true">09</span>
+      <p class="line-body quote">&gt; estimating graded stress from facial video, rPPG, EDA, and behavior signals.</p>
+
+      <span class="line-no" aria-hidden="true">10</span>
+      <div class="line-body blank" aria-hidden="true"></div>
+
+      <span class="line-no" aria-hidden="true">11</span>
+      <p class="line-body command"><span>&gt;</span> ls ./working-set</p>
+
+      <span class="line-no" aria-hidden="true">12</span>
+      <div class="line-body blank" aria-hidden="true"></div>
+
+      <span class="line-no" aria-hidden="true">13</span>
+      <p class="line-body kv">
+        <span>signals</span>
+        <code>rPPG</code> <i>·</i> <code>EDA</code> <i>·</i> <code>HRV</code> <i>·</i>
+        <code>landmarks</code> <i>·</i> <code>gaze</code>
+      </p>
+
+      <span class="line-no" aria-hidden="true">14</span>
+      <p class="line-body kv">
+        <span>models</span>
+        <code>CCT-LSTM</code> <i>·</i> <code>multimodal fusion</code> <i>·</i>
+        <code>sequence modeling</code>
+      </p>
+
+      <span class="line-no" aria-hidden="true">15</span>
+      <p class="line-body kv">
+        <span>tools</span>
+        <code>pytorch</code> <i>·</i> <code>neurokit2</code> <i>·</i> <code>linux</code>
+        <i>·</i> <code>reproducible experiments</code>
+      </p>
+
+      <span class="line-no" aria-hidden="true">16</span>
+      <p class="line-body kv">
+        <span>langs</span>
+        <code>Chinese</code> <i>·</i> <code>English</code> <i>·</i> <code>Japanese</code>
+      </p>
+
+      <span class="line-no" aria-hidden="true">17</span>
+      <p class="line-body prompt"><span>&gt;</span> <b></b></p>
+    </div>
   </div>
+
+  <aside class="identity-portrait" aria-label="Author portrait">
+    <div class="identity-portrait__frame">
+      <span class="corner corner--tl" aria-hidden="true"></span>
+      <span class="corner corner--tr" aria-hidden="true"></span>
+      <span class="corner corner--bl" aria-hidden="true"></span>
+      <span class="corner corner--br" aria-hidden="true"></span>
+      <img src={portrait} alt={`${site.name} avatar`} loading="eager" />
+    </div>
+
+    <div class="identity-portrait__caption">
+      <p>"decoding stress from physiological traces."</p>
+      <a href="/about/">reach_me.sh →</a>
+    </div>
+  </aside>
 </article>
 
 <style>
-  .home-hero {
-    position: relative;
-    min-height: 340px;
+  .identity-console {
+    display: grid;
+    grid-template-columns: minmax(0, 2.1fr) minmax(300px, 0.9fr);
+    gap: clamp(var(--s-4), 2vw, var(--s-6));
+    min-height: clamp(520px, 39vw, 550px);
+  }
+
+  .identity-terminal,
+  .identity-portrait {
     overflow: hidden;
-    border: 1px solid rgba(244, 114, 182, 0.18);
-    border-radius: var(--r-lg);
-    background: var(--surface);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    border-radius: var(--r-xl);
+    background: rgba(5, 8, 14, 0.86);
     box-shadow:
-      0 0 28px rgba(244, 114, 182, 0.05),
-      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      0 0 34px rgba(2, 8, 23, 0.54),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    transition:
+      border-color 90ms ease,
+      box-shadow 90ms ease;
   }
 
-  .home-hero__photo,
-  .home-hero__shade {
+  .identity-terminal {
+    display: grid;
+    grid-template-rows: 50px 1fr;
+    background: transparent;
+  }
+
+  .identity-terminal:hover {
+    border-color: rgba(148, 163, 184, 0.2);
+    box-shadow:
+      0 0 34px rgba(2, 8, 23, 0.54),
+      0 0 18px rgba(148, 163, 184, 0.055),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .identity-terminal__bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 28px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+    background: rgba(4, 6, 11, 0.94);
+  }
+
+  .identity-terminal__dot {
+    width: 13px;
+    height: 13px;
+    border-radius: 999px;
+  }
+
+  .identity-terminal__dot--red {
+    background: #ff5f57;
+    box-shadow: 0 0 8px rgba(255, 95, 87, 0.36);
+  }
+
+  .identity-terminal__dot--yellow {
+    background: #ffbd2e;
+    box-shadow: 0 0 8px rgba(255, 189, 46, 0.28);
+  }
+
+  .identity-terminal__dot--green {
+    background: #28c840;
+    box-shadow: 0 0 8px rgba(40, 200, 64, 0.3);
+  }
+
+  .identity-terminal__title {
     position: absolute;
-    inset: 0;
+    right: 0;
+    left: 0;
+    color: rgba(139, 149, 161, 0.68);
+    font-family: var(--font-mono);
+    font-size: clamp(12px, 1vw, 15px);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-align: center;
   }
 
-  .home-hero__photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center 30%;
-    filter: brightness(0.3) saturate(0.45);
-  }
-
-  .home-hero__shade {
+  .identity-terminal__grid {
+    display: grid;
+    grid-template-columns: 78px minmax(0, 1fr);
+    grid-auto-rows: minmax(25px, auto);
+    align-content: start;
+    padding: 14px 44px 34px 0;
+    border-left: 1px solid rgba(148, 163, 184, 0.055);
     background:
-      linear-gradient(180deg, rgba(7, 9, 18, 0.4), transparent 60%),
-      linear-gradient(180deg, rgba(7, 9, 18, 0.08), rgba(7, 9, 18, 0.54) 46%, rgba(7, 9, 18, 0.98) 94%);
+      radial-gradient(720px 340px at 78% 0%, rgba(56, 189, 248, 0.018), transparent 62%),
+      rgba(0, 0, 0, 0.82);
+    font-family: var(--font-mono);
   }
 
-  .home-hero__body {
-    position: absolute;
-    z-index: 2;
-    right: clamp(var(--s-6), 5vw, var(--s-10));
-    bottom: clamp(var(--s-6), 5vw, var(--s-8));
-    left: clamp(var(--s-6), 5vw, var(--s-10));
-  }
-
-  .home-hero h1 {
-    margin: 0;
-    font-size: clamp(36px, 3.8vw, 48px);
-    font-weight: 800;
-    letter-spacing: -0.025em;
-    line-height: 0.92;
-    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
-  }
-
-  .home-hero__name {
-    color: var(--accent-pink);
-    filter: drop-shadow(0 0 24px rgba(244, 114, 182, 0.22));
-  }
-
-  .home-hero h1 .blink-cursor {
-    color: var(--accent-pink);
-  }
-
-  .home-hero__role {
-    max-width: 620px;
-    margin: var(--s-5) 0 0;
-    color: #e8eaed;
-    font-size: 16px;
-    font-weight: 300;
-    line-height: 1.55;
-    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
-  }
-
-  .home-hero__role b {
-    color: var(--accent-teal);
+  .line-no {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid rgba(148, 163, 184, 0.055);
+    color: rgba(107, 119, 133, 0.56);
+    font-size: clamp(12px, 1.05vw, 16px);
     font-weight: 500;
   }
 
-  .home-hero__links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-2);
-    margin-top: var(--s-6);
+  .line-body {
+    min-width: 0;
+    margin: 0;
+    padding-left: clamp(var(--s-5), 2.8vw, var(--s-8));
+    color: rgba(222, 229, 237, 0.88);
+    font-size: clamp(12px, 1.05vw, 16px);
+    letter-spacing: 0.01em;
+    line-height: 1.5;
   }
 
-  .home-hero__links a {
-    display: inline-flex;
-    align-items: baseline;
-    gap: var(--s-2);
-    padding: 4px 11px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 999px;
-    background: rgba(7, 8, 9, 0.55);
-    color: var(--text-muted);
+  .command {
+    color: rgba(238, 242, 247, 0.92);
+    font-weight: 650;
+  }
+
+  .command span,
+  .prompt span {
+    margin-right: 12px;
+    color: rgba(244, 114, 182, 0.9);
+    text-shadow: 0 0 10px rgba(244, 114, 182, 0.32);
+  }
+
+  .kv {
+    color: rgba(213, 221, 230, 0.84);
+  }
+
+  .kv > span {
+    display: inline-block;
+    min-width: 104px;
+    color: rgba(107, 119, 133, 0.62);
+  }
+
+  .kv strong {
+    color: rgba(244, 114, 182, 0.9);
+    font-family: var(--font-serif);
+    font-size: clamp(18px, 1.65vw, 24px);
+    font-style: italic;
+    font-weight: 800;
+    letter-spacing: 0;
+  }
+
+  .kv b {
+    color: rgba(226, 232, 240, 0.9);
+    font-weight: 560;
+  }
+
+  .kv em {
+    color: rgba(166, 173, 182, 0.86);
+    font-style: normal;
+  }
+
+  .kv mark {
+    background: transparent;
+    color: rgba(125, 211, 252, 0.84);
+  }
+
+  .kv code {
+    color: rgba(194, 204, 214, 0.88);
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  .kv i {
+    margin: 0 8px;
+    color: rgba(107, 119, 133, 0.64);
+    font-style: normal;
+  }
+
+  .quote {
+    color: rgba(196, 204, 214, 0.86);
+    font-size: clamp(12px, 1vw, 15px);
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  .prompt b {
+    display: inline-block;
+    width: 12px;
+    height: 2px;
+    transform: translateY(4px);
+    background: rgba(244, 114, 182, 0.95);
+    box-shadow: 0 0 10px rgba(244, 114, 182, 0.42);
+    animation: blink 1s step-end infinite;
+  }
+
+  .identity-portrait {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    padding: clamp(var(--s-4), 2vw, var(--s-5));
+    border-color: rgba(148, 163, 184, 0.12);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0.004)),
+      rgba(6, 9, 16, 0.94);
+  }
+
+  .identity-portrait:hover {
+    border-color: rgba(148, 163, 184, 0.2);
+    box-shadow:
+      0 0 34px rgba(2, 8, 23, 0.54),
+      0 0 18px rgba(148, 163, 184, 0.055),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .identity-portrait__frame {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: var(--r-md);
+    background: #070a11;
+    box-shadow:
+      0 0 22px rgba(2, 8, 23, 0.26),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    transition:
+      border-color 90ms ease,
+      box-shadow 90ms ease;
+  }
+
+  .identity-portrait:hover .identity-portrait__frame {
+    border-color: rgba(148, 163, 184, 0.21);
+    box-shadow:
+      0 0 22px rgba(148, 163, 184, 0.055),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .identity-portrait__frame::after {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(3, 7, 18, 0.1), rgba(3, 7, 18, 0.38)),
+      radial-gradient(420px 220px at 50% 0%, rgba(56, 189, 248, 0.06), transparent 68%);
+    content: '';
+    pointer-events: none;
+  }
+
+  .identity-portrait__frame img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: cover;
+    object-position: center center;
+    filter: brightness(0.74) saturate(0.54) contrast(1.05);
+  }
+
+  .corner {
+    position: absolute;
+    z-index: 2;
+    width: 24px;
+    height: 24px;
+    opacity: 0.58;
+  }
+
+  .corner--tl {
+    top: 16px;
+    left: 16px;
+    border-top: 1px solid rgba(148, 163, 184, 0.58);
+    border-left: 1px solid rgba(148, 163, 184, 0.58);
+  }
+
+  .corner--tr {
+    top: 16px;
+    right: 16px;
+    border-top: 1px solid rgba(148, 163, 184, 0.58);
+    border-right: 1px solid rgba(148, 163, 184, 0.58);
+  }
+
+  .corner--bl {
+    bottom: 16px;
+    left: 16px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.58);
+    border-left: 1px solid rgba(148, 163, 184, 0.58);
+  }
+
+  .corner--br {
+    right: 16px;
+    bottom: 16px;
+    border-right: 1px solid rgba(148, 163, 184, 0.58);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.58);
+  }
+
+  .identity-portrait__caption {
+    display: grid;
+    gap: var(--s-3);
+    padding: var(--s-4) 8px 2px;
+    border-top: 1px solid rgba(148, 163, 184, 0.08);
+  }
+
+  .identity-portrait__caption p {
+    margin: 0;
+    color: rgba(177, 186, 196, 0.74);
+    font-family: var(--font-serif);
+    font-size: clamp(15px, 1.25vw, 18px);
+    font-style: italic;
+    line-height: 1.3;
+  }
+
+  .identity-portrait__caption a {
+    color: rgba(125, 211, 252, 0.78);
     font-family: var(--font-mono);
-    font-size: 11px;
-    backdrop-filter: blur(8px);
+    font-size: clamp(13px, 1.15vw, 17px);
+    font-weight: 700;
+    letter-spacing: 0.05em;
   }
 
-  .home-hero__links small {
-    color: var(--accent-blue);
-    font-size: 11px;
+  @media (max-width: 1120px) {
+    .identity-console {
+      grid-template-columns: 1fr;
+    }
+
+    .identity-portrait {
+      grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1fr);
+      grid-template-rows: auto;
+      align-items: stretch;
+    }
+
+    .identity-portrait__frame img {
+      min-height: 320px;
+    }
+
+    .identity-portrait__caption {
+      align-content: end;
+      border-top: 0;
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+      padding: var(--s-5);
+    }
   }
 
   @media (max-width: 720px) {
-    .home-hero {
-      min-height: 380px;
+    .identity-console {
+      min-height: 0;
     }
 
-    .home-hero h1 {
-      font-size: clamp(38px, 12vw, 50px);
+    .identity-terminal {
+      grid-template-rows: 52px 1fr;
+      border-radius: var(--r-lg);
     }
 
-    .home-hero__role {
-      font-size: 15px;
+    .identity-terminal__bar {
+      padding: 0 16px;
+    }
+
+    .identity-terminal__dot {
+      width: 12px;
+      height: 12px;
+    }
+
+    .identity-terminal__title {
+      font-size: 12px;
+    }
+
+    .identity-terminal__grid {
+      grid-template-columns: 42px minmax(0, 1fr);
+      grid-auto-rows: minmax(30px, auto);
+      padding: var(--s-5) var(--s-4) var(--s-5) 0;
+    }
+
+    .line-no {
+      font-size: 12px;
+    }
+
+    .line-body {
+      padding-left: var(--s-4);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .kv > span {
+      min-width: 64px;
+    }
+
+    .kv strong {
+      font-size: 20px;
+    }
+
+    .identity-portrait {
+      grid-template-columns: 1fr;
+      padding: var(--s-3);
+      border-radius: var(--r-lg);
+    }
+
+    .identity-portrait__frame {
+      aspect-ratio: 1 / 1;
+    }
+
+    .identity-portrait__frame img {
+      min-height: 0;
+    }
+
+    .identity-portrait__caption {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-left: 0;
+      padding: var(--s-4) var(--s-2) var(--s-1);
     }
   }
 </style>

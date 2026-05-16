@@ -3,12 +3,8 @@ import SectionLabel from '../ui/SectionLabel.astro';
 import SectionMarker from '../ui/SectionMarker.astro';
 import { formatPostDate, getReadingStats, postHref, type PostEntry } from '../../lib/content';
 
-type FeaturedSource = 'selected' | 'pinned' | 'latest' | 'startHere';
-
 type Props = {
-  featured: PostEntry | null;
   posts: PostEntry[];
-  source: FeaturedSource;
 };
 
 const { posts } = Astro.props;
@@ -147,7 +143,7 @@ function truncateText(text: string, limit: number) {
       </div>
 
       <div class="post-drum__foot">
-        <span>⇅ wheel / tap</span>
+        <span>wheel / tap</span>
         <a href="/posts/">all writing →</a>
       </div>
     </aside>
@@ -423,7 +419,7 @@ function truncateText(text: string, limit: number) {
   }
 
   .home-writing__grid {
-    --writing-panel-height: clamp(330px, 26vw, 364px);
+    --writing-panel-height: clamp(396px, 31vw, 437px);
 
     display: grid;
     min-height: 0;
@@ -440,12 +436,22 @@ function truncateText(text: string, limit: number) {
     border-radius: var(--r-lg);
     background: var(--surface);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    transition:
+      border-color 90ms ease,
+      box-shadow 90ms ease;
   }
 
   .post-drum {
     display: flex;
     border: 1px solid rgba(56, 189, 248, 0.18);
     flex-direction: column;
+  }
+
+  .post-drum:hover {
+    border-color: rgba(56, 189, 248, 0.28);
+    box-shadow:
+      0 0 18px rgba(56, 189, 248, 0.07),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   .post-drum__top,
@@ -684,7 +690,13 @@ function truncateText(text: string, limit: number) {
     display: grid;
     grid-template-columns: minmax(230px, 0.88fr) minmax(0, 1.12fr);
     border: 1px solid rgba(244, 114, 182, 0.22);
-    transition: border-color 0.32s, box-shadow 0.32s;
+  }
+
+  .preview-card:hover {
+    border-color: rgba(244, 114, 182, 0.32);
+    box-shadow:
+      0 0 18px rgba(244, 114, 182, 0.075),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   .preview-card__cover {
@@ -890,7 +902,7 @@ function truncateText(text: string, limit: number) {
     }
 
     .home-writing__grid {
-      --writing-panel-height: 380px;
+      --writing-panel-height: 456px;
     }
   }
 
@@ -911,7 +923,7 @@ function truncateText(text: string, limit: number) {
 
   @media (max-width: 560px) {
     .home-writing__grid {
-      --writing-panel-height: 352px;
+      --writing-panel-height: 410px;
     }
 
     .post-drum__top,

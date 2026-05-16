@@ -1,9 +1,42 @@
-<div class="site-backdrop" aria-hidden="true"></div>
+<div class="site-backdrop" aria-hidden="true">
+  <span class="site-backdrop__glow site-backdrop__glow--pink" data-parallax-glow data-depth="0.34"></span>
+  <span class="site-backdrop__glow site-backdrop__glow--blue" data-parallax-glow data-depth="0.43"></span>
+  <span class="site-backdrop__glow site-backdrop__glow--teal" data-parallax-glow data-depth="0.28"></span>
+</div>
+
+<script is:inline>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const glows = [...document.querySelectorAll('[data-parallax-glow]')];
+  let ticking = false;
+
+  function updateBackdrop() {
+    ticking = false;
+    if (reduceMotion.matches) {
+      for (const glow of glows) glow.style.transform = 'none';
+      return;
+    }
+
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+
+    for (const glow of glows) {
+      const depth = Number(glow.getAttribute('data-depth') || 0.35);
+      glow.style.transform = `translate3d(0, ${scrollY * depth * -1}px, 0)`;
+    }
+  }
+
+  function requestBackdropUpdate() {
+    if (ticking || reduceMotion.matches) return;
+    ticking = true;
+    window.requestAnimationFrame(updateBackdrop);
+  }
+
+  updateBackdrop();
+  window.addEventListener('scroll', requestBackdropUpdate, { passive: true });
+  reduceMotion.addEventListener('change', updateBackdrop);
+</script>
 
 <style>
-  .site-backdrop,
-  .site-backdrop::before,
-  .site-backdrop::after {
+  .site-backdrop {
     position: fixed;
     top: 0;
     right: 0;
@@ -13,9 +46,6 @@
     height: 100dvh;
     min-height: 100lvh;
     pointer-events: none;
-  }
-
-  .site-backdrop {
     overflow: hidden;
     background-image:
       linear-gradient(to right, rgba(148, 163, 184, 0.025) 1px, transparent 1px),
@@ -23,68 +53,37 @@
     background-size: 44px 44px;
   }
 
-  .site-backdrop::before,
-  .site-backdrop::after {
-    content: '';
+  .site-backdrop__glow {
+    position: absolute;
+    display: block;
+    pointer-events: none;
+    will-change: transform;
   }
 
-  .site-backdrop::before {
+  .site-backdrop__glow--pink {
+    top: 24vh;
+    left: -18vw;
+    width: 78vw;
+    height: 72vh;
     opacity: 0.045;
-    background: radial-gradient(75vw 70vh at 0% 100%, rgba(244, 114, 182, 0.9), transparent 68%);
-    animation: pink-glow-wander 78s ease-in-out infinite;
-    will-change: transform;
+    background: radial-gradient(closest-side, rgba(244, 114, 182, 0.9), transparent 68%);
   }
 
-  .site-backdrop::after {
+  .site-backdrop__glow--blue {
+    top: 52vh;
+    right: -16vw;
+    width: 72vw;
+    height: 64vh;
     opacity: 0.03;
-    background: radial-gradient(70vw 62vh at 100% 0%, rgba(56, 189, 248, 0.62), transparent 68%);
-    animation: blue-glow-wander 84s ease-in-out -42s infinite;
-    will-change: transform;
+    background: radial-gradient(closest-side, rgba(56, 189, 248, 0.62), transparent 68%);
   }
 
-  @keyframes pink-glow-wander {
-    0%,
-    100% {
-      transform: translate3d(-4%, 2%, 0) scale(1);
-    }
-
-    28% {
-      transform: translate3d(6%, -4%, 0) scale(1.025);
-    }
-
-    54% {
-      transform: translate3d(8%, 5%, 0) scale(0.99);
-    }
-
-    78% {
-      transform: translate3d(-7%, -5%, 0) scale(1.015);
-    }
-  }
-
-  @keyframes blue-glow-wander {
-    0%,
-    100% {
-      transform: translate3d(5%, -3%, 0) scale(1);
-    }
-
-    26% {
-      transform: translate3d(-7%, 4%, 0) scale(1.02);
-    }
-
-    52% {
-      transform: translate3d(-4%, -6%, 0) scale(0.99);
-    }
-
-    80% {
-      transform: translate3d(8%, 5%, 0) scale(1.015);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .site-backdrop::before,
-    .site-backdrop::after {
-      animation: none;
-      transform: none;
-    }
+  .site-backdrop__glow--teal {
+    top: 122vh;
+    left: 18vw;
+    width: 68vw;
+    height: 62vh;
+    opacity: 0.025;
+    background: radial-gradient(closest-side, rgba(93, 202, 165, 0.58), transparent 70%);
   }
 </style>

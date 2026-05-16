@@ -23,8 +23,8 @@ const wordLabel = typeof wordCount === 'number' ? wordCount.toLocaleString('en')
     <details class="post-toc post-toc--details">
       <summary>On this page</summary>
       <ol>
-        {tocHeadings.map((heading, index) => (
-          <li class={`post-toc__item post-toc__item--${heading.depth} ${index === 1 ? 'is-active' : ''}`}>
+        {tocHeadings.map((heading) => (
+          <li class={`post-toc__item post-toc__item--${heading.depth}`}>
             <a href={`#${heading.slug}`}>{heading.text}</a>
           </li>
         ))}
@@ -39,8 +39,8 @@ const wordLabel = typeof wordCount === 'number' ? wordCount.toLocaleString('en')
       <nav aria-label="Table of contents">
         <p>On this page</p>
         <ol>
-          {tocHeadings.map((heading, index) => (
-            <li class={`post-toc__item post-toc__item--${heading.depth} ${index === 1 ? 'is-active' : ''}`}>
+          {tocHeadings.map((heading) => (
+            <li class={`post-toc__item post-toc__item--${heading.depth}`}>
               <a href={`#${heading.slug}`}>{heading.text}</a>
             </li>
           ))}
@@ -51,10 +51,7 @@ const wordLabel = typeof wordCount === 'number' ? wordCount.toLocaleString('en')
         {wordLabel && <span>{wordLabel} words</span>}
         {readingMinutes && <span>{readingMinutes} min read</span>}
         {i18nHref && <a href={i18nHref}>↳ 中文 version</a>}
-        <span>↳ Share · cite · raw</span>
       </div>
-
-      <p class="post-toc__note">TOC visible ≥ 1024px · collapses to ▾ on mobile</p>
     </aside>
   )
 }
@@ -98,23 +95,6 @@ const wordLabel = typeof wordCount === 'number' ? wordCount.toLocaleString('en')
     position: relative;
   }
 
-  .post-toc__item.is-active::before {
-    content: '';
-    position: absolute;
-    top: 0.25em;
-    bottom: 0.25em;
-    left: calc(var(--s-6) * -1 - 1px);
-    width: 3px;
-    border-radius: 999px;
-    background: var(--accent-pink);
-    box-shadow: 0 0 14px rgba(244, 114, 182, 0.5);
-  }
-
-  .post-toc__item.is-active a {
-    color: #fff;
-    font-weight: 700;
-  }
-
   .post-toc__item--3 {
     padding-left: var(--s-3);
   }
@@ -136,16 +116,6 @@ const wordLabel = typeof wordCount === 'number' ? wordCount.toLocaleString('en')
 
   .post-toc__meta a {
     color: var(--accent-blue);
-  }
-
-  .post-toc__note {
-    margin-top: var(--s-10);
-    color: color-mix(in srgb, var(--text-dim), transparent 35%);
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: 0;
-    line-height: 1.7;
-    text-transform: none;
   }
 
   .post-toc--details {

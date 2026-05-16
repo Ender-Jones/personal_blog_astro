@@ -7,11 +7,12 @@ type Props = {
 };
 
 const { post } = Astro.props;
+const hasImage = Boolean(post.data.image);
 ---
 
-<article class="post-row">
-  <time>{formatDate(post.data.date)}</time>
-  {post.data.image && <img src={post.data.image} alt="" aria-hidden="true" loading="lazy" />}
+<article class={hasImage ? 'post-row post-row--with-image' : 'post-row post-row--no-image'}>
+  <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+  {hasImage && <img src={post.data.image} alt="" aria-hidden="true" loading="lazy" />}
   <a href={postHref(post)}>
     <h3>{post.data.title}</h3>
     {post.data.description && <p>{post.data.description}</p>}
@@ -24,11 +25,18 @@ const { post } = Astro.props;
 <style>
   .post-row {
     display: grid;
-    grid-template-columns: 112px 86px minmax(0, 1fr) auto;
     gap: var(--s-5);
     align-items: center;
     padding: var(--s-5) var(--s-6);
     border-bottom: 1px solid var(--border);
+  }
+
+  .post-row--with-image {
+    grid-template-columns: 112px 86px minmax(0, 1fr) auto;
+  }
+
+  .post-row--no-image {
+    grid-template-columns: 112px minmax(0, 1fr) auto;
   }
 
   .post-row:hover {

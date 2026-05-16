@@ -1,58 +1,29 @@
 ---
 import { getCollection } from 'astro:content';
 import ActivityEvidence from '../components/home/ActivityEvidence.astro';
-import CurrentThreadCompact from '../components/home/CurrentThreadCompact.astro';
 import HeroSection from '../components/home/HeroSection.astro';
 import PersonalityContact from '../components/home/PersonalityContact.astro';
-import ResearchNowCard from '../components/home/ResearchNowCard.astro';
 import WritingSurface from '../components/home/WritingSurface.astro';
 import BaseLayout from '../components/layout/BaseLayout.astro';
 import SectionMarker from '../components/ui/SectionMarker.astro';
-import { byDateDesc, type PostEntry } from '../lib/content';
-import { quotes, research, site } from '../lib/data';
+import { byDateDesc } from '../lib/content';
+import { quotes, site } from '../lib/data';
 import { getCurrentThread } from '../lib/parseWorklog';
-
-type FeaturedSource = 'selected' | 'pinned' | 'latest' | 'startHere';
 
 const posts = byDateDesc(await getCollection('posts'));
 const worklogs = await getCollection('worklogs');
 const currentThread = getCurrentThread(worklogs);
-const featured = resolveFeaturedPost(posts);
 const quote = quotes[new Date().getUTCDate() % quotes.length];
-
-function resolveFeaturedPost(items: PostEntry[]): { post: PostEntry | null; source: FeaturedSource } {
-  const selected = items.find((post) => post.data.selected);
-  if (selected) return { post: selected, source: 'selected' };
-
-  const pinned = items.find((post) => post.data.pinned);
-  if (pinned) return { post: pinned, source: 'pinned' };
-
-  const latest = items[0];
-  if (latest) return { post: latest, source: 'latest' };
-
-  const whoAmI = items.find((post) => post.id === 'who-am-i');
-  if (whoAmI) return { post: whoAmI, source: 'startHere' };
-
-  return { post: null, source: 'latest' };
-}
 ---
 
 <BaseLayout title={site.name} description={site.research_oneliner}>
   <main class="home-page">
     <section class="home-identity" aria-labelledby="identity-title">
-      <SectionMarker id="identity-title" number="01" name="IDENTITY" />
-
-      <div class="home-first">
-        <HeroSection site={site} />
-
-        <div class="home-first__support">
-          <ResearchNowCard research={research} />
-          <CurrentThreadCompact thread={currentThread} />
-        </div>
-      </div>
+      <SectionMarker id="identity-title" number="01" name="IDENTITY" tone="pink" />
+      <HeroSection site={site} />
     </section>
 
-    <WritingSurface featured={featured.post} posts={posts} source={featured.source} />
+    <WritingSurface posts={posts} />
 
     <ActivityEvidence thread={currentThread} posts={posts} site={site} />
 
@@ -74,43 +45,10 @@ function resolveFeaturedPost(items: PostEntry[]): { post: PostEntry | null; sour
     gap: var(--s-4);
   }
 
-  .home-first {
-    display: grid;
-    grid-auto-rows: 162px;
-    grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr);
-    gap: var(--s-4);
-    align-items: stretch;
-  }
-
-  .home-first__support {
-    display: grid;
-    grid-row: span 2;
-    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
-    gap: var(--s-4);
-  }
-
-  .home-first > :first-child {
-    grid-row: span 2;
-  }
-
   @media (max-width: 1060px) {
     .home-page {
       width: min(100% - 32px, 760px);
       gap: var(--s-12);
-    }
-
-    .home-first {
-      grid-template-columns: 1fr;
-      grid-auto-rows: auto;
-    }
-
-    .home-first__support {
-      grid-row: auto;
-      grid-template-rows: auto;
-    }
-
-    .home-first > :first-child {
-      grid-row: auto;
     }
   }
 
@@ -120,6 +58,5 @@ function resolveFeaturedPost(items: PostEntry[]): { post: PostEntry | null; sour
       gap: var(--s-10);
       padding-top: var(--s-6);
     }
-
   }
 </style>

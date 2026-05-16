@@ -7,15 +7,16 @@ type Props = {
 };
 
 const { post } = Astro.props;
+const hasImage = Boolean(post.data.image);
 ---
 
-<article class="pinned-hero">
-  {post.data.image && <img src={post.data.image} alt="" aria-hidden="true" loading="lazy" />}
+<article class={hasImage ? 'pinned-hero pinned-hero--with-image' : 'pinned-hero pinned-hero--no-image'}>
+  {hasImage && <img src={post.data.image} alt="" aria-hidden="true" loading="lazy" />}
   <a class="pinned-hero__body" href={postHref(post)}>
     <p>★ Pinned</p>
     <h3>{post.data.title}</h3>
     {post.data.description && <span>{post.data.description}</span>}
-    <small>{formatDate(post.data.date)}</small>
+    <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
   </a>
 </article>
 
@@ -23,11 +24,18 @@ const { post } = Astro.props;
   .pinned-hero {
     display: grid;
     overflow: hidden;
-    grid-template-columns: minmax(240px, 1.2fr) 1fr;
     margin-bottom: var(--s-4);
     border: 1px solid rgba(244, 114, 182, 0.14);
     border-radius: var(--r-lg);
     background: rgba(14, 16, 20, 0.86);
+  }
+
+  .pinned-hero--with-image {
+    grid-template-columns: minmax(240px, 1.2fr) 1fr;
+  }
+
+  .pinned-hero--no-image {
+    grid-template-columns: 1fr;
   }
 
   .pinned-hero img {
@@ -47,14 +55,14 @@ const { post } = Astro.props;
   }
 
   .pinned-hero p,
-  .pinned-hero small {
+  .pinned-hero time {
     margin: 0;
     color: var(--accent-pink);
     font-family: var(--font-mono);
     font-size: 11px;
   }
 
-  .pinned-hero small {
+  .pinned-hero time {
     color: var(--text-dim);
   }
 

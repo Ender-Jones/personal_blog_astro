@@ -39,7 +39,7 @@ At the core of regression evaluation is the concept of **residuals** - the diffe
 
 $$\text{Residual} = y_i - \hat{y}_i$$
 
-Where __$$y_i$$__ is the actual value and __$$\hat{y}_i$$__ is the predicted value.
+Where **$y_i$** is the actual value and **$\hat{y}_i$** is the predicted value.
 
 ### Bias and Error
 
@@ -87,7 +87,6 @@ $$\text{MAE} = \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i|$$
 - **Scale dependence**: Difficult to compare across different datasets
 
 > MAE is like a ruler that measures the average distance between predictions and reality, without caring about the direction of the error.
-{: .prompt-info }
 
 ### Mean Squared Error (MSE) and Root Mean Squared Error (RMSE)
 
@@ -112,7 +111,6 @@ $$\text{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}$$
 - **Unit variance**: Cannot directly compare across different datasets
 
 > If MAE is a ruler, then MSE is a magnifying glass that emphasizes larger errors. RMSE converts that magnified view back to the original scale.
-{: .prompt-info }
 
 ### Coefficient of Determination (R²)
 
@@ -123,8 +121,8 @@ R² represents the proportion of variance in the dependent variable that can be 
 $$R^2 = 1 - \frac{RSS}{TSS}$$
 
 Where:
-- RSS (Residual Sum of Squares): $$\sum(y_i - \hat{y}_i)^2$$
-- TSS (Total Sum of Squares): $$\sum(y_i - \bar{y})^2$$
+- RSS (Residual Sum of Squares): $\sum(y_i - \hat{y}_i)^2$
+- TSS (Total Sum of Squares): $\sum(y_i - \bar{y})^2$
 
 #### Interpretation:
 - Ranges typically from 0 to 1 (can be negative for very poor models)
@@ -143,7 +141,6 @@ Where:
 - **Not ideal for time series** or non-linear relationships
 
 > R² is like a school grade for your model - it tells you what percentage of the test your model got right, but doesn't tell you where it made mistakes.
-{: .prompt-info }
 
 ## Advanced Evaluation Metrics
 
@@ -244,7 +241,6 @@ Understanding regression model evaluation metrics is crucial for building effect
 Remember that the ultimate goal isn't just to optimize metrics but to create models that generalize well to new, unseen data and provide valuable insights for your specific problem.
 
 > In regression modeling, metrics are your compass, guiding you toward better predictions and deeper understanding of your data's story.
-{: .prompt-tip }
 
 ## References
 1. A Comprehensive Overview of Regression Evaluation Metrics, <https://developer.nvidia.com/blog/a-comprehensive-overview-of-regression-evaluation-metrics/#entry-content-comments>, By Eryk Lewinson

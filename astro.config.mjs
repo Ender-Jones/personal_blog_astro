@@ -1,5 +1,7 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
 import yaml from '@rollup/plugin-yaml';
 
 export default defineConfig({
@@ -9,6 +11,10 @@ export default defineConfig({
     enabled: false,
   },
   integrations: [mdx()],
+  markdown: {
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeKatex],
+  },
   vite: {
     plugins: [yaml()],
   },

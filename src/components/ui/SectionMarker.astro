@@ -3,12 +3,13 @@ type Props = {
   id?: string;
   name: string;
   number: string;
+  tone?: 'default' | 'pink';
 };
 
-const { id, name, number } = Astro.props;
+const { id, name, number, tone = 'default' } = Astro.props;
 ---
 
-<p class="section-marker" id={id}>
+<p class:list={['section-marker', `section-marker--${tone}`]} id={id}>
   <span>§ {number} ·</span>
   <b>{name}</b>
 </p>
@@ -33,5 +34,9 @@ const { id, name, number } = Astro.props;
   .section-marker b {
     color: var(--text-muted);
     font: inherit;
+  }
+
+  .section-marker--pink b {
+    color: rgba(244, 114, 182, 0.82);
   }
 </style>

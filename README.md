@@ -2,6 +2,9 @@
 
 Astro-based personal blog / research portfolio.
 
+Current direction: editorial notebook / research archive homepage, posts archive, post detail, worklog,
+tags, and about pages.
+
 ## Development
 
 This project is Docker-first to avoid polluting the local Node.js environment.
@@ -46,5 +49,6 @@ docker compose down -v
 
 - Dependencies live in Docker named volumes, not in a normal project `node_modules/`.
 - `reference/` is read-only design/content reference.
-- The current page is only a Phase 1 scaffold; the Bento homepage implementation has not started yet.
-
+- Homepage code lives in `src/pages/index.astro` and `src/components/home/`.
+- Post math is rendered statically with `remark-math`, `rehype-katex`, and KaTeX CSS.
+- Active runtime images live under `public/img/`; `public/assets/img/` is kept for favicons and migrated inline post images.
