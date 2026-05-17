@@ -155,6 +155,10 @@ function verifyNoRuntimeApis() {
     if (/\bfetch\s*\(|\bXMLHttpRequest\b|\baxios\b/.test(source)) {
       errors.push(`${relative(root, file)}: runtime API call found in built output.`);
     }
+
+    if (/\{:\s*[^}]+}/.test(source)) {
+      errors.push(`${relative(root, file)}: unrendered Kramdown attribute-list leaked into built output.`);
+    }
   }
 }
 

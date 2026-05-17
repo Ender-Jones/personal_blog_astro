@@ -79,7 +79,8 @@
 - 当前 GitHub 仓库 `Ender-Jones/personal_blog_astro` 已启用 Discussions；Giscus 使用真实 `General` category 配置，发布前仍需确认 Giscus app 已安装/授权到该 repo。
 - GitHub activity / commit wall 只能读取 build-time git history/cache snapshot；无 history 时必须显示空状态，不伪造 commit。
 - Worklog parser 只能读取 `public_thread` 或 `<!-- public:thread:start -->` block；不能把 raw worklog notes 自动上 Homepage。
-- Build 必须阻塞坏内容和坏产物：draft frontmatter、旧 Kramdown attr-list、坏图片/内链、空 public thread、无效 Marginalia、worklog comments、缺 tag metadata、runtime API calls、缺失部署文件、缺失生成路由、错误 sitemap/robots。
+- Build 必须阻塞坏内容和坏产物：draft frontmatter、未支持的 Kramdown attr-list、坏图片/内链、空 public thread、无效 Marginalia、worklog comments、缺 tag metadata、runtime API calls、缺失部署文件、缺失生成路由、错误 sitemap/robots。
+- 旧站 Markdown 迁移必须保留可见语义；目前受控支持 Chirpy prompt attr-list 与图片 `width`/`height`/`.w-*`/`.left`/`.right`，用于复现旧站 admonition 和图片位置，未支持的 attr-list 必须阻塞 build。
 
 ## 性能优化结论
 
@@ -126,7 +127,7 @@
   - `strip`
   - `none`
 - 不加入 `inline` cover mode。
-- Markdown 内容文件不要内嵌 `<style>`、inline style 或 Chirpy/Kramdown attribute-list 行。
+- Markdown 内容文件不要内嵌 `<style>` 或 inline style；旧 Chirpy/Kramdown attr-list 只允许已在 markdown pipeline 中显式支持的 prompt/image 布局语义。
 
 ## 内容与图片
 

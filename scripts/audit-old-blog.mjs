@@ -16,13 +16,20 @@ if (!oldBlogRoot) {
   process.exit(1);
 }
 
-const oldPosts = listMarkdown(join(oldBlogRoot, '_posts')).map(readOldPost);
+const oldPostEntries = listContentFiles(join(oldBlogRoot, '_posts')).map(readOldPost);
+const oldPosts = oldPostEntries.filter((entry) => entry.date);
+const oldDrafts = [
+  ...oldPostEntries.filter((entry) => !entry.date),
+  ...listContentFiles(join(oldBlogRoot, '_drafts')).map(readOldPost),
+].filter((entry) => entry.title);
 const newPosts = listMarkdown(join(newBlogRoot, 'src/content/posts')).map(readNewEntry);
 const oldWorklogs = listMarkdown(join(oldBlogRoot, '_worklogs')).map(readOldWorklog);
 const newWorklogs = listMarkdown(join(newBlogRoot, 'src/content/worklogs')).map(readNewEntry);
+const newDrafts = listMarkdown(join(newBlogRoot, 'drafts')).map(readNewEntry).filter((entry) => entry.title);
 
 compareEntries('post', oldPosts, newPosts);
 compareEntries('worklog', oldWorklogs, newWorklogs);
+compareDrafts(oldDrafts, newDrafts);
 
 if (errors.length > 0) {
   console.error('Old blog audit failed:');
@@ -30,11 +37,22 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Old blog audit passed: ${oldPosts.length} posts, ${oldWorklogs.length} worklogs.`);
+console.log(`Old blog audit passed: ${oldPosts.length} posts, ${oldWorklogs.length} worklogs, ${oldDrafts.length} drafts.`);
 
 function listMarkdown(dir) {
+  if (!existsSync(dir)) return [];
+
   return readdirSync(dir)
     .filter((name) => name.endsWith('.md'))
+    .map((name) => join(dir, name))
+    .sort();
+}
+
+function listContentFiles(dir) {
+  if (!existsSync(dir)) return [];
+
+  return readdirSync(dir)
+    .filter((name) => !name.startsWith('.') && !name.endsWith('~'))
     .map((name) => join(dir, name))
     .sort();
 }
@@ -93,12 +111,22 @@ function compareEntries(kind, oldEntries, newEntries) {
   }
 }
 
+function compareDrafts(oldEntries, newEntries) {
+  const newByTitle = new Map(newEntries.map((entry) => [normalize(entry.title), entry]));
+
+  for (const oldEntry of oldEntries) {
+    if (!newByTitle.has(normalize(oldEntry.title))) {
+      errors.push(`missing draft: ${oldEntry.title}`);
+    }
+  }
+}
+
 function readFrontmatter(file) {
   return readFileSync(file, 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
 }
 
 function readField(frontmatter, key) {
-  return frontmatter.match(new RegExp(`^${key}:\\s*[\"']?(.+?)[\"']?\\s*$`, 'm'))?.[1]?.trim() ?? '';
+  return frontmatter.match(new RegExp(`^${key}:[ \\t]*[\"']?([^\\r\\n]*?)[\"']?[ \\t]*$`, 'm'))?.[1]?.trim() ?? '';
 }
 
 function readDate(frontmatter) {

@@ -101,7 +101,8 @@ Comments use Giscus with GitHub Discussions and stay opt-in per post.
 - Markdown admonitions use `:::info`, `:::tip`, `:::note`, `:::warning`, and `:::danger`.
 - Homepage Marginalia reads only post frontmatter; quote-style entries use `marginalia.quote.lines` with optional `author`, `work`, and `year`.
 - `npm run build` validates source content, type checks Astro, builds static output, then verifies the deployable `dist/` artifact.
-- Source validation blocks old Kramdown attributes, inline styles, bad images, broken internal links, empty public thread blocks, invalid Marginalia, worklog comments, missing Giscus config for enabled comments, missing tag metadata, runtime API calls, and unsupported `draft:` frontmatter.
+- Source validation blocks unsupported Kramdown attributes, inline styles, bad images, broken internal links, empty public thread blocks, invalid Marginalia, worklog comments, missing Giscus config for enabled comments, missing tag metadata, runtime API calls, and unsupported `draft:` frontmatter`.
+- The Markdown pipeline preserves supported Chirpy/Kramdown migration semantics for prompt blocks and image layout attributes such as `.w-50`, `.w-75`, `.left`, `.right`, `width`, and `height`.
 - Artifact verification checks required deploy files, generated routes, sitemap/robots, Homepage Marginalia output, Giscus output rules, and runtime API calls in built HTML/JS.
 - Unfinished writing belongs in root `drafts/`, not `src/content`; no `draft: true` publishing path is used.
 - The working old blog reference is `/Users/ender/Documents/Git/Ender-Jones.github.io`; this new site targets the same final domain.

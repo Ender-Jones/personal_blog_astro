@@ -4,7 +4,7 @@ status: incomplete
 source: /Users/ender/Documents/Git/Ender-Jones.github.io/_posts/2026-05-13-Context-file-management
 ---
 
-This is a draft placeholder for a future article about managing AI context files in codebases and research folders.
+This will be an article about how I manage my project's AI context file in codebase/research folder.
 
 Required before publishing:
 

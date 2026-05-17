@@ -1,7 +1,7 @@
 ---
 title: "Regression Model Evaluation Metrics: MAE, MSE, RMSE, and R² Explained"
 date: 2025-05-08T18:23:00+09:00
-description: "A comprehensive guide to key regression model evaluation metrics: MAE, MSE, RMSE, and R²."
+description: "A comprehensive guide to key regression model evaluation metrics. Understand the differences, advantages, and limitations of MAE, MSE, RMSE, and R² to choose the right metric for your machine learning projects."
 kind: research-note
 tags:
   - "AI"

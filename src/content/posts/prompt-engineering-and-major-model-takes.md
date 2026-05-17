@@ -1,7 +1,7 @@
 ---
 title: "My Take on Prompt Engineering and Major AI Models"
 date: 2025-09-01T22:49:00+09:00
-description: "A pragmatic look at prompt engineering, practical techniques, and a personal comparison of today's leading AI models."
+description: "A pragmatic look at prompt engineering, with practical techniques and a personal comparison of today's leading AI models like Claude, GPT, and Gemini."
 tags:
   - "AI"
   - "Prompt Engineering"
