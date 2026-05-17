@@ -180,7 +180,7 @@ function verifyHomepageMarginalia() {
     errors.push('dist/index.html: Marginalia image CSS variable is missing or not root-relative.');
   }
 
-  if (homepage.includes('Everything that comes from weakness.</blockquote>') || homepage.includes("J'aime les nuages")) {
+  if (homepage.includes('Everything that comes from weakness.</blockquote>')) {
     errors.push('dist/index.html: old standalone quote data leaked into Homepage Marginalia.');
   }
 }

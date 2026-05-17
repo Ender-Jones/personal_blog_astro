@@ -15,7 +15,13 @@ image_role: mood
 image_focus: "50% 42%"
 cover_mode: hero-large
 marginalia:
-  text: "I, MUST CHART A NEW PATH."
+  quote:
+    lines:
+      - "— Qui aimes-tu le mieux, homme énigmatique, dis ?"
+      - "— J’aime les nuages… les nuages qui passent… là-bas… là-bas… les merveilleux nuages !"
+    author: Charles Baudelaire
+    work: "L'Étranger"
+    year: 1869
 ---
 
 > <p><em>Je n’ai que ma douleur et je ne veux plus qu’elle.<br>

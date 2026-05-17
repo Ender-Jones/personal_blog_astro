@@ -28,17 +28,36 @@ function getPostMarginalia(post: PostEntry): MarginaliaItem | undefined {
   if (!raw) return undefined;
 
   const config = typeof raw === 'object' ? raw : {};
-  const text = config.text ?? post.data.description;
+  const text = getMarginaliaText(config) ?? post.data.description;
   const image = config.image ?? post.data.image;
 
   if (!text || !image) return undefined;
 
   return {
     text,
-    source: config.source ?? post.data.title,
+    source: getMarginaliaSource(config) ?? post.data.title,
     href: postHref(post),
     image,
     imageAlt: config.image_alt ?? post.data.image_alt ?? '',
     imageFocus: config.image_focus ?? post.data.image_focus ?? '50% 50%',
   };
+}
+
+type MarginaliaConfig = Exclude<PostEntry['data']['marginalia'], boolean | undefined>;
+
+function getMarginaliaText(config: MarginaliaConfig) {
+  if (config.quote) return config.quote.lines.join('\n');
+  return config.text;
+}
+
+function getMarginaliaSource(config: MarginaliaConfig) {
+  if (!config.quote) return config.source;
+
+  const parts = [
+    config.quote.author,
+    config.quote.work ? `"${config.quote.work}"` : undefined,
+    config.quote.year,
+  ].filter(Boolean);
+
+  return parts.join(', ');
 }

@@ -99,6 +99,7 @@ Comments use Giscus with GitHub Discussions and stay opt-in per post.
 - Homepage code lives in `src/pages/index.astro` and `src/components/home/`.
 - Post math is rendered statically with `remark-math`, `rehype-katex`, and KaTeX CSS.
 - Markdown admonitions use `:::info`, `:::tip`, `:::note`, `:::warning`, and `:::danger`.
+- Homepage Marginalia reads only post frontmatter; quote-style entries use `marginalia.quote.lines` with optional `author`, `work`, and `year`.
 - `npm run build` validates source content, type checks Astro, builds static output, then verifies the deployable `dist/` artifact.
 - Source validation blocks old Kramdown attributes, inline styles, bad images, broken internal links, empty public thread blocks, invalid Marginalia, worklog comments, missing Giscus config for enabled comments, missing tag metadata, runtime API calls, and unsupported `draft:` frontmatter.
 - Artifact verification checks required deploy files, generated routes, sitemap/robots, Homepage Marginalia output, Giscus output rules, and runtime API calls in built HTML/JS.

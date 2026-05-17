@@ -74,7 +74,7 @@
 
 ## 必须完成的后端工程备忘条款
 
-- Homepage Marginalia 必须从带 `marginalia` 的 posts 读取，并使用该 post 的真实图片；选择可以是 build-time random，但不能做 runtime API、fake live widget 或伪随机评论/内容。
+- Homepage Marginalia 必须从带 `marginalia` 的 posts frontmatter 读取，并使用该 post 的真实图片；quote 使用 `marginalia.quote.lines + author/work/year` 显式格式，不能从正文猜测；选择可以是 build-time random，但不能做 runtime API、fake live widget 或伪随机评论/内容。
 - Giscus comments 默认关闭；只有 post frontmatter `comments: true` 且 `src/data/site.yml` 有真实 Giscus 配置时才允许输出评论脚本。
 - 当前 GitHub 仓库 `Ender-Jones/personal_blog_astro` 已启用 Discussions；Giscus 使用真实 `General` category 配置，发布前仍需确认 Giscus app 已安装/授权到该 repo。
 - GitHub activity / commit wall 只能读取 build-time git history/cache snapshot；无 history 时必须显示空状态，不伪造 commit。

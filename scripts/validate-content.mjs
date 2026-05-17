@@ -318,6 +318,7 @@ function validateMarginalia(file, frontmatter, postImage) {
 
   const inlineValue = readFrontmatterValue(frontmatter, 'marginalia');
   const objectText = readNestedFrontmatterValue(frontmatter, 'marginalia', 'text');
+  const objectQuote = hasNestedFrontmatterKey(frontmatter, 'marginalia', 'quote');
   const objectImage = readNestedFrontmatterValue(frontmatter, 'marginalia', 'image');
   const description = readFrontmatterValue(frontmatter, 'description');
 
@@ -327,8 +328,8 @@ function validateMarginalia(file, frontmatter, postImage) {
 
   if (inlineValue === 'false') return;
 
-  if (!objectText && !description) {
-    fail(file, 'marginalia requires text or a post description.');
+  if (!objectText && !objectQuote && !description) {
+    fail(file, 'marginalia requires text, quote, or a post description.');
   }
 
   if (!objectImage && !postImage) {
@@ -357,6 +358,11 @@ function validatePublicThreadBlock(file, source) {
   if (bullets.length > 4) {
     fail(file, 'public thread block has more than 4 bullets; shorten it before publishing.');
   }
+}
+
+function hasNestedFrontmatterKey(frontmatter, objectKey, key) {
+  const block = frontmatter.match(new RegExp(`^${objectKey}:\\s*\\r?\\n((?:\\s{2,}.+\\r?\\n?)+)`, 'm'))?.[1] ?? '';
+  return new RegExp(`^\\s+${key}:\\s*(?:.+?)?\\s*$`, 'm').test(block);
 }
 
 function getKnownRoutes() {

@@ -17,12 +17,22 @@ const postKind = z.enum([
   'field-report',
 ]);
 const text = z.string().trim().min(1);
+const marginaliaQuoteYear = z.union([text, z.number().int().positive().transform(String)]);
+const marginaliaQuote = z
+  .object({
+    lines: z.array(text).min(1),
+    author: text.optional(),
+    work: text.optional(),
+    year: marginaliaQuoteYear.optional(),
+  })
+  .strict();
 const marginalia = z.union([
   z.boolean(),
   z
     .object({
       text: text.optional(),
       source: text.optional(),
+      quote: marginaliaQuote.optional(),
       image: text.optional(),
       image_alt: text.optional(),
       image_focus: text.optional(),
