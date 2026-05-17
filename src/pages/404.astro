@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../components/layout/BaseLayout.astro';
+---
+
+<BaseLayout title="404" description="This page could not be found." noindex>
+  <main class="not-found-page">
+    <section class="route-header not-found-page__header">
+      <p class="eyebrow">/ 404</p>
+      <h1>Page not found</h1>
+      <p>The page is missing, unpublished, or intentionally excluded from the build.</p>
+      <div class="not-found-page__links">
+        <a href="/">home</a>
+        <a href="/posts/">writing</a>
+        <a href="/worklog/">worklog</a>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .not-found-page {
+    display: grid;
+    min-height: 62vh;
+    width: min(900px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: var(--s-16) 0 var(--s-20);
+    place-items: center start;
+  }
+
+  .not-found-page__header {
+    max-width: 720px;
+  }
+
+  .not-found-page__header h1 {
+    font-size: clamp(52px, 9vw, 96px);
+  }
+
+  .not-found-page__header p:not(.eyebrow) {
+    max-width: 560px;
+    color: var(--text-muted);
+    font-size: 18px;
+    line-height: 1.7;
+  }
+
+  .not-found-page__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-6);
+  }
+
+  .not-found-page__links a {
+    padding: var(--s-2) var(--s-3);
+    border: 1px solid var(--border-hi);
+    border-radius: var(--r-sm);
+    color: var(--accent-blue);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+</style>
