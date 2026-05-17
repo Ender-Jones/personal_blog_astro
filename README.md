@@ -65,12 +65,32 @@ Cloudflare Pages settings:
 
 ```txt
 Production branch: main
+Framework preset: Astro
 Build command: npm run build
 Build output directory: dist
 Node version: 22.16.0
 ```
 
+Cloudflare dashboard setup:
+
+1. Open Workers & Pages.
+2. Select Create application.
+3. Choose Pages, then Import an existing Git repository.
+4. Connect GitHub and select `Ender-Jones/personal_blog_astro`.
+   Do not select `Ender-Jones/Ender-Jones.github.io`; that is the old site.
+5. Set the project name, for example `enderjones-new-blog`.
+6. Set the production branch to `main`.
+7. Select the Astro preset, or fill the build settings manually:
+   - Build command: `npm run build`
+   - Build output directory: `dist`
+   - Root directory: leave blank
+8. Set `NODE_VERSION=22.16.0` for both Production and Preview if Cloudflare asks for an environment variable. The repo also has `.node-version`.
+9. Select Save and Deploy.
+10. Use the generated `*.pages.dev` URL for final staging checks.
+
 Use the Cloudflare Pages `*.pages.dev` deployment as staging. Do not use the GitHub project Pages URL as preview because this site is built for the root path and final domain.
+
+Do not attach `enderjones.com` until the `*.pages.dev` staging site has passed final checks. The old Cloudflare Pages project should keep serving the production domain until cutover.
 
 Pushes to `main` run `.github/workflows/build.yml` and validate the Astro build. Cloudflare Pages performs the actual deploy.
 
