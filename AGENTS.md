@@ -10,6 +10,7 @@
 
 截至 2026-05-17：
 - 项目使用 Astro 6+，静态输出，目标部署到 Cloudflare Pages。
+- GitHub Actions 只做 release gate，不部署 GitHub Pages；正式 staging/production 都走 Cloudflare Pages。
 - 本地开发优先使用 Docker Compose 的 `site` 服务运行 Node/npm。
 - Content collections 配置在 `src/content.config.ts`，不是旧版 `src/content/config.ts`。
 - 已有 collections：
@@ -81,6 +82,7 @@
 - Worklog parser 只能读取 `public_thread` 或 `<!-- public:thread:start -->` block；不能把 raw worklog notes 自动上 Homepage。
 - Build 必须阻塞坏内容和坏产物：draft frontmatter、未支持的 Kramdown attr-list、坏图片/内链、空 public thread、无效 Marginalia、worklog comments、缺 tag metadata、runtime API calls、缺失部署文件、缺失生成路由、错误 sitemap/robots。
 - 旧站 Markdown 迁移必须保留可见语义；目前受控支持 Chirpy prompt attr-list 与图片 `width`/`height`/`.w-*`/`.left`/`.right`，用于复现旧站 admonition 和图片位置，未支持的 attr-list 必须阻塞 build。
+- 不把 GitHub project Pages URL 当作预览环境；当前站点按根路径和最终域名构建，预览应使用 Cloudflare Pages `*.pages.dev` 根路径部署。
 
 ## 性能优化结论
 

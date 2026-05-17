@@ -59,7 +59,7 @@ docker compose down -v
 
 ## Deployment
 
-The site is static Astro output and is ready for Cloudflare Pages or GitHub Pages.
+The site is static Astro output. GitHub Actions is only the release gate; production and staging should run on Cloudflare Pages.
 
 Cloudflare Pages settings:
 
@@ -70,17 +70,11 @@ Build output directory: dist
 Node version: 22.16.0
 ```
 
-GitHub Pages settings:
+Use the Cloudflare Pages `*.pages.dev` deployment as staging. Do not use the GitHub project Pages URL as preview because this site is built for the root path and final domain.
 
-```txt
-Source: GitHub Actions
-Artifact directory: dist
-Custom domain: enderjones.com
-```
+Pushes to `main` run `.github/workflows/build.yml` and validate the Astro build. Cloudflare Pages performs the actual deploy.
 
-Pushes to `main` run `.github/workflows/build.yml`, build the Astro site, upload `dist`, and deploy it to GitHub Pages. Pull requests only build and validate.
-
-The built artifact includes `CNAME`, `.nojekyll`, `robots.txt`, `sitemap.xml`, and Google site verification.
+The built artifact includes `_headers`, `robots.txt`, `sitemap.xml`, and Google site verification.
 
 ## Comments
 

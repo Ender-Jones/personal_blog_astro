@@ -56,8 +56,6 @@ function verifyRequiredDistFiles() {
   for (const file of [
     'index.html',
     '404.html',
-    'CNAME',
-    '.nojekyll',
     '_headers',
     'robots.txt',
     'sitemap.xml',
@@ -73,17 +71,11 @@ function verifyDeploymentFiles() {
     return;
   }
 
-  let host;
   try {
-    host = new URL(siteUrl).host;
+    new URL(siteUrl);
   } catch {
     errors.push(`src/data/site.yml: invalid url "${siteUrl}".`);
     return;
-  }
-
-  const cname = readIfExists(join(distDir, 'CNAME'))?.trim();
-  if (cname !== host) {
-    errors.push(`dist/CNAME: "${cname ?? 'missing'}" does not match site host "${host}".`);
   }
 
   const headers = readIfExists(join(distDir, '_headers')) ?? '';
