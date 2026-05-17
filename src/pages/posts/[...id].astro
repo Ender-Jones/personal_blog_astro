@@ -39,7 +39,7 @@ const readingStats = getReadingStats(post.body);
 const i18nHref = post.data.i18n_alt ? `/posts/${post.data.i18n_alt}/` : undefined;
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description}>
+<BaseLayout title={post.data.title} description={post.data.description} image={post.data.image} ogType="article">
   <main class="post-page">
     <ReadingProgress />
     <PostHeader post={post} readingMinutes={readingStats.minutes} />

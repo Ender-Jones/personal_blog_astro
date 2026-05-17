@@ -58,6 +58,18 @@ export function getCoverMode(post: PostEntry) {
   return post.data.cover_mode ?? (post.data.image ? (post.data.pinned ? 'hero-large' : 'hero-small') : 'none');
 }
 
+export function getPostKindLabel(post: PostEntry) {
+  const labels: Record<PostEntry['data']['kind'], string> = {
+    essay: 'Essay',
+    poem: 'Poem',
+    note: 'Note',
+    'research-note': 'Research Note',
+    'field-report': 'Field Report',
+  };
+
+  return labels[post.data.kind];
+}
+
 export function getTagCounts(posts: PostEntry[]) {
   const counts = new Map<string, number>();
 

@@ -9,33 +9,55 @@ const coverMode = z.enum([
   'strip',
   'none',
 ]);
+const postKind = z.enum([
+  'essay',
+  'poem',
+  'note',
+  'research-note',
+  'field-report',
+]);
+const text = z.string().trim().min(1);
+const marginalia = z.union([
+  z.boolean(),
+  z
+    .object({
+      text: text.optional(),
+      source: text.optional(),
+      image: text.optional(),
+      image_alt: text.optional(),
+      image_focus: text.optional(),
+    })
+    .strict(),
+]);
 
 const posts = defineCollection({
   loader: glob({ base: './src/content/posts', pattern: '**/*.{md,mdx}' }),
   schema: z
     .object({
-      title: z.string(),
+      title: text,
       date: z.coerce.date(),
-      description: z.string().optional(),
-      tags: z.array(z.string()).default([]),
+      description: text.optional(),
+      kind: postKind.default('essay'),
+      tags: z.array(text).default([]),
       pinned: z.boolean().default(false),
       comments: z.boolean().default(false),
       language: z.enum(['en', 'zh']).default('en'),
-      i18n_alt: z.string().optional(),
-      image: z.string().optional(),
-      image_alt: z.string().optional(),
+      i18n_alt: text.optional(),
+      image: text.optional(),
+      image_alt: text.optional(),
       image_role: z.enum(['mood', 'semantic', 'decorative']).default('mood'),
-      image_focus: z.string().default('50% 50%'),
-      image_credit: z.string().optional(),
+      image_focus: text.default('50% 50%'),
+      image_credit: text.optional(),
       cover_mode: coverMode.optional(),
+      marginalia: marginalia.optional(),
     })
     .strict(),
 });
 
 const publicThread = z
   .object({
-    summary: z.string(),
-    bullets: z.array(z.string()).max(4).default([]),
+    summary: text,
+    bullets: z.array(text).max(4).default([]),
   })
   .strict();
 
@@ -43,10 +65,10 @@ const worklogs = defineCollection({
   loader: glob({ base: './src/content/worklogs', pattern: '**/*.{md,mdx}' }),
   schema: z
     .object({
-      title: z.string(),
+      title: text,
       date: z.coerce.date(),
       updated: z.coerce.date().optional(),
-      description: z.string().optional(),
+      description: text.optional(),
       public_thread: publicThread.optional(),
     })
     .strict(),

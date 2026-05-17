@@ -2,6 +2,7 @@
 title: "Who Am I?"
 date: 2025-04-29T21:29:00+09:00
 description: "A kid wanted to be a scientist, but lost precious things on the road."
+kind: essay
 tags:
   - "blogging"
   - "others"
@@ -13,6 +14,8 @@ image_alt: "The sky at dusk in my hometown, a place holding seven years of memor
 image_role: mood
 image_focus: "50% 42%"
 cover_mode: hero-large
+marginalia:
+  text: "I, MUST CHART A NEW PATH."
 ---
 
 > <p><em>Je n’ai que ma douleur et je ne veux plus qu’elle.<br>

@@ -73,9 +73,12 @@ export function getPublicThread(worklog: WorklogEntry): PublicThreadSummary | un
 
   if (!match) return undefined;
 
+  const thread = parsePublicBlock(match[1]);
+  if (!thread) return undefined;
+
   return {
     source: 'block',
-    ...parsePublicBlock(match[1]),
+    ...thread,
   };
 }
 
@@ -90,7 +93,9 @@ function parsePublicBlock(block: string) {
     .map((line) => line.replace(/^[-*]\s+/, ''))
     .slice(0, 4);
 
-  const summary = lines.find((line) => !/^[-*]\s+/.test(line)) ?? bullets[0] ?? 'Work in progress.';
+  const summary = lines.find((line) => !/^[-*]\s+/.test(line)) ?? bullets[0];
+
+  if (!summary) return undefined;
 
   return { summary, bullets };
 }

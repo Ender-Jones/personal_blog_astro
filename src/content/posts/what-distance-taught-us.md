@@ -2,6 +2,7 @@
 title: "What Distance Taught Us"
 date: 2026-05-07T16:23:00+09:00
 description: "A short poem on seasons, distance, and memory."
+kind: poem
 tags:
   - "poem"
   - "memory"
@@ -12,6 +13,8 @@ image_alt: "Cherry blossoms lifting into a clear spring sky."
 image_role: mood
 image_focus: "50% 44%"
 cover_mode: showcase
+marginalia:
+  text: "Spring remembered every petal, but forgot who I was waiting for."
 ---
 
 <div class="poem-body">

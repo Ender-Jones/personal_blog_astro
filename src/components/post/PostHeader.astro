@@ -1,6 +1,6 @@
 ---
 import type { PostEntry } from '../../lib/content';
-import { formatPostDate, getCoverMode } from '../../lib/content';
+import { formatPostDate, getCoverMode, getPostKindLabel } from '../../lib/content';
 
 type Props = {
   post: PostEntry;
@@ -17,12 +17,13 @@ const coverImageAlt = isSemanticCover ? (post.data.image_alt ?? post.data.title)
 const coverImageHidden = isSemanticCover ? undefined : 'true';
 const imageFocus = post.data.image_focus ?? '50% 50%';
 const year = post.data.date.getFullYear();
+const kindLabel = getPostKindLabel(post);
 ---
 
 <header class={`post-header post-header--${coverMode}`} style={`--post-image-focus: ${imageFocus};`}>
   {showBackdropImage && <img src={post.data.image} alt={coverImageAlt} aria-hidden={coverImageHidden} />}
   <div class="post-header__body">
-    <p class="eyebrow">{post.data.pinned ? '★ Pinned' : 'Writing'} · Essay · {year}</p>
+    <p class="eyebrow">{post.data.pinned ? '★ Pinned' : 'Writing'} · {kindLabel} · {year}</p>
     <h1>{post.data.title}</h1>
     {post.data.description && <p>{post.data.description}</p>}
     <div class="post-header__meta" aria-label="Post metadata">

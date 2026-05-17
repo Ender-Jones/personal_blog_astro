@@ -1,13 +1,18 @@
 ---
 title: "Regression Model Evaluation Metrics: MAE, MSE, RMSE, and R² Explained"
 date: 2025-05-08T18:23:00+09:00
-description: "A comprehensive guide to key regression model evaluation metrics."
+description: "A comprehensive guide to key regression model evaluation metrics: MAE, MSE, RMSE, and R²."
+kind: research-note
 tags:
   - "AI"
   - "study"
   - "machine learning"
   - "regression"
   - "evaluation metrics"
+  - "MAE"
+  - "MSE"
+  - "RMSE"
+  - "R-squared"
 comments: false
 language: en
 image: "/img/posts/regression-title.png"
@@ -86,7 +91,9 @@ $$\text{MAE} = \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i|$$
 - **Optimization challenges**: Not easily differentiable at zero
 - **Scale dependence**: Difficult to compare across different datasets
 
-> MAE is like a ruler that measures the average distance between predictions and reality, without caring about the direction of the error.
+:::info
+MAE is like a ruler that measures the average distance between predictions and reality, without caring about the direction of the error.
+:::
 
 ### Mean Squared Error (MSE) and Root Mean Squared Error (RMSE)
 
@@ -110,7 +117,9 @@ $$\text{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}$$
 - **Interpretation difficulty**: MSE is not in original units (RMSE solves this)
 - **Unit variance**: Cannot directly compare across different datasets
 
-> If MAE is a ruler, then MSE is a magnifying glass that emphasizes larger errors. RMSE converts that magnified view back to the original scale.
+:::info
+If MAE is a ruler, then MSE is a magnifying glass that emphasizes larger errors. RMSE converts that magnified view back to the original scale.
+:::
 
 ### Coefficient of Determination (R²)
 
@@ -140,7 +149,9 @@ Where:
 - **Can be misleading** if model assumptions are violated
 - **Not ideal for time series** or non-linear relationships
 
-> R² is like a school grade for your model - it tells you what percentage of the test your model got right, but doesn't tell you where it made mistakes.
+:::info
+R² is like a school grade for your model - it tells you what percentage of the test your model got right, but doesn't tell you where it made mistakes.
+:::
 
 ## Advanced Evaluation Metrics
 
@@ -240,7 +251,9 @@ Understanding regression model evaluation metrics is crucial for building effect
 
 Remember that the ultimate goal isn't just to optimize metrics but to create models that generalize well to new, unseen data and provide valuable insights for your specific problem.
 
-> In regression modeling, metrics are your compass, guiding you toward better predictions and deeper understanding of your data's story.
+:::tip
+In regression modeling, metrics are your compass, guiding you toward better predictions and deeper understanding of your data's story.
+:::
 
 ## References
 1. A Comprehensive Overview of Regression Evaluation Metrics, <https://developer.nvidia.com/blog/a-comprehensive-overview-of-regression-evaluation-metrics/#entry-content-comments>, By Eryk Lewinson
