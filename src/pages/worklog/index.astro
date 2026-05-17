@@ -4,20 +4,22 @@ import AuthorRail from '../../components/author/AuthorRail.astro';
 import AuthorStrip from '../../components/author/AuthorStrip.astro';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
 import { byDateDesc, formatDate, formatShortDate, worklogHref } from '../../lib/content';
+import { site } from '../../lib/data';
 import { getCurrentThread, getPublicThread } from '../../lib/parseWorklog';
 
 const worklogs = byDateDesc(await getCollection('worklogs'));
 const currentThread = getCurrentThread(worklogs);
-const worklogCards = worklogs.map((worklog) => ({
+const worklogCards = worklogs.map((worklog, index) => ({
   worklog,
   thread: getPublicThread(worklog),
   entryCount: (worklog.body ?? '').match(/^## \d{4}-\d{2}-\d{2}/gm)?.length ?? 0,
   updatedAt: worklog.data.updated ?? worklog.data.date,
+  status: index === 0 ? 'latest month' : 'archived month',
 }));
 const latest = worklogCards[0];
 ---
 
-<BaseLayout title="Worklog" description="Monthly work logs by EnderJones.">
+<BaseLayout title="Worklog" description={`Monthly work logs by ${site.name}.`}>
   <main class="worklog-index">
     <section class="worklog-hero">
       <div>
@@ -54,7 +56,7 @@ const latest = worklogCards[0];
 
       <section class="worklog-list" aria-label="Monthly worklog archive">
         {
-          worklogCards.map(({ worklog, thread, entryCount, updatedAt }) => (
+          worklogCards.map(({ worklog, thread, entryCount, updatedAt, status }) => (
             <a class="worklog-card" href={worklogHref(worklog)}>
               <div class="worklog-card__top">
                 <p class="eyebrow">{formatShortDate(worklog.data.date)}</p>
@@ -71,7 +73,7 @@ const latest = worklogCards[0];
 
               <div class="worklog-card__meta">
                 <span>{entryCount} dated entries</span>
-                <span>open month</span>
+                <span>{status}</span>
               </div>
             </a>
           ))

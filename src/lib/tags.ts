@@ -1,25 +1,11 @@
-import { getTagCounts, type PostEntry } from './content';
-
-export type TagTone = 'research' | 'private';
+import { tagMeta, type TagTone } from './data';
+import { getTagCounts, tagSlug, type PostEntry } from './content';
 
 export type TagSummary = {
   tag: string;
   count: number;
   tone: TagTone;
 };
-
-const RESEARCH_TAG_HINTS = [
-  'ai',
-  'claude',
-  'evaluation',
-  'gemini',
-  'gpt',
-  'llm',
-  'machine',
-  'prompt',
-  'regression',
-  'study',
-];
 
 export function getHomeTagSummary(posts: PostEntry[]): TagSummary[] {
   return getTagCounts(posts)
@@ -32,6 +18,5 @@ export function getHomeTagSummary(posts: PostEntry[]): TagSummary[] {
 }
 
 export function getTagTone(tag: string): TagTone {
-  const normalized = tag.toLowerCase();
-  return RESEARCH_TAG_HINTS.some((hint) => normalized.includes(hint)) ? 'research' : 'private';
+  return tagMeta[tagSlug(tag)]?.tone ?? 'neutral';
 }

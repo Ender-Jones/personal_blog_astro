@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import ArchiveShell from '../../components/archive/ArchiveShell.astro';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
 import { getTagCounts, tagSlug } from '../../lib/content';
+import { site } from '../../lib/data';
 import { getCurrentThread } from '../../lib/parseWorklog';
 
 const posts = await getCollection('posts');
@@ -12,7 +13,7 @@ const topTag = tagsByCount[0];
 const currentThread = getCurrentThread(await getCollection('worklogs'));
 ---
 
-<BaseLayout title="Tags" description="Topic index for EnderJones writing.">
+<BaseLayout title="Tags" description={`Topic index for ${site.name} writing.`}>
   <ArchiveShell currentThread={currentThread}>
     <section class="tag-index__hero">
       <div>

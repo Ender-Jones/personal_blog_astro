@@ -1,36 +1,36 @@
 ---
 import SectionMarker from '../ui/SectionMarker.astro';
-import type { QuoteData } from '../../lib/data';
+import type { MarginaliaItem } from '../../lib/marginalia';
 
 type Props = {
-  quote?: QuoteData;
+  marginalia?: MarginaliaItem;
 };
 
-const { quote } = Astro.props;
+const { marginalia } = Astro.props;
+const backgroundStyle = marginalia
+  ? `--marginalia-image: url("${marginalia.image}"); --marginalia-focus: ${marginalia.imageFocus};`
+  : undefined;
 ---
 
-<section class="home-coda" aria-label="Personality and contact">
-  <SectionMarker number="04" name="MARGINALIA" />
+{
+  marginalia && (
+    <section class="home-coda" aria-label="Personality and contact">
+      <SectionMarker number="04" name="MARGINALIA" />
 
-  {
-    quote && (
-      <figure class="marginalia">
+      <figure class="marginalia" style={backgroundStyle}>
         <div class="marginalia__photo" aria-hidden="true"></div>
         <div class="marginalia__shade" aria-hidden="true"></div>
 
         <div class="marginalia__body">
-          <blockquote>{quote.text}</blockquote>
+          <blockquote>{marginalia.text}</blockquote>
           <figcaption>
-            — {quote.source}
-            {quote.work ? `, ${quote.work}` : ''}
-            {quote.year ? `, ${quote.year}` : ''}
+            — <a href={marginalia.href}>{marginalia.source}</a>
           </figcaption>
         </div>
       </figure>
-    )
-  }
-
-</section>
+    </section>
+  )
+}
 
 <style>
   .home-coda {
@@ -69,7 +69,7 @@ const { quote } = Astro.props;
   }
 
   .marginalia__photo {
-    background: url('/img/posts/cherry-blossom-wide.jpg') center 60% / cover;
+    background: var(--marginalia-image) var(--marginalia-focus, center 60%) / cover;
     filter: brightness(0.35) saturate(0.7) blur(1px);
     opacity: 0.55;
   }
@@ -110,6 +110,10 @@ const { quote } = Astro.props;
     color: rgba(255, 255, 255, 0.56);
     font-family: var(--font-mono);
     font-size: 11px;
+  }
+
+  .marginalia figcaption a {
+    color: inherit;
   }
 
   @media (max-width: 560px) {

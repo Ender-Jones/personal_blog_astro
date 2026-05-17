@@ -5,6 +5,7 @@ import ArchiveShell from '../../components/archive/ArchiveShell.astro';
 import ArchiveYear from '../../components/archive/ArchiveYear.astro';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
 import { byDateDesc, groupPostsByYear } from '../../lib/content';
+import { site } from '../../lib/data';
 import { getCurrentThread } from '../../lib/parseWorklog';
 
 const posts = byDateDesc(await getCollection('posts'));
@@ -12,7 +13,7 @@ const yearGroups = groupPostsByYear(posts);
 const currentThread = getCurrentThread(await getCollection('worklogs'));
 ---
 
-<BaseLayout title="Posts" description="Writing archive by EnderJones.">
+<BaseLayout title="Posts" description={`Writing archive by ${site.name}.`}>
   <ArchiveShell currentThread={currentThread}>
     <section class="route-header archive-intro">
       <p class="eyebrow">/ posts</p>

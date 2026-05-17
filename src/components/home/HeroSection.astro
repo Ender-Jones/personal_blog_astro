@@ -7,6 +7,7 @@ type Props = {
 
 const { site } = Astro.props;
 const portrait = site.hero_portrait ?? site.avatar;
+const identity = site.identity;
 ---
 
 <article class="identity-console" aria-label="Identity">
@@ -15,7 +16,7 @@ const portrait = site.hero_portrait ?? site.avatar;
       <span class="identity-terminal__dot identity-terminal__dot--red"></span>
       <span class="identity-terminal__dot identity-terminal__dot--yellow"></span>
       <span class="identity-terminal__dot identity-terminal__dot--green"></span>
-      <span class="identity-terminal__title">ender@lovely_daughter:~/Blog - zsh</span>
+      <span class="identity-terminal__title">{identity.terminal_title}</span>
     </div>
 
     <div class="identity-terminal__grid">
@@ -26,15 +27,17 @@ const portrait = site.hero_portrait ?? site.avatar;
       <p class="line-body kv"><span>name</span> <strong>{site.name}</strong></p>
 
       <span class="line-no" aria-hidden="true">03</span>
-      <p class="line-body kv"><span>role</span> <b>PhD Candidate · Affective Computing</b></p>
+      <p class="line-body kv"><span>role</span> <b>{identity.role_detail}</b></p>
 
       <span class="line-no" aria-hidden="true">04</span>
-      <p class="line-body kv"><span>focus</span> <mark>Contactless Stress Estimation</mark></p>
+      <p class="line-body kv"><span>focus</span> <mark>{identity.focus_label}</mark></p>
 
       <span class="line-no" aria-hidden="true">05</span>
       <p class="line-body kv">
         <span>stack</span>
-        <code>PyTorch</code> <i>·</i> <code>Time-series</code> <i>·</i> <code>Multimodal ML</code>
+        {identity.stack.map((item, index) => (
+          <><code>{item}</code>{index < identity.stack.length - 1 && <i>·</i>}</>
+        ))}
       </p>
 
       <span class="line-no" aria-hidden="true">06</span>
@@ -47,7 +50,7 @@ const portrait = site.hero_portrait ?? site.avatar;
       <div class="line-body blank" aria-hidden="true"></div>
 
       <span class="line-no" aria-hidden="true">09</span>
-      <p class="line-body quote">&gt; estimating graded stress from facial video, rPPG, EDA, and behavior signals.</p>
+      <p class="line-body quote">&gt; {identity.thesis}</p>
 
       <span class="line-no" aria-hidden="true">10</span>
       <div class="line-body blank" aria-hidden="true"></div>
@@ -61,28 +64,33 @@ const portrait = site.hero_portrait ?? site.avatar;
       <span class="line-no" aria-hidden="true">13</span>
       <p class="line-body kv">
         <span>signals</span>
-        <code>rPPG</code> <i>·</i> <code>EDA</code> <i>·</i> <code>HRV</code> <i>·</i>
-        <code>landmarks</code> <i>·</i> <code>gaze</code>
+        {identity.signals.map((item, index) => (
+          <><code>{item}</code>{index < identity.signals.length - 1 && <i>·</i>}</>
+        ))}
       </p>
 
       <span class="line-no" aria-hidden="true">14</span>
       <p class="line-body kv">
         <span>models</span>
-        <code>CCT-LSTM</code> <i>·</i> <code>multimodal fusion</code> <i>·</i>
-        <code>sequence modeling</code>
+        {identity.models.map((item, index) => (
+          <><code>{item}</code>{index < identity.models.length - 1 && <i>·</i>}</>
+        ))}
       </p>
 
       <span class="line-no" aria-hidden="true">15</span>
       <p class="line-body kv">
         <span>tools</span>
-        <code>pytorch</code> <i>·</i> <code>neurokit2</code> <i>·</i> <code>linux</code>
-        <i>·</i> <code>reproducible experiments</code>
+        {identity.tools.map((item, index) => (
+          <><code>{item}</code>{index < identity.tools.length - 1 && <i>·</i>}</>
+        ))}
       </p>
 
       <span class="line-no" aria-hidden="true">16</span>
       <p class="line-body kv">
         <span>langs</span>
-        <code>Chinese</code> <i>·</i> <code>English</code> <i>·</i> <code>Japanese</code>
+        {identity.languages.map((item, index) => (
+          <><code>{item}</code>{index < identity.languages.length - 1 && <i>·</i>}</>
+        ))}
       </p>
 
       <span class="line-no" aria-hidden="true">17</span>
@@ -100,7 +108,7 @@ const portrait = site.hero_portrait ?? site.avatar;
     </div>
 
     <div class="identity-portrait__caption">
-      <p>"decoding stress from physiological traces."</p>
+      <p>"{identity.portrait_caption}"</p>
       <a href="/about/">reach_me.sh →</a>
     </div>
   </aside>

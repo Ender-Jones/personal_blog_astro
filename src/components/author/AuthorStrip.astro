@@ -1,11 +1,7 @@
 ---
-import { site } from '../../lib/data';
+import { getSocialLinks, site } from '../../lib/data';
 
-const links = [
-  ['GitHub', site.socials.github],
-  ['X', site.socials.twitter],
-  ['Email', site.socials.email],
-].filter(([, href]) => Boolean(href));
+const links = getSocialLinks(site);
 ---
 
 <section class="author-strip" aria-label="Author">
@@ -14,7 +10,7 @@ const links = [
     <strong>{site.name}</strong>
     <p>{site.role} · {site.location}</p>
     <nav aria-label="Author links">
-      {links.map(([label, href]) => <a href={href}>{label}</a>)}
+      {links.map(({ label, href }) => <a href={href}>{label}</a>)}
     </nav>
   </div>
 </section>

@@ -7,13 +7,14 @@ import WritingSurface from '../components/home/WritingSurface.astro';
 import BaseLayout from '../components/layout/BaseLayout.astro';
 import SectionMarker from '../components/ui/SectionMarker.astro';
 import { byDateDesc } from '../lib/content';
-import { quotes, site } from '../lib/data';
+import { site } from '../lib/data';
+import { getRandomMarginalia } from '../lib/marginalia';
 import { getCurrentThread } from '../lib/parseWorklog';
 
 const posts = byDateDesc(await getCollection('posts'));
 const worklogs = await getCollection('worklogs');
 const currentThread = getCurrentThread(worklogs);
-const quote = quotes[new Date().getUTCDate() % quotes.length];
+const marginalia = getRandomMarginalia(posts);
 ---
 
 <BaseLayout title={site.name} description={site.research_oneliner}>
@@ -27,7 +28,7 @@ const quote = quotes[new Date().getUTCDate() % quotes.length];
 
     <ActivityEvidence thread={currentThread} posts={posts} site={site} />
 
-    <PersonalityContact quote={quote} />
+    <PersonalityContact marginalia={marginalia} />
   </main>
 </BaseLayout>
 

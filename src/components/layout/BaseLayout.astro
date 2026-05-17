@@ -1,4 +1,5 @@
 ---
+import { site } from '../../lib/data';
 import Footer from './Footer.astro';
 import Nav from './Nav.astro';
 import SiteBackdrop from './SiteBackdrop.astro';
@@ -11,15 +12,24 @@ type Props = {
   title?: string;
   description?: string;
   bodyClass?: string;
+  image?: string;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
 };
 
 const {
-  title = 'EnderJones',
-  description = 'Research notes, essays, and work logs by EnderJones.',
+  title = site.name,
+  description = `Research notes, essays, and work logs by ${site.name}.`,
   bodyClass = '',
+  image,
+  noindex = false,
+  ogType = 'website',
 } = Astro.props;
 
-const pageTitle = title === 'EnderJones' ? title : `${title} · EnderJones`;
+const pageTitle = title === site.name ? title : `${title} · ${site.name}`;
+const siteUrl = site.url.endsWith('/') ? site.url : `${site.url}/`;
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
+const previewImage = new URL(image ?? site.hero_portrait ?? site.avatar, siteUrl).toString();
 ---
 
 <!doctype html>
@@ -28,6 +38,18 @@ const pageTitle = title === 'EnderJones' ? title : `${title} · EnderJones`;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={previewImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={previewImage} />
     <link rel="icon" href="/assets/img/favicons/favicon.ico" sizes="any" />
     <link rel="icon" href="/assets/img/favicons/favicon-96x96.png" type="image/png" sizes="96x96" />
     <link rel="apple-touch-icon" href="/assets/img/favicons/apple-touch-icon.png" />

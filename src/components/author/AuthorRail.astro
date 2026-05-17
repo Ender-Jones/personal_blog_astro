@@ -1,13 +1,9 @@
 ---
-import { site } from '../../lib/data';
+import { getSocialLinks, site } from '../../lib/data';
 import { formatDate, worklogHref } from '../../lib/content';
 import type { CurrentThread } from '../../lib/parseWorklog';
 
-const links = [
-  ['github', 'Ender-Jones', site.socials.github],
-  ['twitter', '@EnderJones1872', site.socials.twitter],
-  ['email', site.socials.email?.replace('mailto:', ''), site.socials.email],
-].filter(([, , href]) => Boolean(href));
+const links = getSocialLinks(site);
 
 type Props = {
   currentThread?: CurrentThread;
@@ -46,9 +42,9 @@ const publicThread =
   <section class="author-rail__section">
     <h2>Reach Me</h2>
     <dl>
-      {links.map(([label, value, href]) => (
+      {links.map(({ key, value, href }) => (
         <div>
-          <dt>{label}</dt>
+          <dt>{key}</dt>
           <dd><a href={href}>{value}</a></dd>
         </div>
       ))}

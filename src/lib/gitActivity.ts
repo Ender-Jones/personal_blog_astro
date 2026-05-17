@@ -6,19 +6,31 @@ export type GitActivityDay = {
   level: 0 | 1 | 2 | 3 | 4;
 };
 
+export type GitActivitySnapshot = {
+  days: GitActivityDay[];
+  source: 'git' | 'unavailable';
+  totalCommits: number;
+};
+
 export function getGitActivityDays(weeks = 12, now = new Date()): GitActivityDay[] {
+  return getGitActivitySnapshot(weeks, now).days;
+}
+
+export function getGitActivitySnapshot(weeks = 12, now = new Date()): GitActivitySnapshot {
   const dayCount = weeks * 7;
   const start = new Date(now);
   start.setDate(now.getDate() - dayCount + 1);
   start.setHours(0, 0, 0, 0);
 
-  const counts = readGitCommitCounts(start);
+  const { counts, source } = readGitCommitCounts(start);
+  let totalCommits = 0;
 
-  return Array.from({ length: dayCount }, (_, index) => {
+  const days = Array.from({ length: dayCount }, (_, index) => {
     const date = new Date(start);
     date.setDate(start.getDate() + index);
     const key = formatDateKey(date);
     const count = counts.get(key) ?? 0;
+    totalCommits += count;
 
     return {
       date: key,
@@ -26,6 +38,8 @@ export function getGitActivityDays(weeks = 12, now = new Date()): GitActivityDay
       level: getCommitLevel(count),
     };
   });
+
+  return { days, source, totalCommits };
 }
 
 function readGitCommitCounts(start: Date) {
@@ -41,11 +55,12 @@ function readGitCommitCounts(start: Date) {
     for (const date of output.split('\n').filter(Boolean)) {
       counts.set(date, (counts.get(date) ?? 0) + 1);
     }
+
+    return { counts, source: 'git' as const };
   } catch {
     // Build environments without git history should render an empty, non-live wall.
+    return { counts, source: 'unavailable' as const };
   }
-
-  return counts;
 }
 
 function getCommitLevel(count: number): GitActivityDay['level'] {

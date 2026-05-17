@@ -2,17 +2,13 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../components/layout/BaseLayout.astro';
 import { byDateDesc, formatDate, postHref } from '../lib/content';
-import { research, site } from '../lib/data';
+import { getSocialLinks, research, site } from '../lib/data';
 
 const posts = byDateDesc(await getCollection('posts'));
 const featuredPost = posts.find((post) => post.data.pinned) ?? posts[0];
 const selectedPosts = posts.filter((post) => post.id !== featuredPost?.id).slice(0, 3);
 
-const socials = [
-  ['GitHub', 'Ender-Jones', site.socials.github],
-  ['X', '@EnderJones1872', site.socials.twitter],
-  ['Email', site.socials.email?.replace('mailto:', ''), site.socials.email],
-].filter(([, , href]) => Boolean(href));
+const socials = getSocialLinks(site);
 ---
 
 <BaseLayout title="About" description={site.research_oneliner}>
@@ -25,11 +21,9 @@ const socials = [
         <p class="eyebrow">/ about</p>
         <h1>{site.name}</h1>
         <p class="about-hero__meta">{site.role} · {site.location}</p>
-        <p class="about-hero__lead">
-          I keep this site as a research notebook, personal archive, and proof that I am still working.
-        </p>
+        <p class="about-hero__lead">{site.about_lead}</p>
         <div class="about-hero__links" aria-label="Contact links">
-          {socials.map(([label, value, href]) => <a href={href}>{label}<span>{value}</span></a>)}
+          {socials.map(({ label, value, href }) => <a href={href}>{label}<span>{value}</span></a>)}
         </div>
       </div>
     </section>
