@@ -38,19 +38,27 @@
 <style>
   .site-backdrop {
     position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-    z-index: -1;
+    inset: 0;
+    z-index: 0;
     width: 100vw;
     height: 100dvh;
     min-height: 100lvh;
     pointer-events: none;
     overflow: hidden;
     background-image:
+      radial-gradient(1100px 680px at 12% 12%, rgba(244, 114, 182, 0.055), transparent 66%),
+      radial-gradient(920px 580px at 88% 36%, rgba(56, 189, 248, 0.045), transparent 68%),
+      radial-gradient(760px 520px at 50% 112%, rgba(93, 202, 165, 0.03), transparent 70%),
       linear-gradient(to right, rgba(148, 163, 184, 0.025) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(148, 163, 184, 0.025) 1px, transparent 1px);
-    background-size: 44px 44px;
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.025) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(4, 6, 13, 0.99), rgba(4, 6, 13, 0.965));
+    background-size:
+      auto,
+      auto,
+      auto,
+      44px 44px,
+      44px 44px,
+      auto;
   }
 
   .site-backdrop__glow {
@@ -65,7 +73,7 @@
     left: -18vw;
     width: 78vw;
     height: 72vh;
-    opacity: 0.045;
+    opacity: 0.07;
     background: radial-gradient(closest-side, rgba(244, 114, 182, 0.9), transparent 68%);
   }
 
@@ -74,7 +82,7 @@
     right: -16vw;
     width: 72vw;
     height: 64vh;
-    opacity: 0.03;
+    opacity: 0.052;
     background: radial-gradient(closest-side, rgba(56, 189, 248, 0.62), transparent 68%);
   }
 
@@ -83,7 +91,7 @@
     left: 18vw;
     width: 68vw;
     height: 62vh;
-    opacity: 0.025;
+    opacity: 0.038;
     background: radial-gradient(closest-side, rgba(93, 202, 165, 0.58), transparent 70%);
   }
 </style>
