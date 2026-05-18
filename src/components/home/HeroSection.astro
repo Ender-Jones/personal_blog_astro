@@ -501,35 +501,47 @@ const terminalTools = [...identity.tools].sort((a, b) => {
     z-index: 2;
     width: 24px;
     height: 24px;
-    opacity: 0.58;
+    opacity: 0.72;
   }
 
   .corner--tl {
     top: 16px;
     left: 16px;
-    border-top: 1px solid rgba(148, 163, 184, 0.58);
-    border-left: 1px solid rgba(148, 163, 184, 0.58);
+    border-top: 1px solid rgba(244, 114, 182, 0.82);
+    border-left: 1px solid rgba(244, 114, 182, 0.82);
+    box-shadow:
+      -5px -5px 12px -8px rgba(244, 114, 182, 0.78),
+      inset 5px 5px 12px -10px rgba(244, 114, 182, 0.64);
   }
 
   .corner--tr {
     top: 16px;
     right: 16px;
-    border-top: 1px solid rgba(148, 163, 184, 0.58);
-    border-right: 1px solid rgba(148, 163, 184, 0.58);
+    border-top: 1px solid rgba(56, 189, 248, 0.82);
+    border-right: 1px solid rgba(56, 189, 248, 0.82);
+    box-shadow:
+      5px -5px 12px -8px rgba(56, 189, 248, 0.72),
+      inset -5px 5px 12px -10px rgba(56, 189, 248, 0.58);
   }
 
   .corner--bl {
     bottom: 16px;
     left: 16px;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.58);
-    border-left: 1px solid rgba(148, 163, 184, 0.58);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.82);
+    border-left: 1px solid rgba(56, 189, 248, 0.82);
+    box-shadow:
+      -5px 5px 12px -8px rgba(56, 189, 248, 0.72),
+      inset 5px -5px 12px -10px rgba(56, 189, 248, 0.58);
   }
 
   .corner--br {
     right: 16px;
     bottom: 16px;
-    border-right: 1px solid rgba(148, 163, 184, 0.58);
-    border-bottom: 1px solid rgba(148, 163, 184, 0.58);
+    border-right: 1px solid rgba(244, 114, 182, 0.82);
+    border-bottom: 1px solid rgba(244, 114, 182, 0.82);
+    box-shadow:
+      5px 5px 12px -8px rgba(244, 114, 182, 0.78),
+      inset -5px -5px 12px -10px rgba(244, 114, 182, 0.64);
   }
 
   .identity-portrait__caption {
