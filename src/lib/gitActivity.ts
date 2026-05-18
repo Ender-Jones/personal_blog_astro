@@ -1,5 +1,4 @@
-import { execFileSync } from 'node:child_process';
-import gitActivityCache from '../data/git-activity.json';
+import githubActivityCache from '../data/github-activity.json';
 
 export type GitActivityDay = {
   date: string;
@@ -9,8 +8,8 @@ export type GitActivityDay = {
 
 export type GitActivitySnapshot = {
   days: GitActivityDay[];
-  source: 'git' | 'cache' | 'unavailable';
-  totalCommits: number;
+  source: 'github' | 'unavailable';
+  totalContributions: number;
 };
 
 export function getGitActivityDays(weeks = 12, now = new Date()): GitActivityDay[] {
@@ -19,18 +18,16 @@ export function getGitActivityDays(weeks = 12, now = new Date()): GitActivityDay
 
 export function getGitActivitySnapshot(weeks = 12, now = new Date()): GitActivitySnapshot {
   const { start, dayCount } = getAlignedWindow(weeks, now);
-
-  const { counts, source } = readGitCommitCounts(start);
-  const resolvedCounts = source === 'unavailable' ? readCachedCommitCounts() : counts;
-  const resolvedSource = source === 'unavailable' && resolvedCounts.size > 0 ? 'cache' : source;
-  let totalCommits = 0;
+  const counts = readCachedContributionCounts();
+  const source = counts.size > 0 ? 'github' : 'unavailable';
+  let totalContributions = 0;
 
   const days = Array.from({ length: dayCount }, (_, index) => {
     const date = new Date(start);
     date.setDate(start.getDate() + index);
     const key = formatDateKey(date);
-    const count = resolvedCounts.get(key) ?? 0;
-    totalCommits += count;
+    const count = counts.get(key) ?? 0;
+    totalContributions += count;
 
     return {
       date: key,
@@ -39,33 +36,12 @@ export function getGitActivitySnapshot(weeks = 12, now = new Date()): GitActivit
     };
   });
 
-  return { days, source: resolvedSource, totalCommits };
+  return { days, source, totalContributions };
 }
 
-function readGitCommitCounts(start: Date) {
+function readCachedContributionCounts() {
   const counts = new Map<string, number>();
-
-  try {
-    const output = execFileSync(
-      'git',
-      ['log', `--since=${formatDateKey(start)}`, '--date=format:%Y-%m-%d', '--format=%ad'],
-      { encoding: 'utf8' },
-    );
-
-    for (const date of output.split('\n').filter(Boolean)) {
-      counts.set(date, (counts.get(date) ?? 0) + 1);
-    }
-
-    return { counts, source: 'git' as const };
-  } catch {
-    // Build environments without git history should render an empty, non-live wall.
-    return { counts, source: 'unavailable' as const };
-  }
-}
-
-function readCachedCommitCounts() {
-  const counts = new Map<string, number>();
-  const days = Array.isArray(gitActivityCache.days) ? gitActivityCache.days : [];
+  const days = Array.isArray(githubActivityCache.days) ? githubActivityCache.days : [];
 
   for (const day of days) {
     if (typeof day?.date !== 'string' || typeof day?.count !== 'number') continue;

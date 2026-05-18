@@ -27,8 +27,8 @@ const source = worklog ? `worklogs/${worklog.id}.md` : 'worklogs/';
 const topics = getHomeTagSummary(posts);
 const gitActivity = getGitActivitySnapshot();
 const gitActivityDays = gitActivity.days;
-const hasGitHistory = gitActivity.source !== 'unavailable';
-const hasGitActivity = gitActivity.totalCommits > 0;
+const hasGitHubActivitySnapshot = gitActivity.source !== 'unavailable';
+const hasGitActivity = gitActivity.totalContributions > 0;
 const githubLink = getSocialLinks(site).find((link) => link.key === 'github');
 const githubTitle = site.github_card?.title ?? 'Code and research work.';
 const githubDescription = site.github_card?.description ?? 'Repositories and experiments connected to this site.';
@@ -91,25 +91,25 @@ const githubDescription = site.github_card?.description ?? 'Repositories and exp
           </div>
 
           <div
-            class={hasGitHistory && hasGitActivity ? 'commit-wall' : 'commit-wall commit-wall--empty'}
-            aria-label="Site commit activity"
+            class={hasGitHubActivitySnapshot && hasGitActivity ? 'commit-wall' : 'commit-wall commit-wall--empty'}
+            aria-label="GitHub contribution activity"
           >
             <ol aria-hidden="true">
               {
                 gitActivityDays.map((day) => (
                   <li
                     class={`level-${day.level}`}
-                    title={`${day.date}: ${day.count} commit${day.count === 1 ? '' : 's'}`}
+                    title={`${day.date}: ${day.count} contribution${day.count === 1 ? '' : 's'}`}
                   ></li>
                 ))
               }
             </ol>
             {
-              (!hasGitHistory || !hasGitActivity) && (
+              (!hasGitHubActivitySnapshot || !hasGitActivity) && (
                 <p>
-                  {hasGitHistory
-                    ? 'No commits in this build window.'
-                    : 'No git history available in this build.'}
+                  {hasGitHubActivitySnapshot
+                    ? 'No GitHub contributions in this build window.'
+                    : 'No GitHub contribution snapshot available.'}
                 </p>
               )
             }
