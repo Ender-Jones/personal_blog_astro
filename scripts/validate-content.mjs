@@ -35,7 +35,7 @@ for (const file of contentFiles) {
     fail(file, 'draft frontmatter is not supported; move unfinished content to drafts/.');
   }
 
-  validateLegacyKramdownAttrs(file, source);
+  validateNoKramdownAttrs(file, source);
 
   if (/<style[\s>]/i.test(source)) {
     fail(file, 'contains a <style> tag; move content styles to src/styles/prose.css.');
@@ -311,22 +311,13 @@ function validatePublicPath(file, publicPath, label) {
   }
 }
 
-function validateLegacyKramdownAttrs(file, source) {
-  for (const match of source.matchAll(/^\s*\{:\s*([^}]+)}\s*$/gm)) {
-    if (!/^\s*\.prompt-(info|tip|note|warning|danger)\s*$/.test(match[1])) {
-      fail(file, `unsupported standalone Kramdown attribute-list: {: ${match[1]} }`);
-    }
+function validateNoKramdownAttrs(file, source) {
+  if (/\{:\s*[^}]+}/.test(source)) {
+    fail(file, 'Kramdown attribute-lists are not supported; use MDX content components instead.');
   }
 
-  for (const match of source.matchAll(/!\[[^\]\n]*]\([^)]+\)\{:\s*([^}\n]+)\}/g)) {
-    const tokens = match[1].match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) ?? [];
-
-    for (const token of tokens) {
-      if (/^\.(w-25|w-50|w-75|w-100|left|right|normal)$/.test(token)) continue;
-      if (/^(width|height)=['"]?\d+['"]?$/.test(token)) continue;
-
-      fail(file, `unsupported image Kramdown attribute token: ${token}`);
-    }
+  if (/^\s*:::\s*(info|tip|note|warning|danger|caution|important|warn)\b/im.test(source)) {
+    fail(file, 'remark directive callouts are not supported; use <Callout> in MDX instead.');
   }
 }
 

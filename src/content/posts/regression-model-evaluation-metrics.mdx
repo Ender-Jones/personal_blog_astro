@@ -19,13 +19,19 @@ image: "/img/posts/regression-title.png"
 image_alt: "Abstract black and white architectural curves, used as the title image for regression metrics."
 image_role: mood
 image_focus: "50% 50%"
-cover_mode: hero-small
+cover_mode: hero-large
 ---
 
-> <p><em>— Il n’ya a qu’une loi en sentiment. C’est de faire le bonheur de ce qu’on aime</em><br>
-> <em>— There is only one law in emotion: to bring happiness to those we love</em></p>
->
-> <footer>— Stendhal, diary entry dated June 19, 1805</footer>
+import Callout from '../../components/content/Callout.astro';
+import Epigraph from '../../components/content/Epigraph.astro';
+
+<Epigraph
+  lines={[
+    '— Il n’ya a qu’une loi en sentiment. C’est de faire le bonheur de ce qu’on aime',
+    '— There is only one law in emotion: to bring happiness to those we love',
+  ]}
+  source="— Stendhal, diary entry dated June 19, 1805"
+/>
 
 ## Introduction: The Essence of Regression Models
 
@@ -91,9 +97,9 @@ $$\text{MAE} = \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i|$$
 - **Optimization challenges**: Not easily differentiable at zero
 - **Scale dependence**: Difficult to compare across different datasets
 
-:::info
+<Callout type="info">
 MAE is like a ruler that measures the average distance between predictions and reality, without caring about the direction of the error.
-:::
+</Callout>
 
 ### Mean Squared Error (MSE) and Root Mean Squared Error (RMSE)
 
@@ -117,9 +123,9 @@ $$\text{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}$$
 - **Interpretation difficulty**: MSE is not in original units (RMSE solves this)
 - **Unit variance**: Cannot directly compare across different datasets
 
-:::info
+<Callout type="info">
 If MAE is a ruler, then MSE is a magnifying glass that emphasizes larger errors. RMSE converts that magnified view back to the original scale.
-:::
+</Callout>
 
 ### Coefficient of Determination (R²)
 
@@ -149,9 +155,9 @@ Where:
 - **Can be misleading** if model assumptions are violated
 - **Not ideal for time series** or non-linear relationships
 
-:::info
+<Callout type="info">
 R² is like a school grade for your model - it tells you what percentage of the test your model got right, but doesn't tell you where it made mistakes.
-:::
+</Callout>
 
 ## Advanced Evaluation Metrics
 
@@ -251,12 +257,12 @@ Understanding regression model evaluation metrics is crucial for building effect
 
 Remember that the ultimate goal isn't just to optimize metrics but to create models that generalize well to new, unseen data and provide valuable insights for your specific problem.
 
-:::tip
+<Callout type="tip">
 In regression modeling, metrics are your compass, guiding you toward better predictions and deeper understanding of your data's story.
-:::
+</Callout>
 
 ## References
-1. A Comprehensive Overview of Regression Evaluation Metrics, <https://developer.nvidia.com/blog/a-comprehensive-overview-of-regression-evaluation-metrics/#entry-content-comments>, By Eryk Lewinson
+1. A Comprehensive Overview of Regression Evaluation Metrics, [NVIDIA Developer](https://developer.nvidia.com/blog/a-comprehensive-overview-of-regression-evaluation-metrics/#entry-content-comments), By Eryk Lewinson
 2. James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). *An Introduction to Statistical Learning*.
 3. Chai, T., & Draxler, R. R. (2014). *Root mean square error (RMSE) or mean absolute error (MAE)?*
 4. Willmott, C. J., & Matsuura, K. (2005). *Advantages of the mean absolute error (MAE) over the root mean square error (RMSE)*.

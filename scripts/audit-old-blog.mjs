@@ -43,7 +43,7 @@ function listMarkdown(dir) {
   if (!existsSync(dir)) return [];
 
   return readdirSync(dir)
-    .filter((name) => name.endsWith('.md'))
+    .filter((name) => /\.(md|mdx)$/i.test(name))
     .map((name) => join(dir, name))
     .sort();
 }
@@ -77,7 +77,7 @@ function readOldWorklog(file) {
 
   return {
     file,
-    slug: basename(file, '.md'),
+    slug: basename(file).replace(/\.(md|mdx)$/i, ''),
     title: readField(fm, 'title'),
     date: readDate(fm),
   };

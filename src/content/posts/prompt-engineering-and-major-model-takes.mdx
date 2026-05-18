@@ -20,10 +20,16 @@ image_focus: "50% 50%"
 cover_mode: hero-small
 ---
 
-> <p><em>— Was ist schlecht? - Alles, was aus der Schwäche stammt.</em><br>
-> <em>— What is evil? – Everything that comes from weakness.</em></p>
->
-> <footer>— Friedrich Nietzsche</footer>
+import Callout from '../../components/content/Callout.astro';
+import Epigraph from '../../components/content/Epigraph.astro';
+
+<Epigraph
+  lines={[
+    '— Was ist schlecht? - Alles, was aus der Schwäche stammt.',
+    '— What is evil? – Everything that comes from weakness.',
+  ]}
+  source="— Friedrich Nietzsche"
+/>
 
 
 # My Stance on Prompt Engineering
@@ -55,13 +61,13 @@ Assigning a persona to the AI is a technique I hadn't used habitually, but it ca
 For instance:
 > "Assume you are a seasoned professor of AI research. Please guide me through the core concepts of reinforcement learning."
 
-:::tip
+<Callout type="tip">
 This often yields more detailed and contextually appropriate responses than a generic query.
-:::
+</Callout>
 
-:::tip
+<Callout type="tip">
 Structure and persona turn a generic request into a precise directive, like aiming a spotlight instead of just turning on the room lights.
-:::
+</Callout>
 
 ## Core Principles That Always Matter
 
@@ -86,9 +92,9 @@ For instance, instead of asking to "create a presentation about Topic X," a bett
 If you don't know the steps, you can ask the AI to propose a plan.  
  Still, applying your own domain knowledge to deconstruct the task will **always** produce a superior outcome.
 
-:::tip
+<Callout type="tip">
 Great prompts are built on two pillars: a focused signal and manageable steps.
-:::
+</Callout>
 
 ## My Practical Checklist
 
@@ -111,11 +117,11 @@ It's clear that not all models are created equal. Different models excel at diff
 
 | Feature              | Claude                                      | GPT                                     | Gemini                                            |
 | -------------------- | ------------------------------------------- | --------------------------------------- | ------------------------------------------------- |
-| **Primary Strength** | Code Generation                             | Brainstorming & Ideation                | Information Synthesis<br>& Brainstorming          |
-| **Coding Ability**   | Excellent<br>(can over-engineer)            | Capable All-rounder                     | Reliable<br>(sticks to prompt)                    |
-| **Hallucination**    | Very Low                                    | High<br>(without self-awareness)        | High<br>(but sometimes obvious)                   |
-| **Prompt Adherence** | Low<br>(often adds<br>unrequested features) | Medium<br>(can add<br>extra complexity) | High<br>(sticks closely<br>to requirements)       |
-| **Search & Vetting** | Normal                                      | Normal                                  | Strong<br>(excels at<br>synthesizing information) |
+| **Primary Strength** | Code Generation                             | Brainstorming & Ideation                | Information Synthesis<br />& Brainstorming          |
+| **Coding Ability**   | Excellent<br />(can over-engineer)            | Capable All-rounder                     | Reliable<br />(sticks to prompt)                    |
+| **Hallucination**    | Very Low                                    | High<br />(without self-awareness)        | High<br />(but sometimes obvious)                   |
+| **Prompt Adherence** | Low<br />(often adds<br />unrequested features) | Medium<br />(can add<br />extra complexity) | High<br />(sticks closely<br />to requirements)       |
+| **Search & Vetting** | Normal                                      | Normal                                  | Strong<br />(excels at<br />synthesizing information) |
 
 
 ### 💻 Claude: The Coder
@@ -135,9 +141,9 @@ Through my long-term coding collaboration with Gemini 2.5 Pro, its most impressi
 
 The main drawback, however, is its tendency to **hallucinate**. This can manifest in subtle ways, but sometimes it's stark. For instance, when asked to find research papers, it might invent one with a plausible title, authors, and a fake URL that leads nowhere.
 
-:::tip
+<Callout type="tip">
 Each AI model has its own 'personality' and skillset. Finding the right one for your task is the first step to a great result.
-:::
+</Callout>
 
 
 ## Debatable "Best Practices"
@@ -154,6 +160,6 @@ In the end, effective interaction with AI is less about secret handshakes and mo
 
 ---
 
-:::info
+<Callout type="info">
 This post reflects my current understanding and personal experience. The field of AI is evolving at an incredible pace, and these takes are subject to change as the models—and my interactions with them—continue to develop.
-:::
+</Callout>

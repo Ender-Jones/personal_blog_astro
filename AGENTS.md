@@ -55,15 +55,9 @@
 
 ## 下一轮后端 / 内容优先级
 
-下一轮准备直接做内容后端，优先顺序：
+下一轮如继续做内容后端，优先顺序：
 
-1. 实现 Chirpy / Kramdown admonition 迁移与渲染。
-   - 旧写法如 `{: .prompt-info }`、`{: .prompt-tip }` 不能进入新版 content。
-   - 迁移为明确 directive/container 语法，例如 `:::info ... :::`、`:::tip ... :::`。
-   - 在 Astro markdown pipeline 中实现对应渲染，必要时新增 `remark-directive` 或等价方案。
-   - 在 `src/styles/prose.css` 中统一收口 admonition 样式。
-   - 迁移旧文章时不要只删除标记导致语义丢失。
-2. 检查并补齐旧文章迁移。
+1. 检查并补齐旧文章迁移。
    - 当前已发布 posts：
      - `who-am-i`
      - `regression-model-evaluation-metrics`
@@ -81,8 +75,8 @@
 - 当前 GitHub 仓库 `Ender-Jones/personal_blog_astro` 已启用 Discussions；Giscus 使用真实 `General` category 配置，发布前仍需确认 Giscus app 已安装/授权到该 repo。
 - GitHub activity / commit wall 只能读取 build-time git history/cache snapshot；无 history 时必须显示空状态，不伪造 commit。
 - Worklog parser 只能读取 `public_thread` 或 `<!-- public:thread:start -->` block；不能把 raw worklog notes 自动上 Homepage。
-- Build 必须阻塞坏内容和坏产物：draft frontmatter、未支持的 Kramdown attr-list、坏图片/内链、空 public thread、无效 Marginalia、worklog comments、缺 tag metadata、runtime API calls、缺失部署文件、缺失生成路由、错误 sitemap/robots。
-- 旧站 Markdown 迁移必须保留可见语义；目前受控支持 Chirpy prompt attr-list 与图片 `width`/`height`/`.w-*`/`.left`/`.right`，用于复现旧站 admonition 和图片位置，未支持的 attr-list 必须阻塞 build。
+- Build 必须阻塞坏内容和坏产物：draft frontmatter、Kramdown attr-list、remark directive callouts、坏图片/内链、空 public thread、无效 Marginalia、worklog comments、缺 tag metadata、runtime API calls、缺失部署文件、缺失生成路由、错误 sitemap/robots。
+- 旧站 Markdown 迁移必须保留可见语义；当前 posts 已迁移为 MDX，并用 `src/components/content/` 下的 `Figure`、`Epigraph`、`Callout`、`Poem` 明确表达图片、题记、提示块和诗歌布局；不要恢复 Chirpy/Kramdown 兼容层。
 - 不把 GitHub project Pages URL 当作预览环境；当前站点按根路径和最终域名构建，预览应使用 Cloudflare Pages `*.pages.dev` 根路径部署。
 - `enderjones.com` 仍由旧站服务；不要在新站未通过 `*.pages.dev` 验收前绑定或切换 custom domain。
 
@@ -131,7 +125,7 @@
   - `strip`
   - `none`
 - 不加入 `inline` cover mode。
-- Markdown 内容文件不要内嵌 `<style>` 或 inline style；旧 Chirpy/Kramdown attr-list 只允许已在 markdown pipeline 中显式支持的 prompt/image 布局语义。
+- Markdown/MDX 内容文件不要内嵌 `<style>` 或 inline style；图片、题记、提示块、诗歌等布局语义使用 `src/components/content/` 的受控组件。
 
 ## 内容与图片
 
