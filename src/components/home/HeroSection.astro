@@ -3,98 +3,119 @@ import type { SiteData } from '../../lib/data';
 
 type Props = {
   site: SiteData;
+  terminalStats: {
+    posts: number;
+    tags: number;
+    logs: number;
+  };
 };
 
-const { site } = Astro.props;
+const { site, terminalStats } = Astro.props;
 const portrait = site.hero_portrait ?? site.avatar;
 const identity = site.identity;
+const terminalLanguages = identity.languages;
+const terminalModels = identity.models.flatMap((item) => {
+  if (item.toLowerCase() === 'cct-lstm') return ['CCT', 'LSTM'];
+  if (item.toLowerCase() === 'multimodal fusion') return ['Multimodal fusion'];
+  if (item.toLowerCase() === 'sequence modeling') return ['Sequence modeling'];
+  return [item];
+});
+const toolOrder = ['linux', 'pytorch', 'neurokit2', 'reproducible experiments'];
+const terminalTools = [...identity.tools].sort((a, b) => {
+  const ai = toolOrder.indexOf(a.toLowerCase());
+  const bi = toolOrder.indexOf(b.toLowerCase());
+  return (ai === -1 ? Number.MAX_SAFE_INTEGER : ai) - (bi === -1 ? Number.MAX_SAFE_INTEGER : bi);
+});
 ---
 
 <article class="identity-console" aria-label="Identity">
   <div class="identity-terminal">
     <div class="identity-terminal__bar" aria-hidden="true">
-      <span class="identity-terminal__dot identity-terminal__dot--red"></span>
-      <span class="identity-terminal__dot identity-terminal__dot--yellow"></span>
-      <span class="identity-terminal__dot identity-terminal__dot--green"></span>
+      <span class="identity-terminal__lights">
+        <span class="identity-terminal__dot identity-terminal__dot--red"></span>
+        <span class="identity-terminal__dot identity-terminal__dot--yellow"></span>
+        <span class="identity-terminal__dot identity-terminal__dot--green"></span>
+      </span>
       <span class="identity-terminal__title">{identity.terminal_title}</span>
+      <span class="identity-terminal__actions"></span>
     </div>
 
     <div class="identity-terminal__grid">
       <span class="line-no" aria-hidden="true">01</span>
-      <p class="line-body command"><span>&gt;</span> cat profile.md</p>
+      <p class="line-body terminal-command"><span aria-hidden="true">&gt;</span> whoami</p>
 
       <span class="line-no" aria-hidden="true">02</span>
-      <p class="line-body kv"><span>name</span> <strong>{site.name}</strong></p>
+      <p class="line-body terminal-kv terminal-kv--name">
+        <span class="terminal-label">name:</span>
+        <strong>{site.name}</strong>
+      </p>
 
       <span class="line-no" aria-hidden="true">03</span>
-      <p class="line-body kv"><span>role</span> <b>{identity.role_detail}</b></p>
+      <p class="line-body terminal-kv terminal-role">
+        <span class="terminal-label">role:</span>
+        <b>PhD Candidate</b>
+        <i>·</i>
+        <em>AI</em>
+        <i>/</i>
+        <mark>Affective Computing</mark>
+      </p>
 
       <span class="line-no" aria-hidden="true">04</span>
-      <p class="line-body kv"><span>focus</span> <mark>{identity.focus_label}</mark></p>
+      <div class="line-body terminal-separator" aria-hidden="true"><span></span></div>
 
       <span class="line-no" aria-hidden="true">05</span>
-      <p class="line-body kv">
-        <span>stack</span>
-        {identity.stack.map((item, index) => (
-          <><code>{item}</code>{index < identity.stack.length - 1 && <i>·</i>}</>
-        ))}
-      </p>
+      <p class="line-body terminal-command"><span aria-hidden="true">&gt;</span> grep -i thesis research.md</p>
 
       <span class="line-no" aria-hidden="true">06</span>
-      <div class="line-body blank" aria-hidden="true"></div>
+      <p class="line-body terminal-output">"teaching machines how a body feels."</p>
 
       <span class="line-no" aria-hidden="true">07</span>
-      <p class="line-body command"><span>&gt;</span> grep -i thesis research.md</p>
+      <div class="line-body terminal-separator" aria-hidden="true"><span></span></div>
 
       <span class="line-no" aria-hidden="true">08</span>
-      <div class="line-body blank" aria-hidden="true"></div>
+      <p class="line-body terminal-command"><span aria-hidden="true">&gt;</span> ls language/ stack/</p>
 
       <span class="line-no" aria-hidden="true">09</span>
-      <p class="line-body quote">&gt; {identity.thesis}</p>
-
-      <span class="line-no" aria-hidden="true">10</span>
-      <div class="line-body blank" aria-hidden="true"></div>
-
-      <span class="line-no" aria-hidden="true">11</span>
-      <p class="line-body command"><span>&gt;</span> ls ./working-set</p>
-
-      <span class="line-no" aria-hidden="true">12</span>
-      <div class="line-body blank" aria-hidden="true"></div>
-
-      <span class="line-no" aria-hidden="true">13</span>
-      <p class="line-body kv">
-        <span>signals</span>
-        {identity.signals.map((item, index) => (
-          <><code>{item}</code>{index < identity.signals.length - 1 && <i>·</i>}</>
+      <p class="line-body terminal-kv terminal-list terminal-list--blue">
+        <span class="terminal-label">langs:</span>
+        {terminalLanguages.map((item, index) => (
+          <><code>{item}</code>{index < terminalLanguages.length - 1 && <i>·</i>}</>
         ))}
       </p>
 
-      <span class="line-no" aria-hidden="true">14</span>
-      <p class="line-body kv">
-        <span>models</span>
-        {identity.models.map((item, index) => (
-          <><code>{item}</code>{index < identity.models.length - 1 && <i>·</i>}</>
+      <span class="line-no" aria-hidden="true">10</span>
+      <p class="line-body terminal-kv terminal-list terminal-list--blue">
+        <span class="terminal-label">models:</span>
+        {terminalModels.map((item, index) => (
+          <><code>{item}</code>{index < terminalModels.length - 1 && <i>·</i>}</>
         ))}
+      </p>
+
+      <span class="line-no" aria-hidden="true">11</span>
+      <p class="line-body terminal-kv terminal-list terminal-list--teal">
+        <span class="terminal-label">tools:</span>
+        {terminalTools.map((item, index) => (
+          <><code>{item}</code>{index < terminalTools.length - 1 && <i>·</i>}</>
+        ))}
+      </p>
+
+      <span class="line-no" aria-hidden="true">12</span>
+      <div class="line-body terminal-separator" aria-hidden="true"><span></span></div>
+
+      <span class="line-no" aria-hidden="true">13</span>
+      <p class="line-body terminal-command"><span aria-hidden="true">&gt;</span> wc -l content/*</p>
+
+      <span class="line-no" aria-hidden="true">14</span>
+      <p class="line-body terminal-counts">
+        <a class="terminal-count terminal-count--posts" href="/posts/"><span>posts:</span> <b>{terminalStats.posts}</b></a>
+        <i aria-hidden="true">·</i>
+        <a class="terminal-count terminal-count--tags" href="/tags/"><span>tags:</span> <b>{terminalStats.tags}</b></a>
+        <i aria-hidden="true">·</i>
+        <a class="terminal-count terminal-count--logs" href="/worklog/"><span>logs:</span> <b>{terminalStats.logs}</b></a>
       </p>
 
       <span class="line-no" aria-hidden="true">15</span>
-      <p class="line-body kv">
-        <span>tools</span>
-        {identity.tools.map((item, index) => (
-          <><code>{item}</code>{index < identity.tools.length - 1 && <i>·</i>}</>
-        ))}
-      </p>
-
-      <span class="line-no" aria-hidden="true">16</span>
-      <p class="line-body kv">
-        <span>langs</span>
-        {identity.languages.map((item, index) => (
-          <><code>{item}</code>{index < identity.languages.length - 1 && <i>·</i>}</>
-        ))}
-      </p>
-
-      <span class="line-no" aria-hidden="true">17</span>
-      <p class="line-body prompt"><span>&gt;</span> <b></b></p>
+      <p class="line-body terminal-prompt"><span aria-hidden="true">&gt;</span> <b class="ej-blink">_</b></p>
     </div>
   </div>
 
@@ -119,7 +140,7 @@ const identity = site.identity;
     display: grid;
     grid-template-columns: minmax(0, 2.1fr) minmax(300px, 0.9fr);
     gap: clamp(var(--s-4), 2vw, var(--s-6));
-    min-height: clamp(520px, 39vw, 550px);
+    min-height: var(--home-identity-min-height, clamp(520px, 39vw, 550px));
   }
 
   .identity-terminal,
@@ -137,32 +158,52 @@ const identity = site.identity;
   }
 
   .identity-terminal {
+    --terminal-gutter-width: 48px;
+    --terminal-input-size: 15px;
+    --terminal-output-size: 16px;
+    --terminal-emphasis-size: 17px;
+    --terminal-meta-size: 14px;
+    --terminal-name-size: 20px;
+
     display: grid;
-    grid-template-rows: 50px 1fr;
+    overflow: hidden;
+    grid-template-rows: 36px 1fr;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
     background: transparent;
+    box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.8);
   }
 
   .identity-terminal:hover {
-    border-color: rgba(148, 163, 184, 0.2);
-    box-shadow:
-      0 0 34px rgba(2, 8, 23, 0.54),
-      0 0 18px rgba(148, 163, 184, 0.055),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.8);
   }
 
   .identity-terminal__bar {
-    position: relative;
-    display: flex;
+    display: grid;
+    height: 36px;
+    grid-template-columns: 96px minmax(0, 1fr) 96px;
     align-items: center;
-    gap: 12px;
-    padding: 0 28px;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.08);
-    background: rgba(4, 6, 11, 0.94);
+    justify-content: space-between;
+    padding: 0 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: #0a0a0a;
+  }
+
+  .identity-terminal__lights {
+    display: flex;
+    width: 96px;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .identity-terminal__actions {
+    width: 96px;
   }
 
   .identity-terminal__dot {
-    width: 13px;
-    height: 13px;
+    width: 10px;
+    height: 10px;
     border-radius: 999px;
   }
 
@@ -182,123 +223,215 @@ const identity = site.identity;
   }
 
   .identity-terminal__title {
-    position: absolute;
-    right: 0;
-    left: 0;
-    color: rgba(139, 149, 161, 0.68);
+    overflow: hidden;
+    color: #71717a;
     font-family: var(--font-mono);
-    font-size: clamp(12px, 1vw, 15px);
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: var(--fw-medium);
     letter-spacing: 0.04em;
     text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .identity-terminal__grid {
+    position: relative;
     display: grid;
-    grid-template-columns: 78px minmax(0, 1fr);
-    grid-auto-rows: minmax(25px, auto);
+    grid-template-columns: var(--terminal-gutter-width) minmax(0, 1fr);
+    grid-auto-rows: 28px;
     align-content: start;
-    padding: 14px 44px 34px 0;
-    border-left: 1px solid rgba(148, 163, 184, 0.055);
+    padding: 20px 24px 20px 0;
     background:
-      radial-gradient(720px 340px at 78% 0%, rgba(56, 189, 248, 0.018), transparent 62%),
-      rgba(0, 0, 0, 0.82);
+      radial-gradient(720px 340px at 78% 0%, rgba(56, 189, 248, 0.014), transparent 62%),
+      rgba(5, 5, 5, 0.5);
     font-family: var(--font-mono);
+  }
+
+  .identity-terminal__grid::before {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--terminal-gutter-width);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(3, 3, 3, 0.15);
+    content: '';
+  }
+
+  .identity-terminal__grid > * {
+    position: relative;
   }
 
   .line-no {
     display: flex;
     align-items: center;
-    justify-content: center;
-    border-right: 1px solid rgba(148, 163, 184, 0.055);
-    color: rgba(107, 119, 133, 0.56);
-    font-size: clamp(12px, 1.05vw, 16px);
-    font-weight: 500;
+    justify-content: flex-end;
+    height: 28px;
+    padding-right: 12px;
+    color: rgba(113, 113, 122, 0.72);
+    font-size: var(--terminal-meta-size);
+    font-weight: var(--fw-medium);
+    line-height: 28px;
+    text-align: right;
   }
 
   .line-body {
+    height: 28px;
     min-width: 0;
     margin: 0;
-    padding-left: clamp(var(--s-5), 2.8vw, var(--s-8));
-    color: rgba(222, 229, 237, 0.88);
-    font-size: clamp(12px, 1.05vw, 16px);
-    letter-spacing: 0.01em;
-    line-height: 1.5;
+    padding-left: 24px;
+    overflow: hidden;
+    color: #e4e4e7;
+    font-size: var(--terminal-output-size);
+    font-weight: var(--fw-regular);
+    letter-spacing: 0;
+    line-height: 28px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .command {
-    color: rgba(238, 242, 247, 0.92);
-    font-weight: 650;
+  .terminal-command span,
+  .terminal-prompt span {
+    color: var(--accent-pink);
+    user-select: none;
   }
 
-  .command span,
-  .prompt span {
-    margin-right: 12px;
-    color: rgba(244, 114, 182, 0.9);
-    text-shadow: 0 0 10px rgba(244, 114, 182, 0.32);
+  .terminal-command,
+  .terminal-prompt {
+    font-size: var(--terminal-input-size);
   }
 
-  .kv {
-    color: rgba(213, 221, 230, 0.84);
+  .terminal-kv {
+    display: flex;
+    align-items: baseline;
   }
 
-  .kv > span {
+  .terminal-label {
     display: inline-block;
-    min-width: 104px;
-    color: rgba(107, 119, 133, 0.62);
+    width: 9ch;
+    flex: 0 0 9ch;
+    color: #52525b;
+    font-size: var(--terminal-meta-size);
+    font-weight: var(--fw-regular);
+    user-select: none;
   }
 
-  .kv strong {
-    color: rgba(244, 114, 182, 0.9);
+  .terminal-kv--name strong {
+    color: var(--accent-pink);
     font-family: var(--font-serif);
-    font-size: clamp(18px, 1.65vw, 24px);
+    font-size: var(--terminal-name-size);
     font-style: italic;
-    font-weight: 800;
+    font-weight: var(--fw-regular);
     letter-spacing: 0;
   }
 
-  .kv b {
-    color: rgba(226, 232, 240, 0.9);
-    font-weight: 560;
+  .terminal-role b {
+    color: #e4e4e7;
+    font-weight: var(--fw-regular);
   }
 
-  .kv em {
-    color: rgba(166, 173, 182, 0.86);
+  .terminal-role em {
+    color: var(--accent-blue);
     font-style: normal;
   }
 
-  .kv mark {
+  .terminal-role mark {
     background: transparent;
-    color: rgba(125, 211, 252, 0.84);
+    color: var(--accent-teal);
   }
 
-  .kv code {
-    color: rgba(194, 204, 214, 0.88);
+  .terminal-role i,
+  .terminal-list i,
+  .terminal-counts > i {
+    padding: 0 0.375rem;
+    color: #3f3f46;
+    font-style: normal;
+    user-select: none;
+  }
+
+  .terminal-output {
+    padding-left: 24px;
+    color: #d4d4d8;
+    font-family: var(--font-serif);
+    font-size: var(--terminal-output-size);
+    font-style: italic;
+    font-weight: var(--fw-regular);
+  }
+
+  .terminal-separator {
+    display: flex;
+    align-items: center;
+  }
+
+  .terminal-separator span {
+    display: block;
+    width: 100%;
+    border-bottom: 1px dotted rgba(255, 255, 255, 0.08);
+  }
+
+  .terminal-list code {
     font-family: inherit;
     font-size: inherit;
+    font-weight: var(--fw-regular);
   }
 
-  .kv i {
-    margin: 0 8px;
-    color: rgba(107, 119, 133, 0.64);
-    font-style: normal;
+  .terminal-list--blue code {
+    color: var(--accent-blue);
   }
 
-  .quote {
-    color: rgba(196, 204, 214, 0.86);
-    font-size: clamp(12px, 1vw, 15px);
-    font-style: italic;
-    font-weight: 500;
+  .terminal-list--teal code {
+    color: var(--accent-teal);
   }
 
-  .prompt b {
-    display: inline-block;
-    width: 12px;
-    height: 2px;
-    transform: translateY(4px);
-    background: rgba(244, 114, 182, 0.95);
-    box-shadow: 0 0 10px rgba(244, 114, 182, 0.42);
-    animation: blink 1s step-end infinite;
+  .terminal-counts {
+    display: flex;
+    align-items: baseline;
+  }
+
+  .terminal-count {
+    color: #71717a;
+  }
+
+  .terminal-count:hover span {
+    color: #d4d4d8;
+  }
+
+  .terminal-count b {
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--fw-medium);
+  }
+
+  .terminal-count--posts b {
+    color: var(--accent-pink);
+  }
+
+  .terminal-count--tags b {
+    color: var(--accent-blue);
+  }
+
+  .terminal-count--logs b {
+    color: var(--accent-teal);
+  }
+
+  .terminal-prompt b {
+    color: #d4d4d8;
+    font-weight: var(--fw-bold);
+  }
+
+  @keyframes ej-blink {
+    0%,
+    49% {
+      opacity: 1;
+    }
+
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .ej-blink {
+    animation: ej-blink 1.05s steps(1, end) infinite;
   }
 
   .identity-portrait {
@@ -419,7 +552,7 @@ const identity = site.identity;
     color: rgba(125, 211, 252, 0.78);
     font-family: var(--font-mono);
     font-size: clamp(13px, 1.15vw, 17px);
-    font-weight: 700;
+    font-weight: var(--fw-semibold);
     letter-spacing: 0.05em;
   }
 
@@ -452,45 +585,49 @@ const identity = site.identity;
     }
 
     .identity-terminal {
-      grid-template-rows: 52px 1fr;
-      border-radius: var(--r-lg);
+      --terminal-gutter-width: 42px;
+      --terminal-input-size: 14px;
+      --terminal-output-size: 15px;
+      --terminal-emphasis-size: 16px;
+      --terminal-meta-size: 12px;
+      --terminal-name-size: 19px;
+
+      grid-template-rows: 36px 1fr;
+      border-radius: 8px;
     }
 
     .identity-terminal__bar {
-      padding: 0 16px;
+      grid-template-columns: 58px minmax(0, 1fr) 58px;
+      padding: 0 12px;
+    }
+
+    .identity-terminal__lights,
+    .identity-terminal__actions {
+      width: 58px;
     }
 
     .identity-terminal__dot {
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
     }
 
     .identity-terminal__title {
-      font-size: 12px;
+      font-size: 10px;
     }
 
     .identity-terminal__grid {
-      grid-template-columns: 42px minmax(0, 1fr);
-      grid-auto-rows: minmax(30px, auto);
+      grid-auto-rows: 28px;
       padding: var(--s-5) var(--s-4) var(--s-5) 0;
     }
 
     .line-no {
       font-size: 12px;
+      padding-right: 10px;
     }
 
     .line-body {
       padding-left: var(--s-4);
-      font-size: 13px;
-      line-height: 1.65;
-    }
-
-    .kv > span {
-      min-width: 64px;
-    }
-
-    .kv strong {
-      font-size: 20px;
+      line-height: 28px;
     }
 
     .identity-portrait {

@@ -8,8 +8,8 @@ research_oneliner: Stress detection from multi-modal physiological signals.
 about_lead: I keep this site as a research notebook, personal archive, and proof that I am still working.
 
 identity:
-  terminal_title: ender@lovely_daughter:~/Blog - zsh
-  role_detail: PhD Candidate · Affective Computing
+  terminal_title: 'EnderJones@Chiba,Japan: ~/Blog'
+  role_detail: PhD Candidate · AI / Affective Computing
   focus_label: Contactless Stress Estimation
   stack:
     - PyTorch
@@ -35,7 +35,7 @@ identity:
     - Chinese
     - English
     - Japanese
-  portrait_caption: decoding stress from physiological traces.
+  portrait_caption: Decoding stress from physiological traces.
 
 github_card:
   title: Code, experiments, and small tools.

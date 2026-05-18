@@ -9,7 +9,7 @@
 
   --text: #f1f3f5;
   --text-muted: #8b95a1;
-  --text-dim: #6b7785;
+  --text-dim: #6c7886;
 
   --accent-pink: #f472b6;
   --accent-blue: #38bdf8;
@@ -17,10 +17,17 @@
 
   --font-sans: 'Noto Sans', system-ui, sans-serif;
   --font-mono: 'Fira Code', ui-monospace, monospace;
-  --font-serif: 'Georgia', 'Source Serif Pro', serif;
+  --font-serif: 'Source Serif Pro', 'Georgia', serif;
+
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
 
   --nav-height: 44px;
   --nav-z-index: 30;
+  --sticky-rail-top: calc(var(--nav-height) + var(--s-6));
 
   --r-sm: 6px;
   --r-md: 10px;

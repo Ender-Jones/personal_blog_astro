@@ -7,6 +7,7 @@
 <script is:inline>
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const glows = [...document.querySelectorAll('[data-parallax-glow]')];
+  const backdropTravel = 960;
   let ticking = false;
 
   function updateBackdrop() {
@@ -17,10 +18,12 @@
     }
 
     const scrollY = window.scrollY || window.pageYOffset || 0;
+    const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+    const scrollProgress = Math.min(Math.max(scrollY / maxScroll, 0), 1);
 
     for (const glow of glows) {
       const depth = Number(glow.getAttribute('data-depth') || 0.35);
-      glow.style.transform = `translate3d(0, ${scrollY * depth * -1}px, 0)`;
+      glow.style.transform = `translate3d(0, ${scrollProgress * backdropTravel * depth * -1}px, 0)`;
     }
   }
 
@@ -32,6 +35,7 @@
 
   updateBackdrop();
   window.addEventListener('scroll', requestBackdropUpdate, { passive: true });
+  window.addEventListener('resize', requestBackdropUpdate, { passive: true });
   reduceMotion.addEventListener('change', updateBackdrop);
 </script>
 

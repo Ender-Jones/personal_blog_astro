@@ -419,7 +419,7 @@ function truncateText(text: string, limit: number) {
   }
 
   .home-writing__grid {
-    --writing-panel-height: clamp(396px, 31vw, 437px);
+    --writing-panel-height: var(--home-writing-panel-height, clamp(396px, 31vw, 437px));
 
     display: grid;
     min-height: 0;
@@ -489,7 +489,7 @@ function truncateText(text: string, limit: number) {
     color: #fff;
     font-family: var(--font-mono);
     font-size: 12px;
-    font-weight: 600;
+    font-weight: var(--fw-semibold);
     letter-spacing: 0.04em;
     box-shadow:
       0 0 22px rgba(244, 114, 182, 0.18),
@@ -620,7 +620,7 @@ function truncateText(text: string, limit: number) {
   .post-drum__date b {
     color: var(--accent-blue);
     font-size: 11px;
-    font-weight: 600;
+    font-weight: var(--fw-semibold);
   }
 
   .post-drum button:not([aria-current='true']) .post-drum__date b {
@@ -641,7 +641,7 @@ function truncateText(text: string, limit: number) {
     overflow: hidden;
     color: #fff;
     font-size: 14.5px;
-    font-weight: 600;
+    font-weight: var(--fw-semibold);
     line-height: 1.25;
     text-wrap: pretty;
     -webkit-box-orient: vertical;
@@ -779,7 +779,7 @@ function truncateText(text: string, limit: number) {
     margin: 10px 0 0;
     color: #fff;
     font-size: clamp(23px, 2.6vw, 29px);
-    font-weight: 700;
+    font-weight: var(--fw-semibold);
     letter-spacing: -0.018em;
     line-height: 1.12;
     text-wrap: balance;
@@ -795,7 +795,7 @@ function truncateText(text: string, limit: number) {
     font-family: var(--font-serif);
     font-size: 14px;
     font-style: italic;
-    font-weight: 300;
+    font-weight: var(--fw-light);
     line-height: 1.45;
     text-wrap: pretty;
     -webkit-box-orient: vertical;

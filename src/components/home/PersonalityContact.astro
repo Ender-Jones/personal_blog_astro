@@ -41,7 +41,7 @@ const backgroundStyle = marginalia
   .marginalia {
     position: relative;
     display: grid;
-    min-height: 240px;
+    min-height: var(--home-coda-min-height, 240px);
     overflow: hidden;
     margin: 0;
     border: 1px solid rgba(244, 114, 182, 0.14);
@@ -98,7 +98,7 @@ const backgroundStyle = marginalia
     font-family: var(--font-serif);
     font-size: clamp(28px, 4vw, 44px);
     font-style: italic;
-    font-weight: 300;
+    font-weight: var(--fw-light);
     line-height: 1.16;
     overflow-wrap: break-word;
     text-shadow: 0 1px 12px rgba(0, 0, 0, 0.5);

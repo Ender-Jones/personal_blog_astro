@@ -160,7 +160,7 @@ const updatedAt = worklog.data.updated ?? worklog.data.date;
     color: #fff;
     font-family: var(--font-serif);
     font-size: 21px;
-    font-weight: 400;
+    font-weight: var(--fw-regular);
     line-height: 1.45;
   }
 
@@ -186,7 +186,7 @@ const updatedAt = worklog.data.updated ?? worklog.data.date;
   .worklog-reading-layout__left,
   .worklog-reading-layout__right {
     position: sticky;
-    top: var(--s-8);
+    top: var(--sticky-rail-top);
   }
 
   .worklog-reading-layout__body {
