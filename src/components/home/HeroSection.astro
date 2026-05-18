@@ -541,7 +541,7 @@ const terminalTools = [...identity.tools].sort((a, b) => {
 
   .identity-portrait__caption p {
     margin: 0;
-    color: rgba(177, 186, 196, 0.74);
+    color: #d4d4d8;
     font-family: var(--font-serif);
     font-size: clamp(15px, 1.25vw, 18px);
     font-style: italic;
@@ -549,11 +549,25 @@ const terminalTools = [...identity.tools].sort((a, b) => {
   }
 
   .identity-portrait__caption a {
-    color: rgba(125, 211, 252, 0.78);
+    width: max-content;
+    color: var(--accent-blue);
     font-family: var(--font-mono);
     font-size: clamp(13px, 1.15vw, 17px);
     font-weight: var(--fw-semibold);
     letter-spacing: 0.05em;
+    text-shadow:
+      0 0 9px rgba(56, 189, 248, 0.38),
+      0 0 20px rgba(56, 189, 248, 0.16);
+    transition:
+      color 150ms ease,
+      text-shadow 150ms ease;
+  }
+
+  .identity-portrait__caption a:hover {
+    color: var(--accent-pink);
+    text-shadow:
+      0 0 10px rgba(244, 114, 182, 0.48),
+      0 0 24px rgba(244, 114, 182, 0.2);
   }
 
   @media (max-width: 1120px) {

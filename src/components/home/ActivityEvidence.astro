@@ -328,6 +328,23 @@ const githubDescription = site.github_card?.description ?? 'Repositories and exp
     box-shadow:
       0 0 18px rgba(56, 189, 248, 0.15),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.24);
+    transition:
+      border-color 150ms ease,
+      background 150ms ease,
+      color 150ms ease,
+      box-shadow 150ms ease,
+      text-shadow 150ms ease;
+  }
+
+  .thread-editorial__side > a:hover {
+    border-color: rgba(244, 114, 182, 0.58);
+    background: linear-gradient(135deg, rgba(244, 114, 182, 0.25), rgba(244, 114, 182, 0.08));
+    color: #fff;
+    box-shadow:
+      0 0 22px rgba(244, 114, 182, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    text-shadow: 0 0 12px rgba(244, 114, 182, 0.36);
   }
 
   .activity-bottom {
@@ -585,11 +602,37 @@ const githubDescription = site.github_card?.description ?? 'Repositories and exp
   }
 
   .topics-index__foot a {
-    color: var(--text-dim);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 15px;
+    border: 1px solid rgba(56, 189, 248, 0.42);
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(56, 189, 248, 0.07));
+    color: #fff;
+    font-size: 12px;
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.04em;
+    box-shadow:
+      0 0 18px rgba(56, 189, 248, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.24);
+    transition:
+      border-color 150ms ease,
+      background 150ms ease,
+      color 150ms ease,
+      box-shadow 150ms ease,
+      text-shadow 150ms ease;
   }
 
   .topics-index__foot a:hover {
-    color: var(--accent-blue);
+    border-color: rgba(244, 114, 182, 0.58);
+    background: linear-gradient(135deg, rgba(244, 114, 182, 0.25), rgba(244, 114, 182, 0.08));
+    color: #fff;
+    box-shadow:
+      0 0 22px rgba(244, 114, 182, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    text-shadow: 0 0 12px rgba(244, 114, 182, 0.36);
   }
 
   @media (max-width: 980px) {
