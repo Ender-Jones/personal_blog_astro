@@ -11,7 +11,7 @@
 截至 2026-05-17：
 - 项目使用 Astro 6+，静态输出，目标部署到 Cloudflare Pages。
 - GitHub Actions 只做 release gate，不部署 GitHub Pages；正式 staging/production 都走 Cloudflare Pages。
-- Cloudflare Pages 尚未接入新 repo；下一步是在 Cloudflare 中创建新 Pages project，连接 `Ender-Jones/personal_blog_astro`，先用 `*.pages.dev` 验收。
+- Cloudflare Pages 已接入新 repo，`*.pages.dev` staging 可用；Giscus comments 已在 Cloudflare 预览确认 working。下一步是完整 staging 验收后再切 `enderjones.com`。
 - 本地开发优先使用 Docker Compose 的 `site` 服务运行 Node/npm。
 - Content collections 配置在 `src/content.config.ts`，不是旧版 `src/content/config.ts`。
 - 已有 collections：
