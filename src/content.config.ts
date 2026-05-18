@@ -50,7 +50,7 @@ const posts = defineCollection({
       kind: postKind.default('essay'),
       tags: z.array(text).default([]),
       pinned: z.boolean().default(false),
-      comments: z.boolean().default(false),
+      comments: z.boolean().default(true),
       language: z.enum(['en', 'zh']).default('en'),
       i18n_alt: text.optional(),
       image: text.optional(),

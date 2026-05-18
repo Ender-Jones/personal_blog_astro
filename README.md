@@ -98,12 +98,12 @@ The built artifact includes `_headers`, `robots.txt`, `sitemap.xml`, and Google 
 
 ## Comments
 
-Comments use Giscus with GitHub Discussions and stay opt-in per post.
+Comments use Giscus with GitHub Discussions and are enabled by default for posts.
 
 - Site config lives in `src/data/site.yml` under `comments.giscus`.
-- A post shows comments only when its frontmatter has `comments: true`.
+- Set `comments: false` in a post frontmatter to disable comments for that post.
 - Worklogs do not accept comments.
-- Before publishing a commented post, confirm the Giscus GitHub app is installed for `Ender-Jones/personal_blog_astro`.
+- The repo/category ids point to `Ender-Jones/personal_blog_astro` and the `General` Discussions category; runtime loading still depends on the Giscus GitHub app being authorized for the repo.
 
 ## Notes
 

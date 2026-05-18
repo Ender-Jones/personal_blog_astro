@@ -53,8 +53,8 @@ for (const file of contentFiles) {
     fail(file, 'worklogs must not accept comments frontmatter.');
   }
 
-  if (/^comments:\s*true\s*$/m.test(frontmatter) && !giscusConfigured) {
-    fail(file, 'comments: true requires a real site.comments.giscus config in src/data/site.yml.');
+  if (collection === 'posts' && commentsEnabled(frontmatter) && !giscusConfigured) {
+    fail(file, 'post comments are enabled by default; set comments: false or configure site.comments.giscus.');
   }
 
   if (collection === 'posts') {
@@ -211,9 +211,21 @@ function readYamlScalar(source, key) {
 }
 
 function hasConfiguredGiscus(source) {
+  const commentsStart = source.match(/^comments:\s*$/m)?.index;
+  if (commentsStart === undefined) return false;
+
+  const commentsBlock = source.slice(commentsStart);
+  const giscusStart = commentsBlock.match(/^\s+giscus:\s*$/m)?.index;
+  if (giscusStart === undefined) return false;
+
+  const block = commentsBlock.slice(giscusStart);
   return ['repo', 'repo_id', 'category', 'category_id'].every((key) =>
-    new RegExp(`^\\s{6}${key}:\\s*\\S+`, 'm').test(source),
+    new RegExp(`^\\s+${key}:\\s*\\S+`, 'm').test(block),
   );
+}
+
+function commentsEnabled(frontmatter) {
+  return !/^comments:\s*false\s*$/m.test(frontmatter);
 }
 
 function readTagToneConfig(source) {

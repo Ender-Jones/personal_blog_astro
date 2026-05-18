@@ -71,8 +71,8 @@
 ## 必须完成的后端工程备忘条款
 
 - Homepage Marginalia 必须从带 `marginalia` 的 posts frontmatter 读取，并使用该 post 的真实图片；quote 使用 `marginalia.quote.lines + author/work/year` 显式格式，不能从正文猜测；选择可以是 build-time random，但不能做 runtime API、fake live widget 或伪随机评论/内容。
-- Giscus comments 默认关闭；只有 post frontmatter `comments: true` 且 `src/data/site.yml` 有真实 Giscus 配置时才允许输出评论脚本。
-- 当前 GitHub 仓库 `Ender-Jones/personal_blog_astro` 已启用 Discussions；Giscus 使用真实 `General` category 配置，发布前仍需确认 Giscus app 已安装/授权到该 repo。
+- Posts 默认启用 Giscus comments；只有 post frontmatter `comments: false` 时关闭，且 `src/data/site.yml` 必须有真实 Giscus 配置才允许输出评论脚本。
+- 当前 GitHub 仓库 `Ender-Jones/personal_blog_astro` 已启用 Discussions；Giscus 使用真实 `General` category 配置，运行时仍依赖 Giscus app 已安装/授权到该 repo。
 - GitHub activity / commit wall 只能读取 build-time git history/cache snapshot；无 history 时必须显示空状态，不伪造 commit。
 - Worklog parser 只能读取 `public_thread` 或 `<!-- public:thread:start -->` block；不能把 raw worklog notes 自动上 Homepage。
 - Build 必须阻塞坏内容和坏产物：draft frontmatter、Kramdown attr-list、remark directive callouts、坏图片/内链、空 public thread、无效 Marginalia、worklog comments、缺 tag metadata、runtime API calls、缺失部署文件、缺失生成路由、错误 sitemap/robots。
@@ -116,7 +116,7 @@
 - 不把 raw worklog notes 自动展示到 Homepage。
 - 不要把 `noindex` 当作隐私保护；敏感 worklog/content 必须排除出 build/deploy。
 - Worklog detail page 如果被构建出来，就是公开页面，不要称其为 private。
-- Giscus comments 默认关闭，只能通过 posts frontmatter `comments: true` 启用。
+- Posts 默认启用 Giscus comments；单篇只能通过 frontmatter `comments: false` 关闭。
 - Worklogs 默认不启用 comments，schema 不应接受 comments 字段。
 - `cover_mode` 只支持：
   - `hero-large`

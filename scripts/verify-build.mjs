@@ -14,6 +14,7 @@ const postIds = [];
 const worklogIds = [];
 const tagIds = new Set();
 let hasMarginaliaSource = false;
+let hasCommentEnabledPost = false;
 
 collectContentRoutes();
 verifyRequiredDistFiles();
@@ -37,6 +38,7 @@ function collectContentRoutes() {
   for (const file of listMarkdownFiles(join(contentDir, 'posts'))) {
     const frontmatter = readFrontmatter(readFileSync(file, 'utf8'));
     postIds.push(stripExtension(relative(join(contentDir, 'posts'), file)));
+    if (commentsEnabled(frontmatter)) hasCommentEnabledPost = true;
 
     for (const tag of readFrontmatterList(frontmatter, 'tags')) {
       tagIds.add(tagSlug(tag));
@@ -163,6 +165,10 @@ function verifyGiscusOutput() {
   if (scriptFound && !giscusConfigured) {
     errors.push('dist: Giscus script rendered without real site.comments.giscus config.');
   }
+
+  if (hasCommentEnabledPost && !scriptFound) {
+    errors.push('dist: Giscus script missing despite enabled post comments.');
+  }
 }
 
 function verifyHomepageMarginalia() {
@@ -242,9 +248,21 @@ function readYamlScalar(source, key) {
 }
 
 function hasConfiguredGiscus(source) {
+  const commentsStart = source.match(/^comments:\s*$/m)?.index;
+  if (commentsStart === undefined) return false;
+
+  const commentsBlock = source.slice(commentsStart);
+  const giscusStart = commentsBlock.match(/^\s+giscus:\s*$/m)?.index;
+  if (giscusStart === undefined) return false;
+
+  const block = commentsBlock.slice(giscusStart);
   return ['repo', 'repo_id', 'category', 'category_id'].every((key) =>
-    new RegExp(`^\\s{6}${key}:\\s*\\S+`, 'm').test(source),
+    new RegExp(`^\\s+${key}:\\s*\\S+`, 'm').test(block),
   );
+}
+
+function commentsEnabled(frontmatter) {
+  return !/^comments:\s*false\s*$/m.test(frontmatter);
 }
 
 function hasEligibleMarginalia(frontmatter) {
