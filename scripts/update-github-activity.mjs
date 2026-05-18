@@ -108,7 +108,6 @@ function queryWithGhCli(query, variables) {
 function getAlignedWindow(weeks, now) {
   const dayCount = weeks * 7;
   const end = new Date(now);
-  end.setDate(now.getDate() + (6 - now.getDay()));
   end.setHours(23, 59, 59, 999);
 
   const start = new Date(end);

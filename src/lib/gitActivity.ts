@@ -54,7 +54,6 @@ function readCachedContributionCounts() {
 function getAlignedWindow(weeks: number, now: Date) {
   const dayCount = weeks * 7;
   const end = new Date(now);
-  end.setDate(now.getDate() + (6 - now.getDay()));
   end.setHours(0, 0, 0, 0);
 
   const start = new Date(end);

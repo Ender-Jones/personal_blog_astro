@@ -72,7 +72,7 @@
 
 - Homepage Marginalia 必须从带 `marginalia` 的 posts frontmatter 读取，并使用该 post 的真实图片；quote 使用 `marginalia.quote.lines + author/work/year` 显式格式，不能从正文猜测；选择可以是 build-time random，但不能做 runtime API、fake live widget 或伪随机评论/内容。
 - Posts 默认启用 Giscus comments；只有 post frontmatter `comments: false` 时关闭，且 `src/data/site.yml` 必须有真实 Giscus 配置才允许输出评论脚本。
-- 当前 GitHub 仓库 `Ender-Jones/personal_blog_astro` 已启用 Discussions；Giscus 使用真实 `General` category 配置，运行时仍依赖 Giscus app 已安装/授权到该 repo。
+- 当前 GitHub 仓库 `Ender-Jones/personal_blog_astro` 已启用 Discussions；Giscus 使用真实 `General` category 配置，Giscus app 已安装/授权且已在 Cloudflare 预览确认可用。
 - GitHub activity / commit wall 只能读取 build-time GitHub contribution cache snapshot；无 snapshot 时必须显示空状态，不做 runtime API 或伪造 commit。
 - `src/data/github-activity.json` 是由 `npm run activity:cache` 从 GitHub GraphQL `contributionsCollection` 生成的真实 profile contribution snapshot。
 - Worklog parser 只能读取 `public_thread` 或 `<!-- public:thread:start -->` block；不能把 raw worklog notes 自动上 Homepage。
