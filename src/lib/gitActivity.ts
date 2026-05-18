@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import gitActivityCache from '../data/git-activity.json';
 
 export type GitActivityDay = {
   date: string;
@@ -8,7 +9,7 @@ export type GitActivityDay = {
 
 export type GitActivitySnapshot = {
   days: GitActivityDay[];
-  source: 'git' | 'unavailable';
+  source: 'git' | 'cache' | 'unavailable';
   totalCommits: number;
 };
 
@@ -17,19 +18,18 @@ export function getGitActivityDays(weeks = 12, now = new Date()): GitActivityDay
 }
 
 export function getGitActivitySnapshot(weeks = 12, now = new Date()): GitActivitySnapshot {
-  const dayCount = weeks * 7;
-  const start = new Date(now);
-  start.setDate(now.getDate() - dayCount + 1);
-  start.setHours(0, 0, 0, 0);
+  const { start, dayCount } = getAlignedWindow(weeks, now);
 
   const { counts, source } = readGitCommitCounts(start);
+  const resolvedCounts = source === 'unavailable' ? readCachedCommitCounts() : counts;
+  const resolvedSource = source === 'unavailable' && resolvedCounts.size > 0 ? 'cache' : source;
   let totalCommits = 0;
 
   const days = Array.from({ length: dayCount }, (_, index) => {
     const date = new Date(start);
     date.setDate(start.getDate() + index);
     const key = formatDateKey(date);
-    const count = counts.get(key) ?? 0;
+    const count = resolvedCounts.get(key) ?? 0;
     totalCommits += count;
 
     return {
@@ -39,7 +39,7 @@ export function getGitActivitySnapshot(weeks = 12, now = new Date()): GitActivit
     };
   });
 
-  return { days, source, totalCommits };
+  return { days, source: resolvedSource, totalCommits };
 }
 
 function readGitCommitCounts(start: Date) {
@@ -61,6 +61,30 @@ function readGitCommitCounts(start: Date) {
     // Build environments without git history should render an empty, non-live wall.
     return { counts, source: 'unavailable' as const };
   }
+}
+
+function readCachedCommitCounts() {
+  const counts = new Map<string, number>();
+  const days = Array.isArray(gitActivityCache.days) ? gitActivityCache.days : [];
+
+  for (const day of days) {
+    if (typeof day?.date !== 'string' || typeof day?.count !== 'number') continue;
+    counts.set(day.date, day.count);
+  }
+
+  return counts;
+}
+
+function getAlignedWindow(weeks: number, now: Date) {
+  const dayCount = weeks * 7;
+  const end = new Date(now);
+  end.setDate(now.getDate() + (6 - now.getDay()));
+  end.setHours(0, 0, 0, 0);
+
+  const start = new Date(end);
+  start.setDate(end.getDate() - dayCount + 1);
+
+  return { start, dayCount };
 }
 
 function getCommitLevel(count: number): GitActivityDay['level'] {

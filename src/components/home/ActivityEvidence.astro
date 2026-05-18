@@ -27,7 +27,7 @@ const source = worklog ? `worklogs/${worklog.id}.md` : 'worklogs/';
 const topics = getHomeTagSummary(posts);
 const gitActivity = getGitActivitySnapshot();
 const gitActivityDays = gitActivity.days;
-const hasGitHistory = gitActivity.source === 'git';
+const hasGitHistory = gitActivity.source !== 'unavailable';
 const hasGitActivity = gitActivity.totalCommits > 0;
 const githubLink = getSocialLinks(site).find((link) => link.key === 'github');
 const githubTitle = site.github_card?.title ?? 'Code and research work.';

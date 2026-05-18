@@ -74,6 +74,7 @@
 - Posts 默认启用 Giscus comments；只有 post frontmatter `comments: false` 时关闭，且 `src/data/site.yml` 必须有真实 Giscus 配置才允许输出评论脚本。
 - 当前 GitHub 仓库 `Ender-Jones/personal_blog_astro` 已启用 Discussions；Giscus 使用真实 `General` category 配置，运行时仍依赖 Giscus app 已安装/授权到该 repo。
 - GitHub activity / commit wall 只能读取 build-time git history/cache snapshot；无 history 时必须显示空状态，不伪造 commit。
+- `src/data/git-activity.json` 是由 `npm run activity:cache` 从本地 `git log` 生成的真实 fallback snapshot，用于 Docker/Cloudflare 等没有 `git` 命令的 build 环境。
 - Worklog parser 只能读取 `public_thread` 或 `<!-- public:thread:start -->` block；不能把 raw worklog notes 自动上 Homepage。
 - Build 必须阻塞坏内容和坏产物：draft frontmatter、Kramdown attr-list、remark directive callouts、坏图片/内链、空 public thread、无效 Marginalia、worklog comments、缺 tag metadata、runtime API calls、缺失部署文件、缺失生成路由、错误 sitemap/robots。
 - 旧站 Markdown 迁移必须保留可见语义；当前 posts 已迁移为 MDX，并用 `src/components/content/` 下的 `Figure`、`Epigraph`、`Callout`、`Poem` 明确表达图片、题记、提示块和诗歌布局；不要恢复 Chirpy/Kramdown 兼容层。
