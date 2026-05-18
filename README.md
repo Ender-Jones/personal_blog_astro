@@ -103,7 +103,7 @@ Comments use Giscus with GitHub Discussions and are enabled by default for posts
 - Site config lives in `src/data/site.yml` under `comments.giscus`.
 - Set `comments: false` in a post frontmatter to disable comments for that post.
 - Worklogs do not accept comments.
-- The repo/category ids point to `Ender-Jones/personal_blog_astro` and the `General` Discussions category; runtime loading still depends on the Giscus GitHub app being authorized for the repo.
+- The repo/category ids point to `Ender-Jones/personal_blog_astro` and the `General` Discussions category; Giscus app authorization has been confirmed on the Cloudflare preview deployment.
 
 ## Notes
 
