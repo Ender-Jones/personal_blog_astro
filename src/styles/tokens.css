@@ -19,6 +19,9 @@
   --font-mono: 'Fira Code', ui-monospace, monospace;
   --font-serif: 'Georgia', 'Source Serif Pro', serif;
 
+  --nav-height: 44px;
+  --nav-z-index: 30;
+
   --r-sm: 6px;
   --r-md: 10px;
   --r-lg: 14px;
@@ -35,4 +38,10 @@
   --s-12: 48px;
   --s-16: 64px;
   --s-20: 80px;
+}
+
+@media (max-width: 720px) {
+  :root {
+    --nav-height: 70px;
+  }
 }
