@@ -12,10 +12,6 @@ export type GitActivitySnapshot = {
   totalContributions: number;
 };
 
-export function getGitActivityDays(weeks = 12, now = new Date()): GitActivityDay[] {
-  return getGitActivitySnapshot(weeks, now).days;
-}
-
 export function getGitActivitySnapshot(weeks = 12, now = new Date()): GitActivitySnapshot {
   const { start, dayCount } = getAlignedWindow(weeks, now);
   const counts = readCachedContributionCounts();
