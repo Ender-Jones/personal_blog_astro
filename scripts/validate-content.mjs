@@ -1,6 +1,21 @@
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import process from 'node:process';
+import {
+  commentsEnabled,
+  hasConfiguredGiscus,
+  hasFileExtension,
+  hasNestedFrontmatterKey,
+  listMarkdownFiles,
+  listProjectSourceFiles,
+  readFrontmatter,
+  readFrontmatterList,
+  readFrontmatterValue,
+  readNestedFrontmatterValue,
+  readYamlScalar,
+  stripExtension,
+  tagSlug,
+} from './lib/content-utils.mjs';
 
 const root = process.cwd();
 const contentDir = join(root, 'src/content');
@@ -108,34 +123,6 @@ if (errors.length > 0) {
 
 console.log('Content validation passed.');
 
-function listMarkdownFiles(dir) {
-  return readdirSync(dir)
-    .flatMap((name) => {
-      const file = join(dir, name);
-      const stat = statSync(file);
-
-      if (stat.isDirectory()) return listMarkdownFiles(file);
-      if (/\.(md|mdx)$/i.test(name)) return [file];
-
-      return [];
-    })
-    .sort();
-}
-
-function listProjectSourceFiles(dir) {
-  return readdirSync(dir)
-    .flatMap((name) => {
-      const file = join(dir, name);
-      const stat = statSync(file);
-
-      if (stat.isDirectory()) return listProjectSourceFiles(file);
-      if (/\.(astro|ts|js|mjs)$/.test(name)) return [file];
-
-      return [];
-    })
-    .sort();
-}
-
 function validateSiteConfig() {
   if (!siteUrl) {
     errors.push('src/data/site.yml: missing url.');
@@ -174,58 +161,6 @@ function validateNoRuntimeApis() {
       fail(file, 'runtime API calls are not allowed in src/. Use build-time data instead.');
     }
   }
-}
-
-function readFrontmatter(source) {
-  return source.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
-}
-
-function readFrontmatterValue(frontmatter, key) {
-  const value = frontmatter.match(new RegExp(`^${key}:[ \\t]*(.+?)[ \\t]*$`, 'm'))?.[1]?.trim();
-
-  if (!value) return undefined;
-
-  return value.replace(/^['"]|['"]$/g, '');
-}
-
-function readNestedFrontmatterValue(frontmatter, objectKey, key) {
-  const block = frontmatter.match(new RegExp(`^${objectKey}:\\s*\\r?\\n((?:\\s{2,}.+\\r?\\n?)+)`, 'm'))?.[1] ?? '';
-  const value = block.match(new RegExp(`^\\s+${key}:\\s*(.+?)\\s*$`, 'm'))?.[1]?.trim();
-
-  if (!value) return undefined;
-
-  return value.replace(/^['"]|['"]$/g, '');
-}
-
-function readFrontmatterList(frontmatter, key) {
-  const match = frontmatter.match(new RegExp(`^${key}:\\s*\\r?\\n((?:\\s+-\\s+.+\\r?\\n?)+)`, 'm'));
-  const list = match?.[1] ?? '';
-
-  return [...list.matchAll(/^\s+-\s+(.+?)\s*$/gm)].map((item) =>
-    item[1].trim().replace(/^['"]|['"]$/g, ''),
-  );
-}
-
-function readYamlScalar(source, key) {
-  return source.match(new RegExp(`^${key}:[ \\t]*(.+?)[ \\t]*$`, 'm'))?.[1]?.trim().replace(/^['"]|['"]$/g, '');
-}
-
-function hasConfiguredGiscus(source) {
-  const commentsStart = source.match(/^comments:\s*$/m)?.index;
-  if (commentsStart === undefined) return false;
-
-  const commentsBlock = source.slice(commentsStart);
-  const giscusStart = commentsBlock.match(/^\s+giscus:\s*$/m)?.index;
-  if (giscusStart === undefined) return false;
-
-  const block = commentsBlock.slice(giscusStart);
-  return ['repo', 'repo_id', 'category', 'category_id'].every((key) =>
-    new RegExp(`^\\s+${key}:\\s*\\S+`, 'm').test(block),
-  );
-}
-
-function commentsEnabled(frontmatter) {
-  return !/^comments:\s*false\s*$/m.test(frontmatter);
 }
 
 function readTagToneConfig(source) {
@@ -380,11 +315,6 @@ function validatePublicThreadBlock(file, source) {
   }
 }
 
-function hasNestedFrontmatterKey(frontmatter, objectKey, key) {
-  const block = frontmatter.match(new RegExp(`^${objectKey}:\\s*\\r?\\n((?:\\s{2,}.+\\r?\\n?)+)`, 'm'))?.[1] ?? '';
-  return new RegExp(`^\\s+${key}:\\s*(?:.+?)?\\s*$`, 'm').test(block);
-}
-
 function getKnownRoutes() {
   const routes = new Set(['/', '/about/', '/posts/', '/tags/', '/worklog/']);
 
@@ -393,21 +323,6 @@ function getKnownRoutes() {
   for (const id of tagIds) routes.add(`/tags/${id}/`);
 
   return routes;
-}
-
-function hasFileExtension(path) {
-  return /\.[a-z0-9]+$/i.test(path);
-}
-
-function tagSlug(tag) {
-  return tag
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
-}
-
-function stripExtension(path) {
-  return path.replace(/\.(md|mdx)$/i, '');
 }
 
 function fail(file, message) {

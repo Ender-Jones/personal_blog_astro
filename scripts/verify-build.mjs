@@ -1,6 +1,20 @@
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import process from 'node:process';
+import {
+  commentsEnabled,
+  hasConfiguredGiscus,
+  listFiles,
+  listMarkdownFiles,
+  readFrontmatter,
+  readFrontmatterList,
+  readFrontmatterValue,
+  readIfExists,
+  readYamlScalar,
+  routeToFile,
+  stripExtension,
+  tagSlug,
+} from './lib/content-utils.mjs';
 
 const root = process.cwd();
 const distDir = join(root, 'dist');
@@ -187,104 +201,14 @@ function verifyHomepageMarginalia() {
   }
 }
 
-function listMarkdownFiles(dir) {
-  if (!existsSync(dir)) return [];
-
-  return readdirSync(dir)
-    .flatMap((name) => {
-      const file = join(dir, name);
-      const stat = statSync(file);
-
-      if (stat.isDirectory()) return listMarkdownFiles(file);
-      if (/\.(md|mdx)$/i.test(name)) return [file];
-
-      return [];
-    })
-    .sort();
-}
-
-function listFiles(dir) {
-  return readdirSync(dir)
-    .flatMap((name) => {
-      const file = join(dir, name);
-      const stat = statSync(file);
-
-      if (stat.isDirectory()) return listFiles(file);
-      return [file];
-    })
-    .sort();
-}
-
-function readIfExists(file) {
-  if (!existsSync(file)) return undefined;
-  return readFileSync(file, 'utf8');
-}
-
 function verifyExists(file, label) {
   if (!existsSync(file)) errors.push(`${label}: missing.`);
-}
-
-function readFrontmatter(source) {
-  return source.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
-}
-
-function readFrontmatterValue(frontmatter, key) {
-  const value = frontmatter.match(new RegExp(`^${key}:[ \\t]*(.+?)[ \\t]*$`, 'm'))?.[1]?.trim();
-  if (!value) return undefined;
-  return value.replace(/^['"]|['"]$/g, '');
-}
-
-function readFrontmatterList(frontmatter, key) {
-  const match = frontmatter.match(new RegExp(`^${key}:\\s*\\r?\\n((?:\\s+-\\s+.+\\r?\\n?)+)`, 'm'));
-  const list = match?.[1] ?? '';
-
-  return [...list.matchAll(/^\s+-\s+(.+?)\s*$/gm)].map((item) =>
-    item[1].trim().replace(/^['"]|['"]$/g, ''),
-  );
-}
-
-function readYamlScalar(source, key) {
-  return source.match(new RegExp(`^${key}:[ \\t]*(.+?)[ \\t]*$`, 'm'))?.[1]?.trim().replace(/^['"]|['"]$/g, '');
-}
-
-function hasConfiguredGiscus(source) {
-  const commentsStart = source.match(/^comments:\s*$/m)?.index;
-  if (commentsStart === undefined) return false;
-
-  const commentsBlock = source.slice(commentsStart);
-  const giscusStart = commentsBlock.match(/^\s+giscus:\s*$/m)?.index;
-  if (giscusStart === undefined) return false;
-
-  const block = commentsBlock.slice(giscusStart);
-  return ['repo', 'repo_id', 'category', 'category_id'].every((key) =>
-    new RegExp(`^\\s+${key}:\\s*\\S+`, 'm').test(block),
-  );
-}
-
-function commentsEnabled(frontmatter) {
-  return !/^comments:\s*false\s*$/m.test(frontmatter);
 }
 
 function hasEligibleMarginalia(frontmatter) {
   if (!/^marginalia:/m.test(frontmatter)) return false;
   if (readFrontmatterValue(frontmatter, 'marginalia') === 'false') return false;
   return Boolean(readFrontmatterValue(frontmatter, 'image'));
-}
-
-function routeToFile(route) {
-  if (route === '/') return '/index.html';
-  return `${route}index.html`;
-}
-
-function stripExtension(path) {
-  return path.replace(/\.(md|mdx)$/i, '');
-}
-
-function tagSlug(tag) {
-  return tag
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
 }
 
 function escapeXml(value) {

@@ -1,19 +1,33 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import process from 'node:process';
+import {
+  listContentFiles,
+  listMarkdownFiles,
+  normalizeText,
+  readFrontmatterFile,
+  readFrontmatterValue,
+  stripExtension,
+} from './lib/content-utils.mjs';
 
 const newBlogRoot = process.cwd();
 const oldBlogCandidates = [
   process.env.OLD_BLOG_DIR,
   '/Users/ender/Documents/Git/Ender-Jones.github.io',
-  join(newBlogRoot, 'reference/old_blog'),
 ].filter(Boolean);
 const oldBlogRoot = oldBlogCandidates.find((dir) => existsSync(dir));
 const errors = [];
 
 if (!oldBlogRoot) {
-  console.error(`Old blog directory not found. Checked: ${oldBlogCandidates.join(', ')}`);
-  process.exit(1);
+  const message = `Old blog directory not found. Checked: ${oldBlogCandidates.join(', ')}`;
+
+  if (process.env.AUDIT_OLD_BLOG_REQUIRED === '1') {
+    console.error(message);
+    process.exit(1);
+  }
+
+  console.warn(`${message}. Skipping old blog audit; set OLD_BLOG_DIR or AUDIT_OLD_BLOG_REQUIRED=1 to make this strict.`);
+  process.exit(0);
 }
 
 const oldPostEntries = listContentFiles(join(oldBlogRoot, '_posts')).map(readOldPost);
@@ -22,10 +36,10 @@ const oldDrafts = [
   ...oldPostEntries.filter((entry) => !entry.date),
   ...listContentFiles(join(oldBlogRoot, '_drafts')).map(readOldPost),
 ].filter((entry) => entry.title);
-const newPosts = listMarkdown(join(newBlogRoot, 'src/content/posts')).map(readNewEntry);
-const oldWorklogs = listMarkdown(join(oldBlogRoot, '_worklogs')).map(readOldWorklog);
-const newWorklogs = listMarkdown(join(newBlogRoot, 'src/content/worklogs')).map(readNewEntry);
-const newDrafts = listMarkdown(join(newBlogRoot, 'drafts')).map(readNewEntry).filter((entry) => entry.title);
+const newPosts = listMarkdownFiles(join(newBlogRoot, 'src/content/posts')).map(readNewEntry);
+const oldWorklogs = listMarkdownFiles(join(oldBlogRoot, '_worklogs')).map(readOldWorklog);
+const newWorklogs = listMarkdownFiles(join(newBlogRoot, 'src/content/worklogs')).map(readNewEntry);
+const newDrafts = listMarkdownFiles(join(newBlogRoot, 'drafts')).map(readNewEntry).filter((entry) => entry.title);
 
 compareEntries('post', oldPosts, newPosts);
 compareEntries('worklog', oldWorklogs, newWorklogs);
@@ -39,26 +53,8 @@ if (errors.length > 0) {
 
 console.log(`Old blog audit passed: ${oldPosts.length} posts, ${oldWorklogs.length} worklogs, ${oldDrafts.length} drafts.`);
 
-function listMarkdown(dir) {
-  if (!existsSync(dir)) return [];
-
-  return readdirSync(dir)
-    .filter((name) => /\.(md|mdx)$/i.test(name))
-    .map((name) => join(dir, name))
-    .sort();
-}
-
-function listContentFiles(dir) {
-  if (!existsSync(dir)) return [];
-
-  return readdirSync(dir)
-    .filter((name) => !name.startsWith('.') && !name.endsWith('~'))
-    .map((name) => join(dir, name))
-    .sort();
-}
-
 function readOldPost(file) {
-  const fm = readFrontmatter(file);
+  const fm = readFrontmatterFile(file);
   const slug = basename(file)
     .replace(/^\d{4}-\d{2}-\d{2}-/, '')
     .replace(/\.md$/, '')
@@ -67,38 +63,38 @@ function readOldPost(file) {
   return {
     file,
     slug,
-    title: readField(fm, 'title'),
+    title: readFrontmatterValue(fm, 'title') ?? '',
     date: readDate(fm),
   };
 }
 
 function readOldWorklog(file) {
-  const fm = readFrontmatter(file);
+  const fm = readFrontmatterFile(file);
 
   return {
     file,
-    slug: basename(file).replace(/\.(md|mdx)$/i, ''),
-    title: readField(fm, 'title'),
+    slug: stripExtension(basename(file)),
+    title: readFrontmatterValue(fm, 'title') ?? '',
     date: readDate(fm),
   };
 }
 
 function readNewEntry(file) {
-  const fm = readFrontmatter(file);
+  const fm = readFrontmatterFile(file);
 
   return {
     file,
-    slug: basename(file, '.md'),
-    title: readField(fm, 'title'),
+    slug: stripExtension(basename(file)),
+    title: readFrontmatterValue(fm, 'title') ?? '',
     date: readDate(fm),
   };
 }
 
 function compareEntries(kind, oldEntries, newEntries) {
-  const newByTitle = new Map(newEntries.map((entry) => [normalize(entry.title), entry]));
+  const newByTitle = new Map(newEntries.map((entry) => [normalizeText(entry.title), entry]));
 
   for (const oldEntry of oldEntries) {
-    const newEntry = newByTitle.get(normalize(oldEntry.title));
+    const newEntry = newByTitle.get(normalizeText(oldEntry.title));
 
     if (!newEntry) {
       errors.push(`missing ${kind}: ${oldEntry.title}`);
@@ -112,25 +108,17 @@ function compareEntries(kind, oldEntries, newEntries) {
 }
 
 function compareDrafts(oldEntries, newEntries) {
-  const newByTitle = new Map(newEntries.map((entry) => [normalize(entry.title), entry]));
+  const newByTitle = new Map(newEntries.map((entry) => [normalizeText(entry.title), entry]));
 
   for (const oldEntry of oldEntries) {
-    if (!newByTitle.has(normalize(oldEntry.title))) {
+    if (!newByTitle.has(normalizeText(oldEntry.title))) {
       errors.push(`missing draft: ${oldEntry.title}`);
     }
   }
 }
 
-function readFrontmatter(file) {
-  return readFileSync(file, 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
-}
-
-function readField(frontmatter, key) {
-  return frontmatter.match(new RegExp(`^${key}:[ \\t]*[\"']?([^\\r\\n]*?)[\"']?[ \\t]*$`, 'm'))?.[1]?.trim() ?? '';
-}
-
 function readDate(frontmatter) {
-  const raw = readField(frontmatter, 'date');
+  const raw = readFrontmatterValue(frontmatter, 'date');
   if (!raw) return '';
 
   const parsed = new Date(raw);
@@ -141,8 +129,4 @@ function readDate(frontmatter) {
   const day = String(parsed.getDate()).padStart(2, '0');
 
   return `${year}-${month}-${day}`;
-}
-
-function normalize(value) {
-  return value.toLowerCase().replace(/\s+/g, ' ').trim();
 }
