@@ -38,7 +38,7 @@ img {
 
 ::selection {
   background: rgba(244, 114, 182, 0.28);
-  color: #fff;
+  color: var(--text-strong);
 }
 
 .site-nav {
@@ -135,13 +135,66 @@ main {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
+.neon-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 15px;
+  border: 1px solid var(--neon-pill-border);
+  border-radius: 999px;
+  background: var(--neon-pill-bg);
+  color: var(--text-strong);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.04em;
+  box-shadow: var(--neon-pill-shadow);
+  text-shadow: var(--neon-pill-text-shadow);
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease,
+    text-shadow 150ms ease;
+}
+
+.neon-pill:hover {
+  border-color: var(--neon-pill-border-hover);
+  background: var(--neon-pill-bg-hover);
+  color: var(--text-strong);
+  box-shadow: var(--neon-pill-shadow-hover);
+  text-shadow: var(--neon-pill-text-shadow-hover);
+}
+
+.neon-pill--pink-blue {
+  --neon-pill-border: var(--neon-pink-border);
+  --neon-pill-border-hover: var(--neon-blue-border-hover);
+  --neon-pill-bg: var(--neon-pink-bg);
+  --neon-pill-bg-hover: var(--neon-blue-bg-hover);
+  --neon-pill-shadow: var(--neon-pink-shadow);
+  --neon-pill-shadow-hover: var(--neon-blue-shadow-hover);
+  --neon-pill-text-shadow: var(--neon-pink-text-shadow);
+  --neon-pill-text-shadow-hover: var(--neon-blue-text-shadow-hover);
+}
+
+.neon-pill--blue-pink {
+  --neon-pill-border: var(--neon-blue-border);
+  --neon-pill-border-hover: var(--neon-pink-border-hover);
+  --neon-pill-bg: var(--neon-blue-bg);
+  --neon-pill-bg-hover: var(--neon-pink-bg-hover);
+  --neon-pill-shadow: var(--neon-blue-shadow);
+  --neon-pill-shadow-hover: var(--neon-pink-shadow-hover);
+  --neon-pill-text-shadow: var(--neon-blue-text-shadow);
+  --neon-pill-text-shadow-hover: var(--neon-pink-text-shadow-hover);
+}
+
 .route-header {
   margin-bottom: var(--s-8);
 }
 
 .route-header h1 {
   margin: var(--s-3) 0;
-  color: #fff;
+  color: var(--text-strong);
   font-size: clamp(40px, 7vw, 64px);
   line-height: 1;
 }

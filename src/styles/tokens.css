@@ -1,4 +1,4 @@
-/* Design tokens mirrored from reference/claude_redesign/tokens.css. */
+/* Site design tokens. */
 
 :root {
   --bg: #04060d;
@@ -8,12 +8,32 @@
   --border-hi: rgba(255, 255, 255, 0.12);
 
   --text: #f1f3f5;
+  --text-strong: #fff;
+  --text-soft: #dfe4ea;
   --text-muted: #8b95a1;
   --text-dim: #6c7886;
 
   --accent-pink: #f472b6;
   --accent-blue: #38bdf8;
   --accent-teal: #5dcaa5;
+
+  --neon-pink-border: rgba(244, 114, 182, 0.46);
+  --neon-pink-border-hover: rgba(244, 114, 182, 0.58);
+  --neon-pink-bg: linear-gradient(135deg, rgba(244, 114, 182, 0.24), rgba(244, 114, 182, 0.08));
+  --neon-pink-bg-hover: linear-gradient(135deg, rgba(244, 114, 182, 0.25), rgba(244, 114, 182, 0.08));
+  --neon-pink-shadow: 0 0 22px rgba(244, 114, 182, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --neon-pink-shadow-hover: 0 0 22px rgba(244, 114, 182, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --neon-pink-text-shadow: 0 0 10px rgba(244, 114, 182, 0.28);
+  --neon-pink-text-shadow-hover: 0 0 12px rgba(244, 114, 182, 0.36);
+
+  --neon-blue-border: rgba(56, 189, 248, 0.42);
+  --neon-blue-border-hover: rgba(56, 189, 248, 0.58);
+  --neon-blue-bg: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(56, 189, 248, 0.07));
+  --neon-blue-bg-hover: linear-gradient(135deg, rgba(56, 189, 248, 0.24), rgba(56, 189, 248, 0.08));
+  --neon-blue-shadow: 0 0 18px rgba(56, 189, 248, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --neon-blue-shadow-hover: 0 0 22px rgba(56, 189, 248, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --neon-blue-text-shadow: 0 0 10px rgba(56, 189, 248, 0.24);
+  --neon-blue-text-shadow-hover: 0 0 12px rgba(56, 189, 248, 0.36);
 
   --font-sans: 'Noto Sans', system-ui, sans-serif;
   --font-mono: 'Fira Code', ui-monospace, monospace;

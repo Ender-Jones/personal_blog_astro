@@ -144,7 +144,7 @@ function truncateText(text: string, limit: number) {
 
       <div class="post-drum__foot">
         <span>wheel / tap</span>
-        <a href="/posts/">all writing →</a>
+        <a class="neon-pill neon-pill--blue-pink" href="/posts/">all writing →</a>
       </div>
     </aside>
 
@@ -179,7 +179,7 @@ function truncateText(text: string, limit: number) {
 
         <div class="preview-card__foot">
           <span data-preview-slug>posts/{initialPost?.id}/</span>
-          <a href={initialPost?.href ?? '/posts/'} data-preview-read>read post →</a>
+          <a class="neon-pill neon-pill--pink-blue" href={initialPost?.href ?? '/posts/'} data-preview-read>read post →</a>
         </div>
       </div>
     </article>
@@ -475,61 +475,6 @@ function truncateText(text: string, limit: number) {
     padding-top: 8px;
     padding-bottom: 10px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
-  }
-
-  .post-drum__foot a,
-  .preview-card__foot a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 7px 15px;
-    border: 1px solid rgba(244, 114, 182, 0.46);
-    border-radius: 999px;
-    background: linear-gradient(135deg, rgba(244, 114, 182, 0.24), rgba(244, 114, 182, 0.08));
-    color: #fff;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: var(--fw-semibold);
-    letter-spacing: 0.04em;
-    box-shadow:
-      0 0 22px rgba(244, 114, 182, 0.18),
-      inset 0 1px 0 rgba(255, 255, 255, 0.14);
-    text-shadow: 0 0 10px rgba(244, 114, 182, 0.28);
-    transition:
-      border-color 150ms ease,
-      background 150ms ease,
-      color 150ms ease,
-      box-shadow 150ms ease,
-      text-shadow 150ms ease;
-  }
-
-  .post-drum__foot a {
-    border-color: rgba(56, 189, 248, 0.42);
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(56, 189, 248, 0.07));
-    box-shadow:
-      0 0 18px rgba(56, 189, 248, 0.14),
-      inset 0 1px 0 rgba(255, 255, 255, 0.12);
-    text-shadow: 0 0 10px rgba(56, 189, 248, 0.24);
-  }
-
-  .post-drum__foot a:hover {
-    border-color: rgba(244, 114, 182, 0.58);
-    background: linear-gradient(135deg, rgba(244, 114, 182, 0.25), rgba(244, 114, 182, 0.08));
-    color: #fff;
-    box-shadow:
-      0 0 22px rgba(244, 114, 182, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.14);
-    text-shadow: 0 0 12px rgba(244, 114, 182, 0.36);
-  }
-
-  .preview-card__foot a:hover {
-    border-color: rgba(56, 189, 248, 0.58);
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.24), rgba(56, 189, 248, 0.08));
-    color: #fff;
-    box-shadow:
-      0 0 22px rgba(56, 189, 248, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.14);
-    text-shadow: 0 0 12px rgba(56, 189, 248, 0.36);
   }
 
   .post-drum__window {
